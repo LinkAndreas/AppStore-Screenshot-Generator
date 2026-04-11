@@ -1,6 +1,6 @@
 # 📱 App Store Screenshot Generator
 
-**🔗 [View Web-App / Repository](https://github.com/LinkAndreas/AppStore-Screenshot-Generator)**
+**🔗 [Open AppStore Screenshot Generator](https://www.linkandreas.de/AppStore-Screenshot-Generator/)**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
