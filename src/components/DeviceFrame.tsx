@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ImageIcon } from 'lucide-react';
-import { getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
+import { getBezelCategories } from '../constants';
 
 // ---------------------------------------------------------------------------
 // Types
