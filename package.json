@@ -3,6 +3,7 @@
   "description": "A high-performance, browser-based App Store screenshot generator with bulk export and device-accurate scaling.",
   "author": "Andreas Link",
   "license": "MIT",
+  "homepage": "https://LinkAndreas.github.io/AppStore-Screenshot-Generator/",
   "private": false,
   "version": "1.0.0",
   "type": "module",
@@ -20,7 +21,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "clsx": "^2.1.1",
@@ -30,7 +33,8 @@
     "lucide-react": "^1.7.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "gh-pages": "^6.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
