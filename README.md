@@ -1,12 +1,14 @@
 # 📱 App Store Screenshot Generator
 
+**🔗 [View Web-App / Repository](https://github.com/LinkAndreas/AppStore-Screenshot-Generator)**
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6-purple?logo=vite)](https://vitejs.dev/)
 
 A professional, high-performance web tool designed for developers and designers to generate pixel-perfect App Store marketing screenshots in seconds. Stop wasting time with manual alignment and repetitive exports.
 
-![Hero Banner](./src/assets/hero.png)
+*Coded using Google Antigravity.*
 
 ## 🚀 Features
 
