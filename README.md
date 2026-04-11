@@ -61,6 +61,14 @@ A professional, high-performance web tool designed for developers and designers 
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
+## 📦 Assets & Attribution
+
+- Device Bezels: iPhone and iPad device frames are sourced from Apple’s official design resources:
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-17.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-M4.dmg
+
+All rights to these assets belong to Apple and are used in accordance with their design guidelines.
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
