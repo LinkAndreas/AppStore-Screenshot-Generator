@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { ImageIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { Image as ImageIcon } from 'lucide-react';
 import { getBezelCategories } from '../constants';
+import { useConfig } from '../store/ConfigContext';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -73,6 +74,7 @@ export const DeviceFrame = ({
   onScreenshotLoad,
   cornerRadiusPx = 100,
 }: DeviceFrameProps) => {
+  const { t } = useConfig();
   const [bezelDims, setBezelDims] = useState<Dims | null>(null);
   const [shotDims,  setShotDims]  = useState<Dims | null>(null);
 
@@ -210,7 +212,7 @@ export const DeviceFrame = ({
                     maxWidth: '80%',
                   }}
                 >
-                  Drop or Click
+                  {t('content.upload')}
                 </span>
               </div>
             </>

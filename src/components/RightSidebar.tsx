@@ -104,7 +104,7 @@ const FONT_SIZE_OPTIONS = [
 ];
 
 export const RightSidebar = () => {
-  const { screens, selectedScreenId, updateScreen, rightSidebarTab, setRightSidebarTab, expandedSections, setExpandedSections } = useConfig();
+  const { screens, selectedScreenId, updateScreen, rightSidebarTab, setRightSidebarTab, expandedSections, setExpandedSections, t } = useConfig();
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev =>
@@ -130,9 +130,9 @@ export const RightSidebar = () => {
         }}>
           <Palette size={32} />
         </div>
-        <h2 style={{ color: 'var(--text-main)', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>Select a Screen</h2>
+        <h2 style={{ color: 'var(--text-main)', marginBottom: '12px', fontSize: '18px', fontWeight: '600' }}>{t('sidebar.selectScreen')}</h2>
         <p style={{ fontSize: '14px', lineHeight: '1.6' }}>
-          Select a frame from the canvas to customize its layout, background style, and text content.
+          {t('sidebar.selectDesc')}
         </p>
       </div>
     );
@@ -172,7 +172,7 @@ export const RightSidebar = () => {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <textarea
-          placeholder={isTitle ? "Title (Optional)" : "Subtitle (Optional)"}
+          placeholder={isTitle ? t('content.titlePlaceholder') : t('content.subtitlePlaceholder')}
           value={isTitle ? selectedScreen.title : selectedScreen.subtitle}
           onChange={e => updateScreen(selectedScreen.id, { [isTitle ? 'title' : 'subtitle']: e.target.value })}
           style={{ width: '100%', minHeight: isTitle ? '60px' : '50px', resize: 'vertical', fontSize: '13px', marginBottom: '8px' }}
@@ -182,7 +182,7 @@ export const RightSidebar = () => {
 
         <div>
           <div className="label-row" style={{ marginBottom: '8px' }}>
-            <span>Color</span>
+            <span>{t('style.color')}</span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <input type="text" value={color || '#ffffff'} onChange={e => setColor(e.target.value)} style={{ width: '60px', padding: '4px 8px' }} />
               <input type="color" value={color || '#ffffff'} onChange={e => setColor(e.target.value)} style={{ width: '28px', height: '28px', padding: 0, cursor: 'pointer', border: 'none', background: 'transparent' }} />
@@ -201,7 +201,7 @@ export const RightSidebar = () => {
         </div>
 
         <div className="label-row">
-          <span>Font Size</span>
+          <span>{t('style.fontSize')}</span>
           <select
             value={size || ''}
             onChange={e => setSize(e.target.value === '' ? undefined : parseInt(e.target.value))}
@@ -214,7 +214,7 @@ export const RightSidebar = () => {
         </div>
 
         <div className="label-row">
-          <span>Format & Align</span>
+          <span>{t('style.format')}</span>
           <div style={{ display: 'flex', gap: '8px' }}>
             <div style={{ display: 'flex', gap: '2px', background: 'var(--input-bg)', padding: '2px', borderRadius: '6px', border: '1px solid var(--panel-border)' }}>
               <button onClick={() => setBold(!isBold)} style={{ background: isBold ? 'var(--accent)' : 'transparent', color: isBold ? '#fff' : 'inherit', border: 'none', padding: '4px', borderRadius: '4px', cursor: 'pointer' }}><Bold size={14} /></button>
@@ -236,22 +236,22 @@ export const RightSidebar = () => {
     <div className="sidebar sidebar-right">
       <div className="tabs">
         <button className={rightSidebarTab === 'layout' ? 'active' : ''} onClick={() => setRightSidebarTab('layout')}>
-          <Layout size={16} /> Layout
+          <Layout size={16} /> {t('tabs.layout')}
         </button>
         <button className={rightSidebarTab === 'style' ? 'active' : ''} onClick={() => setRightSidebarTab('style')}>
-          <Palette size={16} /> Style
+          <Palette size={16} /> {t('tabs.style')}
         </button>
         <button className={rightSidebarTab === 'content' ? 'active' : ''} onClick={() => setRightSidebarTab('content')}>
-          <FileText size={16} /> Content
+          <FileText size={16} /> {t('tabs.content')}
         </button>
       </div>
 
       <div className="sidebar-content">
         {rightSidebarTab === 'layout' && (
           <div className="panel-group">
-            <h3>Device Selection</h3>
+            <h3>{t('layout.model')}</h3>
             <div className="label-row" style={{ marginBottom: '16px' }}>
-              <span>Model</span>
+              <span>{t('layout.model')}</span>
               <select value={selectedScreen.bezelName} onChange={e => updateScreen(selectedScreen.id, { bezelName: e.target.value })} style={{ width: '130px' }}>
                 {validOptions.map(name => {
                   let display = name.replace('iPhone ', '').replace('iPad ', '').replace(' - Portrait', '').replace(' - Landscape', '');
@@ -262,10 +262,9 @@ export const RightSidebar = () => {
 
             <hr style={{ border: 'none', borderTop: '1px solid var(--panel-border)', margin: '16px -16px' }} />
 
-            <h3>Positioning</h3>
-
+            <h3>{t('layout.positioning')}</h3>
             <div style={{ marginBottom: '24px' }}>
-              <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>Auto-Placement</div>
+              <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginBottom: '8px' }}>{t('layout.autoPlacement')}</div>
               <div style={{ display: 'flex', background: 'var(--input-bg)', padding: '4px', borderRadius: '8px', gap: '4px' }}>
                 {(['top', 'center', 'bottom'] as const).map(pos => {
                   const isActive = selectedScreen.positioning === pos || (!selectedScreen.positioning && pos === 'center');
@@ -287,7 +286,7 @@ export const RightSidebar = () => {
                         transition: 'all 0.2s ease'
                       }}
                     >
-                      {pos}
+                      {t(`layout.${pos}`)}
                     </button>
                   );
                 })}
@@ -297,7 +296,7 @@ export const RightSidebar = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-main)', marginBottom: '8px', fontWeight: 500 }}>
-                  <span>Scale</span>
+                  <span>{t('layout.scale')}</span>
                   <span>{Math.round((selectedScreen.scale || 1) * 100)}%</span>
                 </div>
                 <input
@@ -313,7 +312,7 @@ export const RightSidebar = () => {
 
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-main)', marginBottom: '8px', fontWeight: 500 }}>
-                  <span>Rotation</span>
+                  <span>{t('layout.rotation')}</span>
                   <span>{selectedScreen.rotation || 0}°</span>
                 </div>
                 <input
@@ -327,7 +326,7 @@ export const RightSidebar = () => {
 
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-main)', marginBottom: '8px', fontWeight: 500 }}>
-                  <span>Horizontal Offset</span>
+                  <span>{t('layout.offsetX')}</span>
                   <span>{selectedScreen.offsetX || 0}px</span>
                 </div>
                 <input
@@ -341,7 +340,7 @@ export const RightSidebar = () => {
 
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', color: 'var(--text-main)', marginBottom: '8px', fontWeight: 500 }}>
-                  <span>Vertical Offset</span>
+                  <span>{t('layout.offsetY')}</span>
                   <span>{selectedScreen.offsetY || 0}px</span>
                 </div>
                 <input
@@ -356,7 +355,7 @@ export const RightSidebar = () => {
                     onClick={() => updateScreen(selectedScreen.id, { scale: (device === 'iPad' ? 1.5 : 1.0), rotation: 0, offsetX: 0, offsetY: 0 })}
                     style={{ fontSize: '11px', color: 'var(--accent)', background: 'transparent', border: 'none', cursor: 'pointer' }}
                   >
-                    Reset Fine-Tuning
+                    {t('layout.reset')}
                   </button>
                 </div>
               </div>
@@ -367,18 +366,18 @@ export const RightSidebar = () => {
 
         {rightSidebarTab === 'style' && (
           <div className="panel-group">
-            <h3>Background Style</h3>
+            <h3>{t('style.bg')}</h3>
             <div className="label-row">
-              <span>Type</span>
+              <span>{t('style.type')}</span>
               <select value={selectedScreen.bgType} onChange={e => updateScreen(selectedScreen.id, { bgType: e.target.value as any })} style={{ width: '100px' }}>
-                <option value="gradient">Gradient</option>
-                <option value="color">Solid</option>
+                <option value="gradient">{t('style.gradient')}</option>
+                <option value="color">{t('style.solid')}</option>
               </select>
             </div>
 
             {selectedScreen.bgType === 'color' ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="swatch-label">Choose a Preset</span>
+                <span className="swatch-label">{t('style.preset')}</span>
                 <div className="gradient-swatches">
                   {SOLID_PRESETS.map(p => {
                     const isActive = selectedScreen.bgColor === p.color;
@@ -403,7 +402,7 @@ export const RightSidebar = () => {
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="swatch-label">Choose a Preset</span>
+                <span className="swatch-label">{t('style.preset')}</span>
                 <div className="gradient-swatches">
                   {GRADIENT_PRESETS.map(p => {
                     const isActive = selectedScreen.bgGradientStart === p.start && selectedScreen.bgGradientEnd === p.end;
@@ -433,16 +432,16 @@ export const RightSidebar = () => {
                     style={{ width: 'auto', padding: '6px 12px' }}
                   >
                     <ArrowLeftRight size={14} />
-                    <span style={{ fontSize: '11px', marginLeft: '4px' }}>Reverse</span>
+                    <span style={{ fontSize: '11px', marginLeft: '4px' }}>{t('style.reverse')}</span>
                   </button>
                 </div>
                 <div className="color-picker">
-                  <span style={{ width: 30, fontSize: 12 }}>Start:</span>
+                  <span style={{ width: 30, fontSize: 12 }}>{t('style.start')}:</span>
                   <input type="color" value={selectedScreen.bgGradientStart} onChange={e => updateScreen(selectedScreen.id, { bgGradientStart: e.target.value })} style={{ width: 36, height: 36 }} />
                   <input type="text" value={selectedScreen.bgGradientStart} onChange={e => updateScreen(selectedScreen.id, { bgGradientStart: e.target.value })} />
                 </div>
                 <div className="color-picker">
-                  <span style={{ width: 30, fontSize: 12 }}>End:</span>
+                  <span style={{ width: 30, fontSize: 12 }}>{t('style.end')}:</span>
                   <input type="color" value={selectedScreen.bgGradientEnd} onChange={e => updateScreen(selectedScreen.id, { bgGradientEnd: e.target.value })} style={{ width: 36, height: 36 }} />
                   <input type="text" value={selectedScreen.bgGradientEnd} onChange={e => updateScreen(selectedScreen.id, { bgGradientEnd: e.target.value })} />
                 </div>
@@ -454,7 +453,7 @@ export const RightSidebar = () => {
         {rightSidebarTab === 'content' && (
           <div className="panel-group" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <div style={{ marginTop: '8px' }}>
-              <h3 style={{ marginBottom: '16px' }}>Text Content</h3>
+              <h3 style={{ marginBottom: '16px' }}>{t('content.section')}</h3>
 
               {/* Title Section */}
               <div style={{
@@ -500,7 +499,7 @@ export const RightSidebar = () => {
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    <span style={{ fontSize: '13px', fontWeight: 600 }}>Title</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600 }}>{t('content.title')}</span>
                     {expandedSections.includes('title') ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   </button>
                 </div>
@@ -555,7 +554,7 @@ export const RightSidebar = () => {
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    <span style={{ fontSize: '13px', fontWeight: 600 }}>Subtitle</span>
+                    <span style={{ fontSize: '13px', fontWeight: 600 }}>{t('content.subtitle')}</span>
                     {expandedSections.includes('subtitle') ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                   </button>
                 </div>
@@ -568,7 +567,7 @@ export const RightSidebar = () => {
             </div>
 
             <div>
-              <h3 style={{ marginBottom: '12px' }}>App Screenshot</h3>
+              <h3 style={{ marginBottom: '12px' }}>{t('content.screenshot')}</h3>
               <label
                 className="file-drop"
                 style={{ cursor: 'pointer', padding: '16px', borderRadius: '12px', border: '1px dashed var(--panel-border)', background: 'var(--input-bg)', textAlign: 'center', transition: 'all 0.2s ease', display: 'block' }}
@@ -577,7 +576,7 @@ export const RightSidebar = () => {
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                   <ImageIcon size={20} color={selectedScreen.imageObjUrl ? 'var(--accent)' : 'var(--text-muted)'} />
                   <span style={{ fontSize: '12px', fontWeight: 500, color: selectedScreen.imageObjUrl ? 'var(--text-main)' : 'var(--text-muted)' }}>
-                    {selectedScreen.imageObjUrl ? 'Change Screenshot' : 'Upload Screenshot'}
+                    {selectedScreen.imageObjUrl ? t('content.change') : t('content.upload')}
                   </span>
                 </div>
               </label>
