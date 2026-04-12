@@ -1,14 +1,13 @@
-import React from 'react';
 import { useConfig } from '../store/ConfigContext';
 import { AlertCircle } from 'lucide-react';
 
 export const ErrorToast = () => {
-  const { appError, setAppError, t } = useConfig();
+  const { appError, setAppError } = useConfig();
 
   if (!appError) return null;
 
   return (
-    <div 
+    <div
       className="error-dialog-overlay"
       style={{
         position: 'fixed',
@@ -27,7 +26,7 @@ export const ErrorToast = () => {
       }}
       onClick={() => setAppError(null)}
     >
-      <div 
+      <div
         style={{
           background: 'var(--panel-bg)',
           border: '1px solid var(--panel-border)',
@@ -57,16 +56,16 @@ export const ErrorToast = () => {
         }}>
           <AlertCircle size={40} />
         </div>
-        
+
         <h2 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 16px 0', color: 'var(--text-main)' }}>
           Action Failed
         </h2>
-        
+
         <p style={{ fontSize: '16px', lineHeight: 1.6, color: 'var(--text-muted)', margin: '0 0 32px 0' }}>
           {appError}
         </p>
 
-        <button 
+        <button
           onClick={() => setAppError(null)}
           style={{
             background: 'var(--accent)',
