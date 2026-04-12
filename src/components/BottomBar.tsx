@@ -5,7 +5,7 @@ import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constant
 import { DeviceFrame } from './DeviceFrame';
 
 export const BottomBar = () => {
-  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography } = useConfig();
+  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab } = useConfig();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDropping, setIsDropping] = useState(false);
@@ -135,7 +135,13 @@ export const BottomBar = () => {
             >
               <div 
                 className={`bottom-bar-item ${selectedScreenId === screen.id ? 'active' : ''}`}
-                onClick={() => setSelectedScreenId(screen.id)}
+                onClick={() => {
+                  setSelectedScreenId(screen.id);
+                  if (window.innerWidth <= 1024) {
+                    setMobileTab('customize');
+                    setRightSidebarTab('style');
+                  }
+                }}
                 style={{
                   width: '100%',
                   height: '100%',
