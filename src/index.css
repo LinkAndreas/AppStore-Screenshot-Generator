@@ -1158,9 +1158,6 @@ input[type=range]::-webkit-slider-thumb:hover {
     padding-bottom: 4px;
   }
 
-  .bottom-bar-item, .bottom-bar-add {
-    /* Dimensions are handled dynamically by inline styles in React now */
-  }
 
   .header-text h1 {
     font-size: 60px !important;
