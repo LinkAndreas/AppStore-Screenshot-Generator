@@ -8,20 +8,49 @@ import { TutorialOverlay } from './components/TutorialOverlay';
 import { useConfig } from './store/ConfigContext';
 import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
+import React, { useState, useEffect } from 'react';
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  useEffect(() => {
+    let timeoutId: number;
+    const handleResize = () => {
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => setIsMobile(window.innerWidth <= 1024), 50);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  return isMobile;
+}
+
 function App() {
-  const { mobileTab, setMobileTab, t } = useConfig();
+  const { mobileTab, setMobileTab, mobileSheetHeight, selectedScreenId, t } = useConfig();
+  const isMobile = useIsMobile();
+
+  const showRightSidebar = !isMobile || (mobileTab === 'customize' && selectedScreenId);
 
   return (
-    <div className={`layout mobile-tab-${mobileTab}`}>
+    <div 
+      className={`layout mobile-tab-${mobileTab}`}
+      style={{ '--sheet-height': `${mobileSheetHeight}dvh` } as React.CSSProperties}
+    >
       <LeftSidebar />
       <main className="main-content">
-        <div className="canvas-area">
-          <CanvasRenderer />
-          <ZoomControls />
-        </div>
-        <BottomBar />
+        {(mobileTab !== 'setup' || !isMobile) && (
+          <>
+            <div className="canvas-area">
+              <CanvasRenderer />
+              <ZoomControls />
+            </div>
+            <BottomBar />
+          </>
+        )}
       </main>
-      <RightSidebar />
+      {showRightSidebar && <RightSidebar />}
       <ProcessingOverlay />
       <TutorialOverlay />
 
