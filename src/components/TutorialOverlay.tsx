@@ -18,37 +18,36 @@ interface Step {
 }
 
 export const TutorialOverlay = () => {
-  const { showTutorial, setShowTutorial, theme } = useConfig();
+  const { showTutorial, setShowTutorial, t } = useConfig();
   const [currentStep, setCurrentStep] = useState(0);
 
   if (!showTutorial) return null;
 
-  const isLight = theme === 'light';
 
   const steps: Step[] = [
     {
-      title: "Welcome to Screenshot Generator",
-      description: "Create pixel-perfect App Store marketing screenshots in seconds. Let's take a quick 1-minute tour of the features.",
+      title: t('tutorial.step1.title'),
+      description: t('tutorial.step1.desc'),
       icon: <Sparkles size={48} className="tutorial-icon-pulse" />
     },
     {
-      title: "Interactive Canvas",
-      description: "Click 'Add First Screen' to drop a device onto your canvas. You can drag, scale, and rotate elements directly or use the precision tools.",
+      title: t('tutorial.step2.title'),
+      description: t('tutorial.step2.desc'),
       icon: <Monitor size={48} />
     },
     {
-      title: "Global Reach",
-      description: "Use the Left Sidebar to switch between iPhone and iPad frames. Add localizations and the tool will automatically handle the marketing text for you.",
+      title: t('tutorial.step3.title'),
+      description: t('tutorial.step3.desc'),
       icon: <Globe size={48} />
     },
     {
-      title: "Premium Styling",
-      description: "The Right Sidebar is your design hub. Choose from curated gradients, tweak typography, and adjust device positioning with real-time feedback.",
+      title: t('tutorial.step4.title'),
+      description: t('tutorial.step4.desc'),
       icon: <Palette size={48} />
     },
     {
-      title: "One-Click Batch Export",
-      description: "Ready to ship? Export everything at once—multiple devices, all languages—automatically packaged into a clean ZIP file for the App Store Connect.",
+      title: t('tutorial.step5.title'),
+      description: t('tutorial.step5.desc'),
       icon: <Download size={48} />
     }
   ];
@@ -76,7 +75,7 @@ export const TutorialOverlay = () => {
   return (
     <div className="tutorial-overlay">
       <div className="tutorial-modal">
-        <button className="tutorial-close" onClick={handleSkip} aria-label="Skip Tutorial">
+        <button className="tutorial-close" onClick={handleSkip} aria-label={t('tutorial.skip')}>
           <X size={20} />
         </button>
 
@@ -103,7 +102,7 @@ export const TutorialOverlay = () => {
             className="tutorial-btn tutorial-btn-link" 
             onClick={handleSkip}
           >
-            Skip
+            {t('tutorial.skip')}
           </button>
           
           <div className="tutorial-nav-group">
@@ -113,7 +112,7 @@ export const TutorialOverlay = () => {
                 onClick={handleBack}
               >
                 <ChevronLeft size={18} />
-                Back
+                {t('tutorial.back')}
               </button>
             )}
             
@@ -121,7 +120,7 @@ export const TutorialOverlay = () => {
               className="tutorial-btn tutorial-btn-primary" 
               onClick={handleNext}
             >
-              {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
+              {currentStep === steps.length - 1 ? t('tutorial.getStarted') : t('tutorial.next')}
               {currentStep < steps.length - 1 && <ChevronRight size={18} />}
             </button>
           </div>

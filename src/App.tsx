@@ -9,7 +9,7 @@ import { useConfig } from './store/ConfigContext';
 import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
 function App() {
-  const { mobileTab, setMobileTab } = useConfig();
+  const { mobileTab, setMobileTab, t } = useConfig();
 
   return (
     <div className={`layout mobile-tab-${mobileTab}`}>
@@ -31,21 +31,21 @@ function App() {
           onClick={() => setMobileTab('setup')}
         >
           <Settings size={20} />
-          <span>Setup</span>
+          <span>{t('nav.setup')}</span>
         </button>
         <button 
           className={mobileTab === 'editor' ? 'active' : ''} 
           onClick={() => setMobileTab('editor')}
         >
           <ImageIcon size={20} />
-          <span>Editor</span>
+          <span>{t('nav.editor')}</span>
         </button>
         <button 
           className={mobileTab === 'customize' ? 'active' : ''} 
           onClick={() => setMobileTab('customize')}
         >
           <Palette size={20} />
-          <span>Customize</span>
+          <span>{t('nav.customize')}</span>
         </button>
       </div>
     </div>

@@ -1,24 +1,15 @@
 
 import { useConfig, type Localization, type DeviceType } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
+import { LOCALIZATION_PRESETS } from '../translations';
 import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet } from 'lucide-react';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { toPng } from 'html-to-image';
 
-const LOCALIZATION_PRESETS: Localization[] = [
-  { id: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-  { id: 'de-DE', name: 'German', flag: '🇩🇪' },
-  { id: 'fr-FR', name: 'French', flag: '🇫🇷' },
-  { id: 'es-ES', name: 'Spanish', flag: '🇪🇸' },
-  { id: 'it-IT', name: 'Italian', flag: '🇮🇹' },
-  { id: 'ja-JP', name: 'Japanese', flag: '🇯🇵' },
-  { id: 'zh-CN', name: 'Chinese (Simplified)', flag: '🇨🇳' },
-];
-
 export const LeftSidebar = () => {
   const config = useConfig();
-  const { isProcessing, setIsProcessing, processingMessage, setProcessingMessage } = config;
+  const { isProcessing, setIsProcessing, processingMessage, setProcessingMessage, t } = config;
 
   const handleAddLocalization = (loc: Localization) => {
     config.addLocalization(loc);
@@ -175,17 +166,17 @@ export const LeftSidebar = () => {
             {config.theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
         </div>
-        <h1 className="branding-title">App Store</h1>
-        <p className="branding-subtitle">Screenshot Generator</p>
+        <h1 className="branding-title">{t('app.title')}</h1>
+        <p className="branding-subtitle">{t('app.subtitle')}</p>
       </div>
 
       <div className="sidebar-content">
         <div className="panel-group">
 
           {/* ── Level 1: Device Type ── */}
-          <h3>Device</h3>
+          <h3>{t('device.section')}</h3>
           <div style={{ display: 'flex', background: 'var(--input-bg)', padding: '4px', borderRadius: '10px', gap: '4px', marginBottom: '8px' }}>
-            {DEVICES.map(({ type, label, Icon }) => {
+            {DEVICES.map(({ type, Icon }) => {
               const isActive = config.activeDeviceType === type;
               return (
                 <button
@@ -210,7 +201,7 @@ export const LeftSidebar = () => {
                   }}
                 >
                   <Icon size={14} />
-                  {label}
+                  {t(`device.${type.toLowerCase()}`)}
                 </button>
               );
             })}
@@ -222,7 +213,7 @@ export const LeftSidebar = () => {
           {/* ── Level 2: Language ── */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
             <span style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1.2px', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
-              Language
+              {t('language.section')}
             </span>
             <div style={{ position: 'relative' }}>
               <select
@@ -313,9 +304,9 @@ export const LeftSidebar = () => {
           style={{ width: '100%', marginBottom: '8px', justifyContent: 'center', gap: '8px', height: '36px' }}
         >
           {isProcessing && processingMessage.includes(`(${config.activeLocalizationId})`) ? (
-            <span style={{ fontSize: '11px' }}>Exporting...</span>
+            <span style={{ fontSize: '11px' }}>{t('export.selected', { device: config.activeDeviceType, locale: config.activeLocalizationId }).split(' ')[0]}...</span>
           ) : (
-            <><Download size={14} /> {config.activeDeviceType} ({config.activeLocalizationId})</>
+            <><Download size={14} /> {t('export.selected', { device: config.activeDeviceType, locale: config.activeLocalizationId })}</>
           )}
         </button>
         <button
@@ -325,9 +316,9 @@ export const LeftSidebar = () => {
           style={{ width: '100%', marginBottom: '12px', gap: '8px', justifyContent: 'center', height: '36px' }}
         >
           {isProcessing && processingMessage.includes('Locales') ? (
-            <span style={{ fontSize: '11px' }}>Processing Locales...</span>
+            <span style={{ fontSize: '11px' }}>{t('export.allLocales', { device: config.activeDeviceType }).split(' ')[0]}...</span>
           ) : (
-            <><Layers size={14} /> All {config.activeDeviceType} Locales</>
+            <><Layers size={14} /> {t('export.allLocales', { device: config.activeDeviceType })}</>
           )}
         </button>
         <button
@@ -337,9 +328,9 @@ export const LeftSidebar = () => {
           style={{ width: '100%', gap: '8px', justifyContent: 'center', height: '42px', boxShadow: '0 4px 15px var(--accent-glow)' }}
         >
           {isProcessing && processingMessage.includes('Capturing') && !processingMessage.includes('Locales') ? (
-            <span style={{ fontSize: '11px' }}>Exporting All Devices...</span>
+            <span style={{ fontSize: '11px' }}>{t('export.allAssets').split(' ')[0]}...</span>
           ) : (
-            <><Smartphone size={18} /> Export ALL Device Assets</>
+            <><Smartphone size={18} /> {t('export.allAssets')}</>
           )}
         </button>
       </div>
