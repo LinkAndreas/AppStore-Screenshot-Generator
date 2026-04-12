@@ -102,6 +102,8 @@ export interface AppContextType {
   projectHasScreens: boolean;
   mobileSheetHeight: number;
   setMobileSheetHeight: (val: number) => void;
+  appError: string | null;
+  setAppError: (msg: string | null) => void;
 }
 
 const ConfigContext = createContext<AppContextType | null>(null);
@@ -145,6 +147,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [processingMessage, setProcessingMessage] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<MobileTab>('editor');
   const [mobileSheetHeight, setMobileSheetHeight] = useState<number>(50);
+  const [appError, setAppError] = useState<string | null>(null);
   const [showTutorial, setShowTutorial] = useState<boolean>(() => {
     return localStorage.getItem('tutorialCompleted') !== 'true';
   });
@@ -290,7 +293,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       t,
       projectHasScreens,
       mobileSheetHeight,
-      setMobileSheetHeight
+      setMobileSheetHeight,
+      appError,
+      setAppError
     }}>
       {children}
     </ConfigContext.Provider>
