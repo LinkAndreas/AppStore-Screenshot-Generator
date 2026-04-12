@@ -94,6 +94,8 @@ export interface AppContextType {
   setProcessingMessage: (val: string) => void;
   mobileTab: MobileTab;
   setMobileTab: (tab: MobileTab) => void;
+  showTutorial: boolean;
+  setShowTutorial: (val: boolean) => void;
 }
 
 const ConfigContext = createContext<AppContextType | null>(null);
@@ -116,6 +118,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processingMessage, setProcessingMessage] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<MobileTab>('editor');
+  const [showTutorial, setShowTutorial] = useState<boolean>(() => {
+    return localStorage.getItem('tutorialCompleted') !== 'true';
+  });
 
   useEffect(() => {
     document.documentElement.classList.remove('light-mode', 'dark-mode');
@@ -217,6 +222,13 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     setSelectedScreenId(null);
   };
 
+  const handleSetShowTutorial = (val: boolean) => {
+    setShowTutorial(val);
+    if (!val) {
+      localStorage.setItem('tutorialCompleted', 'true');
+    }
+  };
+
   return (
     <ConfigContext.Provider value={{
       activeDeviceType, setActiveDeviceType: handleSetActiveDeviceType,
@@ -232,6 +244,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       isProcessing, setIsProcessing,
       processingMessage, setProcessingMessage,
       mobileTab, setMobileTab,
+      showTutorial, setShowTutorial: handleSetShowTutorial,
     }}>
       {children}
     </ConfigContext.Provider>

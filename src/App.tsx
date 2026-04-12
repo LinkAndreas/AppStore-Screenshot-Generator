@@ -4,6 +4,7 @@ import { CanvasRenderer } from './components/CanvasRenderer';
 import { BottomBar } from './components/BottomBar';
 import { ZoomControls } from './components/ZoomControls';
 import { ProcessingOverlay } from './components/ProcessingOverlay';
+import { TutorialOverlay } from './components/TutorialOverlay';
 import { useConfig } from './store/ConfigContext';
 import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
@@ -22,6 +23,7 @@ function App() {
       </main>
       <RightSidebar />
       <ProcessingOverlay />
+      <TutorialOverlay />
 
       <div className="mobile-nav">
         <button 
