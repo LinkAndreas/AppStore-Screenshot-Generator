@@ -1,66 +1,126 @@
-
+import { useState, useRef, useEffect } from 'react';
 import { useConfig, type Localization, type DeviceType } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
 import { LOCALIZATION_PRESETS } from '../translations';
-import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet } from 'lucide-react';
+import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Zap, ChevronDown, Check } from 'lucide-react';
 import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
-import { toPng } from 'html-to-image';
+import FileSaver from 'file-saver';
+import { toBlob } from 'html-to-image';
 
 export const LeftSidebar = () => {
   const config = useConfig();
   const { isProcessing, setIsProcessing, processingMessage, setProcessingMessage, t } = config;
 
+  const [showExportMenu, setShowExportMenu] = useState(false);
+  const [exportMode, setExportMode] = useState<'selected' | 'locales' | 'devices' | 'full'>('full');
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setShowExportMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleAddLocalization = (loc: Localization) => {
     config.addLocalization(loc);
   };
 
+  // --- Export Capture Logic ---
+
+  const sanitizeFilename = (name: string) => {
+    // Remove dots and other characters except final extension to prevent Chrome "Safe Browsing" renaming
+    const base = name.replace(/\.zip$/i, '').replace(/[^a-z0-9_-]/gi, '_');
+    return `${base}.zip`;
+  };
+
   const captureCurrentScreens = async (zip: JSZip, device: DeviceType, folderName?: string) => {
+    console.log(`[Export] Capturing ${device} set...`);
     const sequenceNode = document.getElementById('sequence-container');
     if (!sequenceNode) return;
 
     const screensElems = Array.from(sequenceNode.querySelectorAll('.app-screen')) as HTMLElement[];
+    if (screensElems.length === 0) {
+      console.warn(`[Export] No screens found for ${device}.`);
+      return;
+    }
+
     const { width, height } = SCREEN_DIMENSIONS[device];
 
     for (let i = 0; i < screensElems.length; i++) {
       const screen = screensElems[i];
-      const dataUrl = await toPng(screen, {
-        canvasWidth: width,
-        canvasHeight: height,
-        width: width,
-        height: height,
-        quality: 1.0,
-        pixelRatio: 1, // We set exact width/height, pixelRatio 1 is enough
-        style: { transform: 'scale(1)', margin: '0', transformOrigin: 'top left' }
-      });
-      const base64 = dataUrl.split(',')[1];
-      const filename = `screen_${i + 1}.png`;
-      if (folderName) {
-        zip.file(`${folderName}/${filename}`, base64, { base64: true });
-      } else {
-        zip.file(filename, base64, { base64: true });
-      }
+      try {
+        const blob = await toBlob(screen, {
+          canvasWidth: width,
+          canvasHeight: height,
+          width: width,
+          height: height,
+          quality: 1.0,
+          pixelRatio: 1,
+          style: { transform: 'scale(1)', margin: '0', transformOrigin: 'top left' }
+        });
 
-      // Mandatory yield to main thread to breathe the UI/Spinner
+        if (blob) {
+          const filename = `screen_${i + 1}.png`;
+          if (folderName) {
+            zip.file(`${folderName}/${filename}`, blob);
+          } else {
+            zip.file(filename, blob);
+          }
+        }
+      } catch (err) {
+        console.error(`[Export] Failed to capture screen ${i + 1}:`, err);
+      }
       await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  };
+
+  const triggerDownload = async (zip: JSZip, filename: string) => {
+    const cleanName = sanitizeFilename(filename);
+    console.log(`[Export] Preparing download for: ${cleanName}`);
+    
+    // Standard ZIP generation
+    const content = await zip.generateAsync({
+      type: 'blob',
+      mimeType: 'application/zip',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
+    
+    console.log(`[Export] ZIP generated (${(content.size / 1024).toFixed(1)} KB). Calling FileSaver...`);
+
+    try {
+      // Use FileSaver's saveAs which handles Chrome's strange blob naming internally
+      FileSaver.saveAs(content, cleanName);
+    } catch (e) {
+      console.warn('[Export] FileSaver failed, using anchor fallback', e);
+      const url = URL.createObjectURL(content);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = cleanName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
   };
 
   const handleExportSelected = async () => {
     setIsProcessing(true);
-    setProcessingMessage(`Capturing ${config.activeDeviceType} (${config.activeLocalizationId})...`);
-    // Yield to main thread to ensure overlay renders
-    await new Promise(resolve => setTimeout(resolve, 100));
+    setProcessingMessage(config.t('processing.capturing', { device: config.activeDeviceType }));
+    await new Promise(resolve => setTimeout(resolve, 150));
 
     const zip = new JSZip();
     try {
       await captureCurrentScreens(zip, config.activeDeviceType);
-      const content = await zip.generateAsync({ type: 'blob' });
       const deviceName = config.activeDeviceType === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
-      saveAs(content, `AppStore_${deviceName}_${config.activeLocalizationId}.zip`);
+      await triggerDownload(zip, `AppStore_${deviceName}_${config.activeLocalizationId}.zip`);
     } catch (err) {
-      console.error('Failed to export:', err);
-      alert('Failed to export screens.');
+      console.error('[Export] Error:', err);
+      alert('Export failed. Check console.');
     } finally {
       setIsProcessing(false);
       setProcessingMessage('');
@@ -70,26 +130,23 @@ export const LeftSidebar = () => {
   const handleExportAll = async () => {
     setIsProcessing(true);
     const deviceName = config.activeDeviceType === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
-    setProcessingMessage(`Preparing ${deviceName} Export...`);
-    // Yield to main thread to ensure overlay renders
+    setProcessingMessage(config.t('processing.preparing.device', { device: deviceName }));
     await new Promise(resolve => setTimeout(resolve, 150));
 
     const zip = new JSZip();
     const originalActiveId = config.activeLocalizationId;
     try {
-      for (let i = 0; i < config.localizations.length; i++) {
-        const loc = config.localizations[i];
-        setProcessingMessage(`Capturing ${deviceName} - ${loc.id} (${i + 1}/${config.localizations.length})...`);
+      for (const loc of config.localizations) {
+        setProcessingMessage(config.t('processing.capturing.loc', { device: deviceName, locale: loc.id }));
         config.setActiveLocalizationId(loc.id);
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 800)); // Increased wait for render
         await captureCurrentScreens(zip, config.activeDeviceType, loc.id);
       }
       config.setActiveLocalizationId(originalActiveId);
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, `AppStore_Bulk_${deviceName}.zip`);
+      await triggerDownload(zip, `AppStore_Bulk_${deviceName}.zip`);
     } catch (err) {
-      console.error('Failed to bulk export:', err);
-      alert('Failed to bulk export screens.');
+      console.error('[Export] Error:', err);
+      alert('Bulk export failed.');
     } finally {
       setIsProcessing(false);
       setProcessingMessage('');
@@ -98,8 +155,7 @@ export const LeftSidebar = () => {
 
   const handleExportEverything = async () => {
     setIsProcessing(true);
-    setProcessingMessage('Preparing Full Asset Export...');
-    // Yield to main thread to ensure overlay renders
+    setProcessingMessage(config.t('processing.preparing.full'));
     await new Promise(resolve => setTimeout(resolve, 200));
 
     const zip = new JSZip();
@@ -108,34 +164,94 @@ export const LeftSidebar = () => {
 
     try {
       const devices: ('iPhone' | 'iPad')[] = ['iPhone', 'iPad'];
-
       for (const device of devices) {
         config.setActiveDeviceType(device);
         const deviceDir = device === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
-
-        for (let i = 0; i < config.localizations.length; i++) {
-          const loc = config.localizations[i];
-          setProcessingMessage(`Capturing ${device} - ${loc.id}...`);
+        for (const loc of config.localizations) {
+          setProcessingMessage(config.t('processing.capturing.loc', { device, locale: loc.id }));
           config.setActiveLocalizationId(loc.id);
-          // Wait for DOM to adjust to new device/locale
-          await new Promise(resolve => setTimeout(resolve, 600));
+          await new Promise(resolve => setTimeout(resolve, 800));
           await captureCurrentScreens(zip, device, `${deviceDir}/${loc.id}`);
         }
       }
-
-      // Cleanup
       config.setActiveDeviceType(originalDeviceType);
       config.setActiveLocalizationId(originalActiveId);
 
-      setProcessingMessage('Generating ZIP...');
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, `AppStore_Total_Assets.zip`);
+      await triggerDownload(zip, 'AppStore_Total_Assets.zip');
     } catch (err) {
-      console.error('Failed All Device Export:', err);
+      console.error('[Export] Error:', err);
+      alert('Total asset export failed.');
+    } finally {
+      setIsProcessing(false);
+      setProcessingMessage('');
+    }
+  };
+
+  const handleExportDevices = async () => {
+    setIsProcessing(true);
+    setProcessingMessage(config.t('processing.preparing.all', { locale: config.activeLocalizationId }));
+    await new Promise(resolve => setTimeout(resolve, 150));
+
+    const zip = new JSZip();
+    const originalDeviceType = config.activeDeviceType;
+    try {
+      const devices: ('iPhone' | 'iPad')[] = ['iPhone', 'iPad'];
+      for (const device of devices) {
+        config.setActiveDeviceType(device);
+        setProcessingMessage(config.t('processing.capturing', { device }));
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const deviceDir = device === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
+        await captureCurrentScreens(zip, device, deviceDir);
+      }
+      config.setActiveDeviceType(originalDeviceType);
+      await triggerDownload(zip, `AppStore_Devices_${config.activeLocalizationId}.zip`);
+    } catch (err) {
+      console.error('[Export] Error:', err);
       alert('Export failed.');
     } finally {
       setIsProcessing(false);
       setProcessingMessage('');
+    }
+  };
+
+  // --- Export Mode Configuration ---
+
+  const EXPORT_MODES = {
+    selected: {
+      title: `${t('export.menu.item.selected')} (${config.activeLocalizationId})`,
+      icon: <Download size={14} />,
+      mainIcon: <Download size={18} />,
+      handler: handleExportSelected,
+      isEnabled: config.projectHasScreens
+    },
+    locales: {
+      title: t('export.menu.item.all'),
+      icon: <Layers size={14} />,
+      mainIcon: <Layers size={18} />,
+      handler: handleExportAll,
+      isEnabled: config.projectHasScreens
+    },
+    devices: {
+      title: `${t('export.menu.item.selected')} (${config.activeLocalizationId})`,
+      icon: <Smartphone size={14} />,
+      mainIcon: <Smartphone size={18} />,
+      handler: handleExportDevices,
+      isEnabled: config.projectHasScreens
+    },
+    full: {
+      title: t('export.menu.full.title'),
+      icon: <Zap size={14} />,
+      mainIcon: <Zap size={18} />,
+      handler: handleExportEverything,
+      isEnabled: config.projectHasScreens
+    }
+  };
+
+  const currentMode = EXPORT_MODES[exportMode];
+
+  const handleMainExport = () => {
+    if (currentMode.isEnabled && !isProcessing) {
+      currentMode.handler();
     }
   };
 
@@ -291,48 +407,79 @@ export const LeftSidebar = () => {
         </div>
       </div>
 
-      <div className="sidebar-footer" style={{ borderTop: '1px solid var(--panel-border)', paddingTop: '16px', background: 'transparent' }}>
+      <div className="sidebar-footer">
         {processingMessage && (
-          <div style={{ fontSize: '10px', color: 'var(--accent)', fontWeight: 700, textAlign: 'center', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div style={{ fontSize: '10px', color: 'var(--accent)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
             {processingMessage}
           </div>
         )}
-        <button
-          className="secondary-btn"
-          onClick={handleExportSelected}
-          disabled={isProcessing}
-          style={{ width: '100%', marginBottom: '8px', justifyContent: 'center', gap: '8px', height: '36px' }}
-        >
-          {isProcessing && processingMessage.includes(`(${config.activeLocalizationId})`) ? (
-            <span style={{ fontSize: '11px' }}>{t('export.selected', { device: config.activeDeviceType, locale: config.activeLocalizationId }).split(' ')[0]}...</span>
-          ) : (
-            <><Download size={14} /> {t('export.selected', { device: config.activeDeviceType, locale: config.activeLocalizationId })}</>
+
+        <div className="export-container" ref={menuRef}>
+          {showExportMenu && !isProcessing && (
+            <div className="export-dropdown">
+              {/* --- Group: Selected Device --- */}
+              <div className="dropdown-section">
+                <div className="section-header">{t('export.menu.group.selected', { device: config.activeDeviceType })}</div>
+
+                <div className={`dropdown-item ${exportMode === 'selected' ? 'active' : ''}`} onClick={() => { setExportMode('selected'); setShowExportMenu(false); }}>
+                  <div className="item-icon">{exportMode === 'selected' ? <Check size={14} /> : <Download size={14} />}</div>
+                  <div className="item-text single-line">
+                    <span className="item-title">{EXPORT_MODES.selected.title}</span>
+                  </div>
+                </div>
+
+                <div className={`dropdown-item ${exportMode === 'locales' ? 'active' : ''}`} onClick={() => { setExportMode('locales'); setShowExportMenu(false); }}>
+                  <div className="item-icon">{exportMode === 'locales' ? <Check size={14} /> : <Layers size={14} />}</div>
+                  <div className="item-text single-line">
+                    <span className="item-title">{EXPORT_MODES.locales.title}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="dropdown-divider" />
+
+              {/* --- Group: All Devices --- */}
+              <div className="dropdown-section">
+                <div className="section-header">{t('export.menu.group.all')}</div>
+
+                <div className={`dropdown-item ${exportMode === 'devices' ? 'active' : ''}`} onClick={() => { setExportMode('devices'); setShowExportMenu(false); }}>
+                  <div className="item-icon">{exportMode === 'devices' ? <Check size={14} /> : <Download size={14} />}</div>
+                  <div className="item-text single-line">
+                    <span className="item-title">{EXPORT_MODES.devices.title}</span>
+                  </div>
+                </div>
+
+                <div className={`dropdown-item primary-item ${exportMode === 'full' ? 'active' : ''}`} onClick={() => { setExportMode('full'); setShowExportMenu(false); }}>
+                  <div className="item-icon">{exportMode === 'full' ? <Check size={14} /> : <Zap size={14} />}</div>
+                  <div className="item-text single-line">
+                    <span className="item-title">{EXPORT_MODES.full.title}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
-        </button>
-        <button
-          className="secondary-btn"
-          onClick={handleExportAll}
-          disabled={isProcessing}
-          style={{ width: '100%', marginBottom: '12px', gap: '8px', justifyContent: 'center', height: '36px' }}
-        >
-          {isProcessing && processingMessage.includes('Locales') ? (
-            <span style={{ fontSize: '11px' }}>{t('export.allLocales', { device: config.activeDeviceType }).split(' ')[0]}...</span>
-          ) : (
-            <><Layers size={14} /> {t('export.allLocales', { device: config.activeDeviceType })}</>
-          )}
-        </button>
-        <button
-          className="primary"
-          onClick={handleExportEverything}
-          disabled={isProcessing}
-          style={{ width: '100%', gap: '8px', justifyContent: 'center', height: '42px', boxShadow: '0 4px 15px var(--accent-glow)' }}
-        >
-          {isProcessing && processingMessage.includes('Capturing') && !processingMessage.includes('Locales') ? (
-            <span style={{ fontSize: '11px' }}>{t('export.allAssets').split(' ')[0]}...</span>
-          ) : (
-            <><Smartphone size={18} /> {t('export.allAssets')}</>
-          )}
-        </button>
+
+          <div className="export-split-button">
+            <button
+              className="primary main-action"
+              onClick={handleMainExport}
+              disabled={isProcessing || !currentMode.isEnabled}
+            >
+              {isProcessing ? (
+                <span style={{ fontSize: '11px' }}>{t('processing.title')}...</span>
+              ) : (
+                <>{currentMode.mainIcon} {currentMode.title}</>
+              )}
+            </button>
+            <button
+              className="primary toggle-action"
+              onClick={() => setShowExportMenu(!showExportMenu)}
+              disabled={isProcessing}
+            >
+              <ChevronDown size={20} style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

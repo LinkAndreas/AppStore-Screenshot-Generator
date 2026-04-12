@@ -99,6 +99,7 @@ export interface AppContextType {
   setShowTutorial: (val: boolean) => void;
   uiLanguage: string;
   t: (key: string, params?: Record<string, string>) => string;
+  projectHasScreens: boolean;
 }
 
 const ConfigContext = createContext<AppContextType | null>(null);
@@ -155,6 +156,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   // Derive active screens from the current device×locale key
   const activeKey = makeKey(activeDeviceType, activeLocalizationId);
   const screens = screenSets[activeKey] ?? [];
+
+  const projectHasScreens = Object.values(screenSets).some(set => set.length > 0);
 
   const updateCurrentScreens = (updater: (prev: ScreenConfig[]) => ScreenConfig[]) => {
     setScreenSets(prev => ({ ...prev, [activeKey]: updater(prev[activeKey] ?? []) }));
@@ -281,7 +284,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       mobileTab, setMobileTab,
       showTutorial, setShowTutorial: handleSetShowTutorial,
       uiLanguage,
-      t
+      t,
+      projectHasScreens
     }}>
       {children}
     </ConfigContext.Provider>
