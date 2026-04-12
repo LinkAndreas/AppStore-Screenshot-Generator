@@ -2,7 +2,7 @@ import React from 'react';
 import { validateImageDimensions } from '../utils/imageValidation';
 import { useConfig, type ScreenConfig } from '../store/ConfigContext';
 import { AVAILABLE_BEZELS, getBezelCategories } from '../constants';
-import { Image as ImageIcon, ArrowLeftRight, Layout, Palette, FileText, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, GripHorizontal } from 'lucide-react';
+import { Image as ImageIcon, ArrowLeftRight, Layout, Palette, FileText, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, GripHorizontal, MousePointerClick } from 'lucide-react';
 
 const GRADIENT_PRESETS = [
   /* VIBRANT & LUXURY */
@@ -327,7 +327,53 @@ export const RightSidebar = () => {
         <GripHorizontal size={24} color="var(--text-muted)" />
       </div>
 
-      {!selectedScreen ? null : (
+      {!selectedScreen ? (
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '40px 24px',
+          textAlign: 'center',
+          color: 'var(--text-muted)',
+          animation: 'fadeIn 0.3s ease-out'
+        }}>
+          <div style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '24px',
+            background: 'var(--input-bg)',
+            border: '2px dashed var(--panel-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '24px',
+            color: 'var(--text-main)',
+            boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+          }}>
+            <MousePointerClick size={32} />
+          </div>
+          <h3 style={{
+            margin: '0 0 12px 0',
+            color: 'var(--text-main)',
+            fontSize: '18px',
+            fontWeight: 600,
+            letterSpacing: '-0.02em'
+          }}>
+            {t('sidebar.selectScreen')}
+          </h3>
+          <p style={{
+            margin: 0,
+            fontSize: '14px',
+            lineHeight: 1.6,
+            maxWidth: '240px',
+            opacity: 0.8
+          }}>
+            {t('sidebar.selectDesc')}
+          </p>
+        </div>
+      ) : (
         /* Main Customization Tabs */
         <>
           <div className="tabs">
