@@ -281,6 +281,11 @@ html {
   color: var(--accent);
 }
 
+/* Drag Handle - Hidden on Desktop */
+.mobile-drag-handle {
+  display: none;
+}
+
 /* Bottom Bar */
 .bottom-bar {
   height: 180px;
@@ -314,7 +319,7 @@ html {
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   flex-shrink: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .bottom-bar-item.active {
@@ -353,19 +358,34 @@ html {
 
 .thumb-delete {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  padding: 4px;
-  background: rgba(244, 63, 94, 0.8);
-  border: none;
-  border-radius: 4px;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F43F5E;
+  border: 2px solid var(--panel-bg);
+  border-radius: 50%;
   color: white;
   opacity: 0;
-  transition: opacity 0.2s;
+  transform: scale(0.8);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 30;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
 }
 
-.bottom-bar-item:hover .thumb-delete {
+.bottom-bar-item:hover .thumb-delete,
+.bottom-bar-item.active .thumb-delete {
   opacity: 1;
+  transform: scale(1);
+}
+
+.thumb-delete:hover {
+  transform: scale(1.1) !important;
+  background: #E11D48;
 }
 
 .bottom-bar-add {
@@ -1048,32 +1068,64 @@ input[type=range]::-webkit-slider-thumb:hover {
     display: flex;
   }
 
-  /* Split Screen Bottom Sheet for 'Customize' tab */
+  /* Split Screen Dynamic Sheet for 'Customize' tab */
   .layout.mobile-tab-customize .main-content {
     display: flex;
-    flex: 0 0 50dvh;
-    /* Shrink canvas space to top 50% */
   }
 
   .layout.mobile-tab-customize .main-content .bottom-bar {
     display: none;
-    /* Hide timeline to maximize top canvas feedback */
+  }
+
+  .layout.mobile-tab-customize .zoom-controls {
+    bottom: calc(var(--sheet-height) + 16px);
+    transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .layout.mobile-tab-customize .sidebar-right {
     display: flex;
     position: absolute;
-    bottom: 64px;
-    /* Stack immediately above Mobile Nav */
     left: 0;
     width: 100%;
-    height: calc(50dvh - 64px);
-    /* Bottom 50% constraint */
+    height: calc(var(--sheet-height) - 64px);
+    bottom: 64px;
+    z-index: 50;
+    background: var(--panel-bg);
+    touch-action: none;
     border-top: 1px solid var(--panel-border) !important;
     border-radius: 20px 20px 0 0;
     box-shadow: 0 -20px 50px rgba(0, 0, 0, 0.5);
-    z-index: 50;
-    background: var(--panel-bg);
+    transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .mobile-drag-handle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 0;
+    cursor: grab;
+    width: 100%;
+    touch-action: none;
+    transition: background 0.2s ease;
+  }
+
+  .mobile-drag-handle:active {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .mobile-sheet-bottom .mobile-drag-handle {
+    order: -1; /* At the top of the sheet */
+  }
+
+  .mobile-sheet-top .mobile-drag-handle {
+    order: 10; /* At the bottom of the sheet */
+    border-top: 1px solid var(--panel-border);
+  }
+
+  /* Make sure internal content scrolls only if needed */
+  .layout.mobile-tab-customize .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
   }
 
   .light-mode .layout.mobile-tab-customize .sidebar-right {
@@ -1098,27 +1150,16 @@ input[type=range]::-webkit-slider-thumb:hover {
   }
 
   .bottom-bar {
-    height: 140px;
-    padding: 16px;
-    overflow-x: auto;
-    border-top: 1px solid var(--panel-border);
-    background: var(--panel-bg);
-    flex-shrink: 0;
+    height: 114px;
+    padding: 12px;
   }
 
   .bottom-bar-scroll {
-    padding-bottom: 8px;
-    /* Room for scrollbar */
+    padding-bottom: 4px;
   }
 
-  .bottom-bar-item {
-    width: 70px;
-    height: 110px;
-  }
-
-  .bottom-bar-add {
-    min-width: 80px;
-    height: 110px;
+  .bottom-bar-item, .bottom-bar-add {
+    /* Dimensions are handled dynamically by inline styles in React now */
   }
 
   .header-text h1 {
@@ -1188,20 +1229,8 @@ input[type=range]::-webkit-slider-thumb:hover {
     margin: -12px -12px 10px;
   }
 
-  .layout.mobile-tab-customize .sidebar-right {
-    padding-top: 16px;
-  }
-
-  .layout.mobile-tab-customize .sidebar-right::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 36px;
-    height: 4px;
-    background: var(--panel-border);
-    border-radius: 4px;
-    z-index: 100;
+  /* Custom Layout Overrides for Mobile Customization */
+  .layout.mobile-tab-customize .main-content {
+    padding-top: 0;
   }
 }

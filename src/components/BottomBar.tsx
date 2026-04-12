@@ -78,7 +78,11 @@ export const BottomBar = () => {
   const getTransform = (index: number) => {
     if (draggedIndex === null || dragOverIndex === null || draggedIndex === dragOverIndex) return undefined;
 
-    const ITEM_WIDTH = 96; // 80px width + 16px gap
+    const isMobile = window.innerWidth <= 1024;
+    const thumbHeight = isMobile ? 90 : 140;
+    const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
+    const thumbWidth = (canvasDim.width / canvasDim.height) * thumbHeight;
+    const ITEM_WIDTH = thumbWidth + 16; // width + 16px gap
 
     if (draggedIndex < dragOverIndex) {
       if (index > draggedIndex && index <= dragOverIndex) {
@@ -98,20 +102,24 @@ export const BottomBar = () => {
     return undefined;
   };
 
+  const isMobile = window.innerWidth <= 1024;
+  const thumbHeight = isMobile ? 90 : 140;
+  const canvasDimForRef = SCREEN_DIMENSIONS[activeDeviceType];
+  const refThumbWidth = (canvasDimForRef.width / canvasDimForRef.height) * thumbHeight;
+
   return (
     <div className="bottom-bar">
       <div className="bottom-bar-scroll">
-        <label className="bottom-bar-add">
+        <label className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }}>
           <input type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
           <ImageIcon size={20} />
-          <span>{t('bottomBar.batchImport')}</span>
+          <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.batchImport')}</span>
         </label>
 
-        <div style={{ width: '1px', height: '60px', background: 'var(--panel-border)', margin: '0 12px' }} />
+        <div style={{ width: '1px', height: `${thumbHeight - 20}px`, background: 'var(--panel-border)', margin: '0 12px' }} />
 
         {screens.map((screen, index) => {
           const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
-          const thumbHeight = 140;
           const thumbWidth = (canvasDim.width / canvasDim.height) * thumbHeight;
 
           const bezelSrc = getBezelPath(screen.bezelName);
@@ -166,15 +174,14 @@ export const BottomBar = () => {
                   overflow: 'hidden'
                 }}
               >
-                {/* Scaled Real Content Presentation */}
                 {(() => {
                   const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
-                   const thumbScale = 140 / canvasDim.height;
-                   const isTitleVisible = screen.showTitle !== false && screen.title.trim() !== '';
-                   const isSubtitleVisible = screen.showSubtitle !== false && screen.subtitle.trim() !== '';
-                   const showText = isTitleVisible || isSubtitleVisible;
+                  const thumbScale = thumbHeight / canvasDim.height;
+                  const isTitleVisible = screen.showTitle !== false && screen.title.trim() !== '';
+                  const isSubtitleVisible = screen.showSubtitle !== false && screen.subtitle.trim() !== '';
+                  const showText = isTitleVisible || isSubtitleVisible;
                    
-                   return (
+                  return (
                      <div style={{
                        pointerEvents: 'none',
                        position: 'absolute',
@@ -268,6 +275,7 @@ export const BottomBar = () => {
                   );
                 })()}
 
+
                 <span 
                   className="thumb-index" 
                   style={{ position: 'absolute', bottom: '6px', left: '6px', zIndex: 20 }}
@@ -288,9 +296,9 @@ export const BottomBar = () => {
             </div>
           );
         })}
-        <button className="bottom-bar-add" onClick={addScreen}>
-          <Plus size={20} />
-          <span>{t('bottomBar.addScreen')}</span>
+        <button className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }} onClick={addScreen}>
+          <Plus size={isMobile ? 16 : 20} />
+          <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.addScreen')}</span>
         </button>
       </div>
     </div>
