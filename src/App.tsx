@@ -5,6 +5,7 @@ import { BottomBar } from './components/BottomBar';
 import { ZoomControls } from './components/ZoomControls';
 import { ProcessingOverlay } from './components/ProcessingOverlay';
 import { TutorialOverlay } from './components/TutorialOverlay';
+import { ErrorToast } from './components/ErrorToast';
 import { useConfig } from './store/ConfigContext';
 import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
@@ -53,6 +54,7 @@ function App() {
       {showRightSidebar && <RightSidebar />}
       <ProcessingOverlay />
       <TutorialOverlay />
+      <ErrorToast />
 
       <div className="mobile-nav">
         <button 
