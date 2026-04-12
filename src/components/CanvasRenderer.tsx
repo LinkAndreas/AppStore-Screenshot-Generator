@@ -76,7 +76,7 @@ interface ScreenCardProps {
 }
 
 const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, updateScreen }: ScreenCardProps) => {
-  const { activeDeviceType, setRightSidebarTab, setExpandedSections } = useConfig();
+  const { activeDeviceType, setRightSidebarTab, setExpandedSections, t } = useConfig();
   const [bezelDims, setBezelDims] = useState<Dims | null>(null);
 
   const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
@@ -139,14 +139,14 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
               <EditableText
                 className={`screen-title title-${screen.id}`}
                 value={screen.title}
-                placeholder="Enter Title"
+                placeholder={t('content.titlePlaceholder')}
                 onChange={(val: string) => updateScreen(screen.id, { title: val })}
-                onClick={(e: any) => { 
-                  e.stopPropagation(); 
-                  onSelect(); 
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  onSelect();
                   setRightSidebarTab('content');
                   setExpandedSections(prev => prev.includes('title') ? prev : [...prev, 'title']);
-                  onTextClick(); 
+                  onTextClick();
                 }}
                 style={{
                   fontSize: screen.titleSize ? `${screen.titleSize}px` : `${isIpad ? 84 : 92}px`,
@@ -167,14 +167,14 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
               <EditableText
                 className={`screen-subtitle subtitle-${screen.id}`}
                 value={screen.subtitle}
-                placeholder="Enter Subtitle"
+                placeholder={t('content.subtitlePlaceholder')}
                 onChange={(val: string) => updateScreen(screen.id, { subtitle: val })}
-                onClick={(e: any) => { 
-                  e.stopPropagation(); 
-                  onSelect(); 
+                onClick={(e: any) => {
+                  e.stopPropagation();
+                  onSelect();
                   setRightSidebarTab('content');
                   setExpandedSections(prev => prev.includes('subtitle') ? prev : [...prev, 'subtitle']);
-                  onTextClick(); 
+                  onTextClick();
                 }}
                 style={{
                   fontSize: screen.subtitleSize ? `${screen.subtitleSize}px` : `${isIpad ? 48 : 52}px`,
@@ -242,7 +242,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
 // ---------------------------------------------------------------------------
 
 export const CanvasRenderer = () => {
-  const { screens, selectedScreenId, setSelectedScreenId, canvasZoom, updateScreen, addScreen, setRightSidebarTab } = useConfig();
+  const { screens, selectedScreenId, setSelectedScreenId, canvasZoom, updateScreen, addScreen, setRightSidebarTab, t } = useConfig();
 
   const handleFileSelect = (screenId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -289,13 +289,13 @@ export const CanvasRenderer = () => {
             </svg>
           </div>
           <h2 style={{ color: 'var(--text-main)', marginBottom: '12px', fontSize: '24px', fontWeight: '700' }}>
-            Create Your Sequence
+            {t('canvas.empty.title')}
           </h2>
           <p style={{ maxWidth: '400px', lineHeight: '1.6', marginBottom: '32px' }}>
-            Transform your app screenshots into high-converting marketing assets. Add your first frame to get started.
+            {t('canvas.empty.desc')}
           </p>
           <button className="primary" onClick={addScreen} style={{ padding: '14px 28px' }}>
-            Add First Screen
+            {t('canvas.empty.button')}
           </button>
         </div>
       )}
