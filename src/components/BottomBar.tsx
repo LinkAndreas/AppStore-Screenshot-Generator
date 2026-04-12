@@ -5,7 +5,7 @@ import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constant
 import { DeviceFrame } from './DeviceFrame';
 
 export const BottomBar = () => {
-  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab } = useConfig();
+  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab, t } = useConfig();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDropping, setIsDropping] = useState(false);
@@ -104,7 +104,7 @@ export const BottomBar = () => {
         <label className="bottom-bar-add">
           <input type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
           <ImageIcon size={20} />
-          <span>Batch Import</span>
+          <span>{t('bottomBar.batchImport')}</span>
         </label>
 
         <div style={{ width: '1px', height: '60px', background: 'var(--panel-border)', margin: '0 12px' }} />
@@ -290,7 +290,7 @@ export const BottomBar = () => {
         })}
         <button className="bottom-bar-add" onClick={addScreen}>
           <Plus size={20} />
-          <span>Add Screen</span>
+          <span>{t('bottomBar.addScreen')}</span>
         </button>
       </div>
     </div>
