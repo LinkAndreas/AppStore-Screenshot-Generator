@@ -722,3 +722,238 @@ button.primary:hover {
   opacity: 0.5;
   cursor: text;
 }
+
+/* Custom Range Slider */
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  background: transparent;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+  background: var(--panel-border);
+  border-radius: 4px;
+}
+input[type=range]::-webkit-slider-thumb {
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: var(--text-main);
+  border: 4px solid var(--accent);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+input[type=range]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+/* Mobile Optimization */
+.mobile-nav {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  body, html {
+    height: 100dvh;
+    overflow: hidden;
+  }
+  
+  #root {
+    height: 100dvh;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .layout {
+    flex-direction: column;
+    height: 100dvh;
+    padding-bottom: 64px; /* Space for mobile nav */
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    width: 100% !important;
+    flex: 1;
+    height: calc(100dvh - 64px);
+    border: none !important;
+    display: none;
+  }
+
+  .main-content {
+    flex: 1;
+    height: calc(100dvh - 64px);
+    display: none;
+    flex-direction: column;
+    order: 0;
+  }
+
+  /* Reacting to the App's active Mobile Tab via CSS classes on .layout */
+  .layout.mobile-tab-setup .sidebar-left {
+    display: flex;
+  }
+
+  .layout.mobile-tab-editor .main-content {
+    display: flex;
+  }
+
+  /* Split Screen Bottom Sheet for 'Customize' tab */
+  .layout.mobile-tab-customize .main-content {
+    display: flex;
+    flex: 0 0 50dvh; /* Shrink canvas space to top 50% */
+  }
+
+  .layout.mobile-tab-customize .main-content .bottom-bar {
+    display: none; /* Hide timeline to maximize top canvas feedback */
+  }
+
+  .layout.mobile-tab-customize .sidebar-right {
+    display: flex;
+    position: absolute;
+    bottom: 64px; /* Stack immediately above Mobile Nav */
+    left: 0;
+    width: 100%;
+    height: calc(50dvh - 64px); /* Bottom 50% constraint */
+    border-top: 1px solid var(--panel-border) !important;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -20px 50px rgba(0,0,0,0.5);
+    z-index: 50;
+    background: var(--panel-bg);
+  }
+  
+  .light-mode .layout.mobile-tab-customize .sidebar-right {
+    box-shadow: 0 -20px 50px rgba(0,0,0,0.06);
+  }
+
+  .canvas-area {
+    padding: 20px 20px 40px 20px;
+    overflow: auto;
+    flex: 1;
+  }
+
+  .sequence-container {
+    padding: 10px;
+    gap: 40px;
+  }
+
+  .zoom-controls {
+    bottom: 220px; /* Above the bottom bar + spacing */
+    right: 20px;
+  }
+
+  .bottom-bar {
+    height: 140px;
+    padding: 16px;
+    overflow-x: auto;
+    border-top: 1px solid var(--panel-border);
+    background: var(--panel-bg);
+    flex-shrink: 0;
+  }
+
+  .bottom-bar-scroll {
+    padding-bottom: 8px; /* Room for scrollbar */
+  }
+
+  .bottom-bar-item {
+    width: 70px;
+    height: 110px;
+  }
+
+  .bottom-bar-add {
+    min-width: 80px;
+    height: 110px;
+  }
+  
+  .header-text h1 {
+    font-size: 60px !important;
+  }
+  
+  .header-text p {
+    font-size: 30px !important;
+  }
+
+  /* The Bottom Navigation Bar Native App behavior */
+  .mobile-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 64px;
+    background: var(--panel-bg);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    border-top: 1px solid var(--panel-border);
+    z-index: 1000;
+  }
+
+  .light-mode .mobile-nav {
+    box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.03);
+  }
+
+  .mobile-nav button {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 10px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .mobile-nav button.active {
+    color: var(--accent);
+  }
+
+  .mobile-nav button:hover:not(.active) {
+    color: var(--text-main);
+  }
+
+  /* Mobile UX Formatting Pollishes */
+  .gradient-swatches {
+    grid-template-columns: repeat(8, 1fr) !important;
+    gap: 6px !important;
+    margin-bottom: 12px;
+  }
+
+  .panel-group {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .panel-group h3 {
+    margin: -12px -12px 10px;
+  }
+
+  .layout.mobile-tab-customize .sidebar-right {
+    padding-top: 16px; 
+  }
+
+  .layout.mobile-tab-customize .sidebar-right::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    background: var(--panel-border);
+    border-radius: 4px;
+    z-index: 100;
+  }
+}
