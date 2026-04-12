@@ -16,7 +16,7 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
 
       - name: Install and Build 🔧
         run: |
@@ -24,7 +24,7 @@ jobs:
           npm run build
 
       - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4
+        uses: JamesIves/github-pages-deploy-action@4.8.0
         with:
           folder: dist
           branch: gh-pages
