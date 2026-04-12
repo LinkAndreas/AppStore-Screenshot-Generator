@@ -1,4 +1,5 @@
 import React from 'react';
+import { validateImageDimensions } from '../utils/imageValidation';
 import { useConfig, type ScreenConfig } from '../store/ConfigContext';
 import { AVAILABLE_BEZELS, getBezelCategories } from '../constants';
 import { Image as ImageIcon, ArrowLeftRight, Layout, Palette, FileText, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, GripHorizontal } from 'lucide-react';
@@ -196,7 +197,19 @@ const TypographyControls = ({
 };
 
 export const RightSidebar = () => {
-  const { screens, selectedScreenId, updateScreen, rightSidebarTab, setRightSidebarTab, expandedSections, setExpandedSections, mobileSheetHeight, setMobileSheetHeight, t } = useConfig();
+  const {
+    screens,
+    selectedScreenId,
+    updateScreen,
+    rightSidebarTab,
+    setRightSidebarTab,
+    expandedSections,
+    setExpandedSections,
+    mobileSheetHeight,
+    setMobileSheetHeight,
+    setAppError,
+    t
+  } = useConfig();
 
   const [isDragging, setIsDragging] = React.useState(false);
   const [dragHeight, setDragHeight] = React.useState(mobileSheetHeight);
@@ -266,12 +279,19 @@ export const RightSidebar = () => {
 
   const selectedScreen = screens.find(s => s.id === selectedScreenId);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selectedScreen) return;
-    const file = e.target.files?.[0];
-    if (file) {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0] && selectedScreen) {
+      const file = e.target.files[0];
+      const deviceType = bezelOptionsData?.device === 'iPad' ? 'iPad' : 'iPhone';
+      const isValid = await validateImageDimensions(file, deviceType);
+      if (!isValid) {
+        setAppError(t(deviceType === 'iPad' ? 'error.dimension.ipad' : 'error.dimension.iphone'));
+        e.target.value = '';
+        return;
+      }
       const url = URL.createObjectURL(file);
       updateScreen(selectedScreen.id, { imageObjUrl: url });
+      e.target.value = '';
     }
   };
 

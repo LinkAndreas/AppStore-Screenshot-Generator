@@ -3,21 +3,43 @@ import { useConfig } from '../store/ConfigContext';
 import { Trash, Plus, Image as ImageIcon } from 'lucide-react';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
 import { DeviceFrame } from './DeviceFrame';
+import { validateImageDimensions } from '../utils/imageValidation';
 
 export const BottomBar = () => {
-  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab, t } = useConfig();
+  const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab, setAppError, t } = useConfig();
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [isDropping, setIsDropping] = useState(false);
 
-  const handleBatchImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBatchImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (!files.length) return;
     
     // Sort files alphabetically by name to ensure consistent "selected order"
     files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
     
-    const newScreens = files.map(file => ({
+    const validFiles = [];
+    let hadError = false;
+
+    for (const file of files) {
+      const isValid = await validateImageDimensions(file, activeDeviceType === 'iPad' ? 'iPad' : 'iPhone');
+      if (isValid) {
+        validFiles.push(file);
+      } else {
+        hadError = true;
+      }
+    }
+
+    if (hadError) {
+      setAppError(t(activeDeviceType === 'iPad' ? 'error.dimension.ipad' : 'error.dimension.iphone'));
+    }
+
+    if (!validFiles.length) {
+      e.target.value = '';
+      return;
+    }
+    
+    const newScreens = validFiles.map(file => ({
       id: crypto.randomUUID(),
       imageObjUrl: URL.createObjectURL(file),
       bezelName: activeDeviceType === 'iPad' ? 'iPad Pro 13 - M4 - Silver - Portrait' : 'iPhone 17 Pro Max - Silver - Portrait',
