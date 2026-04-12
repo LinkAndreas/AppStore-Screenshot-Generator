@@ -1,7 +1,7 @@
 import { useConfig } from '../store/ConfigContext';
 
 export const ProcessingOverlay = () => {
-  const { isProcessing, processingMessage, theme } = useConfig();
+  const { isProcessing, processingMessage, theme, t } = useConfig();
 
   if (!isProcessing) return null;
 
@@ -52,7 +52,7 @@ export const ProcessingOverlay = () => {
         }} />
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
-            Processing Assets
+            {t('processing.title')}
           </h3>
           <p style={{
             margin: 0,
@@ -60,7 +60,7 @@ export const ProcessingOverlay = () => {
             color: 'var(--text-muted)',
             lineHeight: 1.5
           }}>
-            {processingMessage || 'Please wait while we prepare your high-resolution screenshots...'}
+            {processingMessage || t('processing.message')}
           </p>
         </div>
       </div>
