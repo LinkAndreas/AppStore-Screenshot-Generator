@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { getDefaultBezel } from '../constants';
+import { TRANSLATIONS, LOCALIZATION_PRESETS } from '../translations';
 
 export interface ScreenConfig {
   id: string;
@@ -94,16 +95,40 @@ export interface AppContextType {
   setProcessingMessage: (val: string) => void;
   mobileTab: MobileTab;
   setMobileTab: (tab: MobileTab) => void;
+  showTutorial: boolean;
+  setShowTutorial: (val: boolean) => void;
+  uiLanguage: string;
+  t: (key: string, params?: Record<string, string>) => string;
 }
 
 const ConfigContext = createContext<AppContextType | null>(null);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [activeDeviceType, setActiveDeviceType] = useState<DeviceType>('iPhone');
-  const [localizations, setLocalizations] = useState<Localization[]>([
-    { id: 'en-US', name: 'English (US)', flag: '🇺🇸' },
-  ]);
-  const [activeLocalizationId, setActiveLocalizationId] = useState('en-US');
+
+  // Detect system language and find best match in presets
+  const getInitialLocalization = (): Localization => {
+    const sysLang = navigator.language.toLowerCase();
+    const match = LOCALIZATION_PRESETS.find(p => 
+      sysLang.startsWith(p.id.split('-')[0].toLowerCase())
+    );
+    return match || LOCALIZATION_PRESETS[0]; // Fallback to en-US
+  };
+
+  const [uiLanguage] = useState<string>(() => getInitialLocalization().id);
+
+  const [localizations, setLocalizations] = useState<Localization[]>(() => {
+    const initial = getInitialLocalization();
+    const defaults = [{ id: 'en-US', name: 'English (US)', flag: '🇺🇸' }];
+    if (initial.id !== 'en-US') {
+      defaults.push(initial);
+    }
+    return defaults;
+  });
+
+  const [activeLocalizationId, setActiveLocalizationId] = useState(() => {
+    return getInitialLocalization().id;
+  });
 
   // All screens stored as device×locale keyed map
   const [screenSets, setScreenSets] = useState<Record<ScreenSetKey, ScreenConfig[]>>({});
@@ -116,6 +141,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processingMessage, setProcessingMessage] = useState<string>('');
   const [mobileTab, setMobileTab] = useState<MobileTab>('editor');
+  const [showTutorial, setShowTutorial] = useState<boolean>(() => {
+    return localStorage.getItem('tutorialCompleted') !== 'true';
+  });
 
   useEffect(() => {
     document.documentElement.classList.remove('light-mode', 'dark-mode');
@@ -217,6 +245,25 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     setSelectedScreenId(null);
   };
 
+  const handleSetShowTutorial = (val: boolean) => {
+    setShowTutorial(val);
+    if (!val) {
+      localStorage.setItem('tutorialCompleted', 'true');
+    }
+  };
+
+  const t = (key: string, params?: Record<string, string>): string => {
+    const lang = uiLanguage || 'en-US';
+    let text = TRANSLATIONS[lang]?.[key] || TRANSLATIONS['en-US']?.[key] || key;
+    
+    if (params) {
+      Object.entries(params).forEach(([k, v]) => {
+        text = text.replace(`{${k}}`, v);
+      });
+    }
+    return text;
+  };
+
   return (
     <ConfigContext.Provider value={{
       activeDeviceType, setActiveDeviceType: handleSetActiveDeviceType,
@@ -232,6 +279,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       isProcessing, setIsProcessing,
       processingMessage, setProcessingMessage,
       mobileTab, setMobileTab,
+      showTutorial, setShowTutorial: handleSetShowTutorial,
+      uiLanguage,
+      t
     }}>
       {children}
     </ConfigContext.Provider>
