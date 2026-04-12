@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useConfig } from '../store/ConfigContext';
 import type { ScreenConfig } from '../store/ConfigContext';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
+import { validateImageDimensions } from '../utils/imageValidation';
 import { DeviceFrame } from './DeviceFrame';
 
 // ---------------------------------------------------------------------------
@@ -242,11 +243,20 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
 // ---------------------------------------------------------------------------
 
 export const CanvasRenderer = () => {
-  const { screens, selectedScreenId, setSelectedScreenId, canvasZoom, updateScreen, addScreen, setRightSidebarTab, t } = useConfig();
+  const { screens, selectedScreenId, setSelectedScreenId, canvasZoom, updateScreen, addScreen, setRightSidebarTab, t, activeDeviceType, setAppError } = useConfig();
 
-  const handleFileSelect = (screenId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (screenId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // We look up the exact device of the selected screen for exact validation. 
+      // If we don't know it natively here, we can fallback or use global `activeDeviceType`. 
+      // CanvasRenderer uses `const { activeDeviceType...` from useConfig! Let's ensure strict match.
+      const isValid = await validateImageDimensions(file, activeDeviceType === 'iPad' ? 'iPad' : 'iPhone');
+      if (!isValid) {
+        setAppError(t(activeDeviceType === 'iPad' ? 'error.dimension.ipad' : 'error.dimension.iphone'));
+        e.target.value = '';
+        return;
+      }
       updateScreen(screenId, { imageObjUrl: URL.createObjectURL(file) });
     }
   };

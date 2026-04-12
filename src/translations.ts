@@ -96,6 +96,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': 'Use the Right Sidebar to change colors, fonts, and layouts in real-time.',
     'tutorial.step5.title': 'One-Click Save',
     'tutorial.step5.desc': 'Save everything at once—multiple devices and all languages—automatically packaged into a ZIP.',
+    'error.dimension.iphone': 'Invalid screenshot dimensions. iPhone screenshots must be exactly 1320 × 2868 px.',
+    'error.dimension.ipad': 'Invalid screenshot dimensions. iPad screenshots must be exactly 2064 × 2752 px.',
   },
   'de-DE': {
     'app.title': 'App Store',
@@ -178,6 +180,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': 'Nutze die rechte Seitenleiste, um Farben, Schriften und Layouts in Echtzeit anzupassen.',
     'tutorial.step5.title': 'Speichern mit einem Klick',
     'tutorial.step5.desc': 'Speichere alles auf einmal—mehrere Geräte und alle Sprachen—automatisch als ZIP-Datei.',
+    'error.dimension.iphone': 'Ungültige Bildgröße. iPhone Screenshots müssen exakt 1320 × 2868 px sein.',
+    'error.dimension.ipad': 'Ungültige Bildgröße. iPad Screenshots müssen exakt 2064 × 2752 px sein.',
   },
   'fr-FR': {
     'app.title': 'App Store',
@@ -260,6 +264,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': 'La barre latérale droite est votre centre de design. Choisissez des dégradés et ajustez tout en temps réel.',
     'tutorial.step5.title': 'Exportation en un clic',
     'tutorial.step5.desc': 'Exportez tout d\'un coup—plusieurs appareils, toutes les langues—automatiquement emballés dans un ZIP.',
+    'error.dimension.iphone': 'Dimensions de capture d\'écran invalides. Les captures iPhone doivent être de 1320 × 2868 px.',
+    'error.dimension.ipad': 'Dimensions de capture d\'écran invalides. Les captures iPad doivent être de 2064 × 2752 px.',
   },
   'es-ES': {
     'app.title': 'App Store',
@@ -342,6 +348,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': 'La barra lateral derecha es tu centro de diseño. Elige degradados y ajusta todo en tiempo real.',
     'tutorial.step5.title': 'Exportación en un clic',
     'tutorial.step5.desc': 'Exporta todo a la vez—varios dispositivos, todos los idiomas—en un archivo ZIP.',
+    'error.dimension.iphone': 'Tamaño de imagen no válido. Las capturas de iPhone deben ser exactamente 1320 × 2868 px.',
+    'error.dimension.ipad': 'Tamaño de imagen no válido. Las capturas de iPad deben ser exactamente 2064 × 2752 px.',
   },
   'it-IT': {
     'app.title': 'App Store',
@@ -424,6 +432,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': 'La barra laterale destra è il tuo centro di design. Scegli sfumature e regola tutto in tempo reale.',
     'tutorial.step5.title': 'Esportazione in un clic',
     'tutorial.step5.desc': 'Esporta tutto in una volta—più dispositivi, tutte le lingue—automaticamente in uno ZIP.',
+    'error.dimension.iphone': 'Dimensioni non valide dell\'immagine. Gli screenshot per iPhone devono essere esattamente di 1320 × 2868 px.',
+    'error.dimension.ipad': 'Dimensioni non valide dell\'immagine. Gli screenshot per iPad devono essere esattamente di 2064 × 2752 px.',
   },
   'ja-JP': {
     'app.title': 'App Store',
@@ -506,6 +516,8 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': '右のサイドバーでデザインを調整します。グラデーション、フォント、位置をリアルタイムで確認できます。',
     'tutorial.step5.title': 'ワンクリック書き出し',
     'tutorial.step5.desc': '複数のデバイスやすべての言語を一度に書き出し、自動的にZIPにまとめられます。',
+    'error.dimension.iphone': '無効な画像サイズです。iPhoneのスクリーンショットは「1320 × 2868 px」である必要があります。',
+    'error.dimension.ipad': '無効な画像サイズです。iPadのスクリーンショットは「2064 × 2752 px」である必要があります。',
   },
   'zh-CN': {
     'app.title': 'App Store',
@@ -588,5 +600,7 @@ export const TRANSLATIONS: Record<string, Record<string, string>> = {
     'tutorial.step4.desc': '右侧边栏是您的设计中心。实时选择渐变、字体并调整位置。',
     'tutorial.step5.title': '一键导出',
     'tutorial.step5.desc': '一次性导出多个设备和所有语言，自动打包成 ZIP 文件。',
+    'error.dimension.iphone': '图片尺寸无效。iPhone 截屏必须精确为 1320 × 2868 px。',
+    'error.dimension.ipad': '图片尺寸无效。iPad 截屏必须精确为 2064 × 2752 px。',
   },
 };
