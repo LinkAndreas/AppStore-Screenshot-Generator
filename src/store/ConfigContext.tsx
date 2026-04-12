@@ -40,6 +40,7 @@ export interface Localization {
 }
 
 export type DeviceType = 'iPhone' | 'iPad';
+export type MobileTab = 'setup' | 'editor' | 'customize';
 
 // Key pattern: "iPhone-en-US", "iPad-de-DE", etc.
 export type ScreenSetKey = string;
@@ -91,6 +92,8 @@ export interface AppContextType {
   setIsProcessing: (val: boolean) => void;
   processingMessage: string;
   setProcessingMessage: (val: string) => void;
+  mobileTab: MobileTab;
+  setMobileTab: (tab: MobileTab) => void;
 }
 
 const ConfigContext = createContext<AppContextType | null>(null);
@@ -112,6 +115,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['title']);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [processingMessage, setProcessingMessage] = useState<string>('');
+  const [mobileTab, setMobileTab] = useState<MobileTab>('editor');
 
   useEffect(() => {
     document.documentElement.classList.remove('light-mode', 'dark-mode');
@@ -227,6 +231,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       getDefaultTypography,
       isProcessing, setIsProcessing,
       processingMessage, setProcessingMessage,
+      mobileTab, setMobileTab,
     }}>
       {children}
     </ConfigContext.Provider>

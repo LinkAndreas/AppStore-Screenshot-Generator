@@ -4,10 +4,14 @@ import { CanvasRenderer } from './components/CanvasRenderer';
 import { BottomBar } from './components/BottomBar';
 import { ZoomControls } from './components/ZoomControls';
 import { ProcessingOverlay } from './components/ProcessingOverlay';
+import { useConfig } from './store/ConfigContext';
+import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
 function App() {
+  const { mobileTab, setMobileTab } = useConfig();
+
   return (
-    <div className="layout">
+    <div className={`layout mobile-tab-${mobileTab}`}>
       <LeftSidebar />
       <main className="main-content">
         <div className="canvas-area">
@@ -18,6 +22,30 @@ function App() {
       </main>
       <RightSidebar />
       <ProcessingOverlay />
+
+      <div className="mobile-nav">
+        <button 
+          className={mobileTab === 'setup' ? 'active' : ''} 
+          onClick={() => setMobileTab('setup')}
+        >
+          <Settings size={20} />
+          <span>Setup</span>
+        </button>
+        <button 
+          className={mobileTab === 'editor' ? 'active' : ''} 
+          onClick={() => setMobileTab('editor')}
+        >
+          <ImageIcon size={20} />
+          <span>Editor</span>
+        </button>
+        <button 
+          className={mobileTab === 'customize' ? 'active' : ''} 
+          onClick={() => setMobileTab('customize')}
+        >
+          <Palette size={20} />
+          <span>Customize</span>
+        </button>
+      </div>
     </div>
   );
 }
