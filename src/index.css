@@ -313,7 +313,6 @@ html {
 .bottom-bar-item {
   width: 80px;
   height: 140px;
-  border-radius: 12px;
   border: 2px solid var(--panel-border);
   position: relative;
   cursor: pointer;
