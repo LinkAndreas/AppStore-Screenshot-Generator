@@ -290,6 +290,7 @@ export const BottomBar = () => {
                             screenId={`thumb-${screen.id}`}
                             onFileSelect={() => {}}
                             cornerRadiusPx={isIpad ? 60 : 100}
+                            isThumbnail={true}
                           />
                         </div>
                       </div>

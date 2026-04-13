@@ -109,7 +109,9 @@ export interface AppContextType {
 const ConfigContext = createContext<AppContextType | null>(null);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
-  const [activeDeviceType, setActiveDeviceType] = useState<DeviceType>('iPhone');
+  const [activeDeviceType, setActiveDeviceType] = useState<DeviceType>(() => {
+    return (localStorage.getItem('activeDeviceType') as DeviceType) || 'iPhone';
+  });
 
   // Detect system language and find best match in presets
   const getInitialLocalization = (): Localization => {
@@ -123,6 +125,14 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [uiLanguage] = useState<string>(() => getInitialLocalization().id);
 
   const [localizations, setLocalizations] = useState<Localization[]>(() => {
+    const saved = localStorage.getItem('localizations');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved localizations', e);
+      }
+    }
     const initial = getInitialLocalization();
     const defaults = [{ id: 'en-US', name: 'English (US)', flag: '🇺🇸' }];
     if (initial.id !== 'en-US') {
@@ -132,15 +142,34 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [activeLocalizationId, setActiveLocalizationId] = useState(() => {
+    const saved = localStorage.getItem('activeLocalizationId');
+    if (saved) return saved;
     return getInitialLocalization().id;
   });
 
   // All screens stored as device×locale keyed map
-  const [screenSets, setScreenSets] = useState<Record<ScreenSetKey, ScreenConfig[]>>({});
+  const [screenSets, setScreenSets] = useState<Record<ScreenSetKey, ScreenConfig[]>>(() => {
+    const saved = localStorage.getItem('screenSets');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Clear blob URLs as they are invalid after reload
+        Object.keys(parsed).forEach(key => {
+          parsed[key] = parsed[key].map((s: ScreenConfig) => ({ ...s, imageObjUrl: null }));
+        });
+        return parsed;
+      } catch (e) {
+        console.error('Failed to parse saved screenSets', e);
+      }
+    }
+    return {};
+  });
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
   const [rightSidebarTab, setRightSidebarTab] = useState<'layout' | 'style' | 'content'>('layout');
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+  });
   const [canvasZoom, setCanvasZoom] = useState<number>(1.0);
   const [expandedSections, setExpandedSections] = useState<string[]>(['title']);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -155,7 +184,29 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     document.documentElement.classList.remove('light-mode', 'dark-mode');
     document.documentElement.classList.add(`${theme}-mode`);
+    localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('localizations', JSON.stringify(localizations));
+  }, [localizations]);
+
+  useEffect(() => {
+    localStorage.setItem('activeLocalizationId', activeLocalizationId);
+  }, [activeLocalizationId]);
+
+  useEffect(() => {
+    localStorage.setItem('activeDeviceType', activeDeviceType);
+  }, [activeDeviceType]);
+
+  useEffect(() => {
+    // Save screenSets to localStorage, but without blob URLs
+    const toSave: Record<string, ScreenConfig[]> = {};
+    Object.keys(screenSets).forEach(key => {
+      toSave[key] = screenSets[key].map(s => ({ ...s, imageObjUrl: null }));
+    });
+    localStorage.setItem('screenSets', JSON.stringify(toSave));
+  }, [screenSets]);
 
   const toggleTheme = () => setTheme(prev => prev === 'dark' ? 'light' : 'dark');
 
