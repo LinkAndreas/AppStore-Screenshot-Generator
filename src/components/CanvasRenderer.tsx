@@ -262,11 +262,28 @@ export const CanvasRenderer = () => {
   };
 
   return (
-    <div
-      id="sequence-container"
-      className="sequence-container"
-      style={{ zoom: canvasZoom, WebkitZoom: canvasZoom } as React.CSSProperties}
-    >
+    <div className="canvas-area">
+      <div 
+        className="canvas-transformer-outer"
+        style={{
+          width: 'fit-content',
+          height: 'fit-content',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start'
+        }}
+      >
+        <div
+          id="sequence-container"
+          className="sequence-container"
+          style={{ 
+            transform: `scale(${canvasZoom})`, 
+            transformOrigin: '0 0',
+            // Correct the space occupied by the element since transform doesn't affect document flow
+            marginBottom: `calc(${canvasZoom - 1} * 100%)`, // Rough approximation for height
+            marginRight: `calc(${canvasZoom - 1} * 100%)`  // Rough approximation for width
+          }}
+        >
       {screens.map((screen) => (
         <ScreenCard
           key={screen.id}
@@ -309,6 +326,8 @@ export const CanvasRenderer = () => {
           </button>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 };
