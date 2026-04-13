@@ -28,6 +28,11 @@ interface DeviceFrameProps {
    * Default: 100 — matches typical Apple device screen radii at native res.
    */
   cornerRadiusPx?: number;
+  /**
+   * If true, the component is rendered in a simplified way for thumbnails.
+   * This skips hidden height scanning and other non-essential calculations.
+   */
+  isThumbnail?: boolean;
 }
 
 // ---------------------------------------------------------------------------
@@ -73,6 +78,7 @@ export const DeviceFrame = ({
   onBezelLoad,
   onScreenshotLoad,
   cornerRadiusPx = 100,
+  isThumbnail = false,
 }: DeviceFrameProps) => {
   const { t } = useConfig();
   const [bezelDims, setBezelDims] = useState<Dims | null>(null);
@@ -104,9 +110,12 @@ export const DeviceFrame = ({
           onLoad={(e) => {
             const img = e.currentTarget;
             const dims = { w: img.naturalWidth, h: img.naturalHeight };
-            setShotDims(dims);
-            onScreenshotLoad?.(dims);
+            if (shotDims?.w !== dims.w || shotDims?.h !== dims.h) {
+              setShotDims(dims);
+              onScreenshotLoad?.(dims);
+            }
           }}
+          loading={isThumbnail ? 'lazy' : 'eager'}
           style={{
             position: 'absolute',
             left: `${((bezelDims.w - shotDims.w) / 2 / bezelDims.w) * 100}%`,
@@ -124,7 +133,10 @@ export const DeviceFrame = ({
           alt=""
           onLoad={(e) => {
             const img = e.currentTarget;
-            setShotDims({ w: img.naturalWidth, h: img.naturalHeight });
+            const dims = { w: img.naturalWidth, h: img.naturalHeight };
+            if (shotDims?.w !== dims.w || shotDims?.h !== dims.h) {
+              setShotDims(dims);
+            }
           }}
           style={{ display: 'none' }}
         />
@@ -188,8 +200,7 @@ export const DeviceFrame = ({
                   justifyContent: 'center',
                   boxSizing: 'border-box',
                   pointerEvents: 'none',
-                  background: 'rgba(255, 255, 255, 0.02)',
-                  backdropFilter: 'blur(10px)',
+                  background: 'rgba(255, 255, 255, 0.04)',
                   boxShadow: 'inset 0 0 40px rgba(0,0,0,0.3)',
                 }}
               >
@@ -229,8 +240,10 @@ export const DeviceFrame = ({
         onLoad={(e) => {
           const img = e.currentTarget;
           const dims = { w: img.naturalWidth, h: img.naturalHeight };
-          setBezelDims(dims);
-          onBezelLoad?.(dims);
+          if (bezelDims?.w !== dims.w || bezelDims?.h !== dims.h) {
+            setBezelDims(dims);
+            onBezelLoad?.(dims);
+          }
         }}
         style={{
           position: 'absolute',
