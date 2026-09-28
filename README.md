@@ -1,6 +1,6 @@
 # 📱 App Store Screenshot Generator
 
-**🔗 [Open AppStore Screenshot Generator](https://www.linkandreas.de/AppStore-Screenshot-Generator/)**
+**🔗 [Open AppStore Screenshot Generator](https://screenshots.linkandreas.de/)**
 
 [![Version](https://img.shields.io/badge/version-1.7.1-blue.svg)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
@@ -57,6 +57,27 @@ A professional, high-performance web tool designed for developers and designers 
 
 - **Exporting**: Click "Download All Locales" to receive a pre-organized ZIP file categorized by device and localization.
 - **Alignment**: Select a screen in the center canvas to reveal fine-tuning controls in the right sidebar.
+
+## 🚢 Deployment
+
+Every push to `main` runs `.github/workflows/deploy.yml`: GitHub builds the Docker image (Vite
+build served by [Caddy](https://caddyserver.com), configured in `docker/Caddyfile`) and pushes it to
+`ghcr.io/linkandreas/appstore-screenshot-generator`, tagged with the commit SHA. The Hostinger VPS
+only receives `compose.yaml` in `~/appstore-screenshot-generator`, pulls that image and restarts
+the container.
+
+The container publishes no ports; it joins the shared Docker network `web`, where the
+`cloudflared` container reaches it at `http://appstore-screenshot-generator:32775` and serves it
+with HTTPS at <https://screenshots.linkandreas.de>.
+
+Repository secrets: `HOSTINGER_HOST`, `HOSTINGER_USERNAME`, `HOSTINGER_SSH_KEY`.
+
+To roll back, run on the VPS:
+`cd ~/appstore-screenshot-generator && TAG=<older commit sha> docker compose up -d`.
+
+To run the production image locally:
+`docker build -t appstore-screenshot-generator . && docker run --rm -p 32775:32775 appstore-screenshot-generator`
+→ <http://localhost:32775>.
 
 ## 📜 License
 
