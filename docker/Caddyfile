@@ -1,0 +1,32 @@
+# Serves the built app on port 32775 (plain HTTP). HTTPS and the domain are handled by the
+# Cloudflare Tunnel in front of it on the VPS.
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:32775 {
+	root * /srv
+	encode zstd gzip
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		-Server
+	}
+
+	# Vite's hashed bundles never change; icons revalidate weekly; the page always revalidates.
+	@hashed path /assets/*
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+	@images path *.svg *.png *.webp
+	header @images Cache-Control "public, max-age=604800"
+	@pages path / *.html
+	header @pages Cache-Control "no-cache"
+
+	# Single-page app: every path without a file is served index.html.
+	try_files {path} /index.html
+	file_server
+}
