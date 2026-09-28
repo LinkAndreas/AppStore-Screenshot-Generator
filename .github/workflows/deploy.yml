@@ -1,30 +1,96 @@
-name: Build and Deploy
+name: Deploy to Hostinger VPS
+
+# GitHub builds the Docker image and pushes it to GitHub Container Registry, tagged with the commit
+# SHA. The VPS only receives compose.yaml, pulls that exact image and restarts the container. On the
+# VPS the container joins the shared `web` network, where the cloudflared container reaches it at
+# http://appstore-screenshot-generator:32775 and serves it (with HTTPS) at the domain.
+#
+# Roll back on the VPS: cd ~/appstore-screenshot-generator && TAG=<older commit sha> docker compose up -d
+#
+# Repository secrets: HOSTINGER_HOST, HOSTINGER_USERNAME, HOSTINGER_SSH_KEY
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
 
-permissions:
-  contents: write
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/linkandreas/appstore-screenshot-generator
 
 jobs:
-  build-and-deploy:
-    concurrency: ci-${{ github.ref }}
+  build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v6.0.2
+      - name: Checkout Code
+        uses: actions/checkout@v5
 
-      - name: Install and Build 🔧
-        run: |
-          npm install
-          npm run build
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Deploy 🚀
-        uses: JamesIves/github-pages-deploy-action@v4.8.0
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          folder: dist
-          branch: gh-pages
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Copy compose.yaml to VPS
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          source: "compose.yaml"
+          target: "~/appstore-screenshot-generator"
+
+      - name: Pull and restart via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        env:
+          TAG: ${{ github.sha }}
+          GHCR_USER: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          envs: TAG,GHCR_USER,GHCR_TOKEN
+          script: |
+            set -e
+            cd ~/appstore-screenshot-generator
+            docker network inspect web >/dev/null 2>&1 || docker network create web
+            # The job's token is only valid during this run, so log out again right after the pull.
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            TAG="$TAG" docker compose pull
+            docker logout ghcr.io
+            TAG="$TAG" docker compose up -d --remove-orphans
+            docker image prune -f

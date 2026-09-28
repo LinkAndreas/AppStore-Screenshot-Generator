@@ -1,0 +1,16 @@
+name: appstore-screenshot-generator
+
+services:
+  appstore-screenshot-generator:
+    # Built by GitHub Actions (.github/workflows/deploy.yml); TAG is the commit SHA of the deploy.
+    image: ghcr.io/linkandreas/appstore-screenshot-generator:${TAG:-latest}
+    container_name: appstore-screenshot-generator
+    # No published ports: the cloudflared container on the `web` network reaches it at
+    # http://appstore-screenshot-generator:32775 and serves it (with HTTPS) at the domain.
+    networks:
+      - web
+    restart: unless-stopped
+
+networks:
+  web:
+    external: true
