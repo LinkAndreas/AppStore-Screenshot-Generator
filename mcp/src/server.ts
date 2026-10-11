@@ -11,7 +11,7 @@ import { loadImage, MAX_IMAGE_BYTES, toImage, type InputPolicy, type LoadedImage
 import { renderScreen } from './render';
 import { brandSchema, designOptions, outputFolder, resolveScreen, screenSchema } from './spec';
 
-const VERSION = '1.9.0';
+const VERSION = '1.10.0';
 const MAX_SCREENS_PER_CALL = 40;
 const MAX_PREVIEWS = 6;
 const FILE_TTL_MS = 60 * 60 * 1000;
