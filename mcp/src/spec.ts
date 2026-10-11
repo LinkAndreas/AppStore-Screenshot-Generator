@@ -5,7 +5,7 @@ import {
 } from '../../src/shared/layout';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, type ScreenFontId } from '../../src/shared/fonts';
 import { GRADIENT_PRESETS, SOLID_PRESETS, readableTextColor } from '../../src/shared/presets';
-import { LAYOUT_PRESETS, presetValues, type LayoutPresetId } from '../../src/shared/layoutPresets';
+import { LAYOUT_PRESETS, presetValues, presetsForDevice, type LayoutPresetId } from '../../src/shared/layoutPresets';
 import type { LoadedImage } from './inputs';
 import type { ResolvedScreen } from './render';
 
@@ -110,11 +110,24 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
 
   const textAlign = pick('textAlign') ?? 'center';
   // Placement: a layer's explicit values beat its preset; the screen's layer beats the brand's.
+  // Presets that don't suit the device (e.g. a tilted Mac) fall back to Classic.
+  const presetFor = (layer: StyleInput): LayoutPresetId | undefined => {
+    const id = layer.layoutPreset;
+    if (!id || presetsForDevice(device).some(p => p.id === id)) return id;
+    return 'classic';
+  };
+  for (const layer of [screen, brand]) {
+    if (layer.layoutPreset && presetFor(layer) !== layer.layoutPreset) {
+      warnings.push(`${label}: layoutPreset ${layer.layoutPreset} is not available for ${device}; used classic.`);
+      break;
+    }
+  }
   const placement = (key: 'textPosition' | 'positioning' | 'scale' | 'rotation' | 'offsetX' | 'offsetY') => {
     const field = key === 'positioning' ? 'devicePosition' : key;
     for (const layer of [screen, brand]) {
       if (layer[field] !== undefined) return layer[field];
-      if (layer.layoutPreset) return presetValues(device, layer.layoutPreset)[key];
+      const preset = presetFor(layer);
+      if (preset) return presetValues(device, preset)[key];
     }
     return presetValues(device, 'classic')[key];
   };
@@ -186,7 +199,7 @@ export const designOptions = () => ({
   fonts: SCREEN_FONTS.map(f => ({ id: f.id, name: f.label, category: f.category, weights: f.weights, italic: f.hasItalic })),
   gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, category: p.category, from: p.start, to: p.end, textColor: readableTextColor(p.start, p.end) })),
   solidPresets: SOLID_PRESETS.map(p => ({ name: p.name, color: p.color })),
-  layoutPresets: LAYOUT_PRESETS.map(p => ({ id: p.id, name: p.name, description: p.description })),
+  layoutPresets: LAYOUT_PRESETS.map(p => ({ id: p.id, name: p.name, description: p.description, devices: p.devices ?? DEVICE_TYPES })),
   layout: {
     textPosition: ['top', 'bottom'],
     devicePosition: ['top', 'center', 'bottom'],

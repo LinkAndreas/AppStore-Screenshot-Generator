@@ -3,12 +3,12 @@
  * device: scale is a factor of the device's default size, offsets are fractions of the canvas.
  * Shared by the editor (Device tab) and the MCP server (layoutPreset).
  */
-import { DEVICES, offsetLimit, type DeviceType } from './layout';
+import { DEVICES, getBezelSpec, offsetLimit, type DeviceType } from './layout';
 
 export type TextPosition = 'top' | 'bottom';
 export type DevicePosition = 'top' | 'center' | 'bottom';
 
-export type LayoutPresetId = 'classic' | 'hero' | 'rising' | 'floating' | 'tiltLeft' | 'tiltRight' | 'textBelow';
+export type LayoutPresetId = 'classic' | 'hero' | 'floating' | 'textBelow' | 'tiltLeft' | 'tiltRight';
 
 export interface LayoutPreset {
   id: LayoutPresetId;
@@ -19,23 +19,29 @@ export interface LayoutPreset {
   positioning: DevicePosition;
   /** Factor of the device's default scale. */
   scale: number;
+  /** Tilt in degrees; offsets that keep a tilted device clear of the text are computed. */
   rotation: number;
-  /** Fractions of the canvas width / height. */
-  offsetX: number;
-  offsetY: number;
+  /** Devices the preset suits (default: all). Tilted laptops and watches look wrong. */
+  devices?: DeviceType[];
 }
 
+/**
+ * Compositions that keep text and device in a clean relationship: the device sits next to the
+ * text with the standard gap and, when it is too big for the canvas, bleeds off the far edge.
+ */
 export const LAYOUT_PRESETS: LayoutPreset[] = [
-  { id: 'classic', name: 'Classic', description: 'Text on top, the whole device below it.', textPosition: 'top', positioning: 'top', scale: 1, rotation: 0, offsetX: 0, offsetY: 0 },
-  { id: 'hero', name: 'Big & Bold', description: 'A larger device that runs off the bottom edge.', textPosition: 'top', positioning: 'top', scale: 1.3, rotation: 0, offsetX: 0, offsetY: 0 },
-  { id: 'rising', name: 'Rising', description: 'The device rises from the bottom edge, leaving room for big text.', textPosition: 'top', positioning: 'bottom', scale: 1.1, rotation: 0, offsetX: 0, offsetY: 0.16 },
-  { id: 'floating', name: 'Floating', description: 'A smaller device centred below the text, fully visible.', textPosition: 'top', positioning: 'center', scale: 0.82, rotation: 0, offsetX: 0, offsetY: 0 },
-  { id: 'tiltLeft', name: 'Tilted Left', description: 'The device leans to the left for a dynamic look.', textPosition: 'top', positioning: 'top', scale: 1.08, rotation: -9, offsetX: -0.11, offsetY: 0.01 },
-  { id: 'tiltRight', name: 'Tilted Right', description: 'The device leans to the right for a dynamic look.', textPosition: 'top', positioning: 'top', scale: 1.08, rotation: 9, offsetX: 0.11, offsetY: 0.01 },
-  { id: 'textBelow', name: 'Text Below', description: 'The device comes in from the top edge, text sits below it.', textPosition: 'bottom', positioning: 'top', scale: 1.1, rotation: 0, offsetX: 0, offsetY: -0.14 },
+  { id: 'classic', name: 'Classic', description: 'Headline on top, the device right below it.', textPosition: 'top', positioning: 'top', scale: 1, rotation: 0 },
+  { id: 'hero', name: 'Big & Bold', description: 'Headline on top, a larger device that runs off the bottom edge.', textPosition: 'top', positioning: 'top', scale: 1.3, rotation: 0 },
+  { id: 'floating', name: 'Floating', description: 'A smaller device centred below the headline, fully visible.', textPosition: 'top', positioning: 'center', scale: 0.85, rotation: 0 },
+  { id: 'textBelow', name: 'Text Below', description: 'The device comes in from the top edge, the headline sits below it.', textPosition: 'bottom', positioning: 'bottom', scale: 1.15, rotation: 0 },
+  { id: 'tiltLeft', name: 'Tilted Left', description: 'Headline on top, the device leans to the left.', textPosition: 'top', positioning: 'top', scale: 1, rotation: -8, devices: ['iPhone', 'iPhoneDuoInner', 'iPhoneDuoOuter', 'iPad'] },
+  { id: 'tiltRight', name: 'Tilted Right', description: 'Headline on top, the device leans to the right.', textPosition: 'top', positioning: 'top', scale: 1, rotation: 8, devices: ['iPhone', 'iPhoneDuoInner', 'iPhoneDuoOuter', 'iPad'] },
 ];
 
 export const DEFAULT_LAYOUT_PRESET: LayoutPresetId = 'classic';
+
+/** Presets offered for a device. */
+export const presetsForDevice = (device: DeviceType) => LAYOUT_PRESETS.filter(p => !p.devices || p.devices.includes(device));
 
 export interface PlacementValues {
   textPosition: TextPosition;
@@ -50,21 +56,29 @@ export interface PlacementValues {
 export const presetValues = (device: DeviceType, presetId: LayoutPresetId): PlacementValues => {
   const preset = LAYOUT_PRESETS.find(p => p.id === presetId) ?? LAYOUT_PRESETS[0];
   const spec = DEVICES[device];
+  const scale = Math.round(preset.scale * spec.layout.defaultScale * 100) / 100;
+  let offsetX = 0, offsetY = 0;
+  if (preset.rotation !== 0) {
+    // The device turns around its top centre: one top corner rises by w/2·sin(θ) and the body
+    // swings sideways by up to h·sin(θ). Lower it by the rise so the gap to the text stays as in
+    // Classic, and shift it back a little so the top stays inside the canvas while the bottom
+    // bleeds off the lower edge.
+    const bezel = getBezelSpec(undefined, device);
+    const w = spec.layout.deviceWidth * scale;
+    const h = w * (bezel.height / bezel.width);
+    const sin = Math.sin((Math.abs(preset.rotation) * Math.PI) / 180);
+    offsetY = (w / 2) * sin;
+    // CSS rotate(θ < 0) is counter-clockwise, which swings the body to the right: shift left.
+    offsetX = Math.sign(preset.rotation) * (h / 2) * sin * 0.4;
+  }
   const limit = offsetLimit(device);
   const clamp = (v: number) => Math.max(-limit, Math.min(limit, Math.round(v)));
-  return {
-    textPosition: preset.textPosition,
-    positioning: preset.positioning,
-    scale: Math.round(preset.scale * spec.layout.defaultScale * 100) / 100,
-    rotation: preset.rotation,
-    offsetX: clamp(preset.offsetX * spec.width),
-    offsetY: clamp(preset.offsetY * spec.height),
-  };
+  return { textPosition: preset.textPosition, positioning: preset.positioning, scale, rotation: preset.rotation, offsetX: clamp(offsetX), offsetY: clamp(offsetY) };
 };
 
 /** The preset a screen's placement matches, or null when it has been adjusted by hand. */
 export const matchPreset = (device: DeviceType, s: Partial<PlacementValues>): LayoutPresetId | null => {
-  for (const preset of LAYOUT_PRESETS) {
+  for (const preset of presetsForDevice(device)) {
     const v = presetValues(device, preset.id);
     if ((s.textPosition ?? 'top') === v.textPosition
       && (s.positioning ?? 'center') === v.positioning

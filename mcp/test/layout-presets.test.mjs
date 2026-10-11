@@ -20,12 +20,12 @@ await build({
   },
   bundle: true, platform: 'node', format: 'esm', outfile: out, logLevel: 'silent',
 });
-const { LAYOUT_PRESETS, presetValues, matchPreset, DEVICE_TYPES, offsetLimit } = await import(out);
+const { LAYOUT_PRESETS, presetValues, presetsForDevice, matchPreset, DEVICE_TYPES, offsetLimit } = await import(out);
 rmSync(out);
 
 test('every preset is recognised after applying it, on every device', () => {
   for (const device of DEVICE_TYPES) {
-    for (const preset of LAYOUT_PRESETS) {
+    for (const preset of presetsForDevice(device)) {
       const values = presetValues(device, preset.id);
       assert.equal(matchPreset(device, values), preset.id, `${device} / ${preset.id}`);
       assert.ok(Math.abs(values.offsetX) <= offsetLimit(device) && Math.abs(values.offsetY) <= offsetLimit(device), `${device} / ${preset.id} offsets within range`);

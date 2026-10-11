@@ -117,10 +117,13 @@ const buildTree = (s: ResolvedScreen): El => {
 
   // The editor rotates around the box's top centre; satori rotates around the centre, so add the
   // translation that turns one into the other.
+  // The editor scales and rotates around the edge facing the text (top centre, or bottom centre
+  // when the text is below); satori rotates around the centre, so add the difference.
+  const anchorBottom = s.textPosition === 'bottom';
   const rad = (s.rotation * Math.PI) / 180;
   const half = boxH / 2;
-  const tx = s.offsetX - half * Math.sin(rad);
-  const ty = s.offsetY - half * (1 - Math.cos(rad));
+  const tx = s.offsetX + (anchorBottom ? 1 : -1) * half * Math.sin(rad);
+  const ty = s.offsetY + (anchorBottom ? 1 : -1) * half * (1 - Math.cos(rad));
 
   const textLine = (text: string, kind: 'title' | 'subtitle') => {
     const isTitle = kind === 'title';
@@ -168,7 +171,8 @@ const buildTree = (s: ResolvedScreen): El => {
   children.push(h('div', {
     display: 'flex',
     position: 'relative',
-    // May shrink when device and text overflow the canvas; drawn from the top either way.
+    // May shrink when device and text overflow the canvas; the device is anchored to the side
+    // facing the text so it bleeds off the far edge (as in the editor).
     flexShrink: 1,
     minHeight: 0,
     width: boxW,
@@ -179,7 +183,7 @@ const buildTree = (s: ResolvedScreen): El => {
     display: 'flex',
     position: 'absolute',
     left: 0,
-    top: 0,
+    ...(anchorBottom ? { bottom: 0 } : { top: 0 }),
     width: boxW,
     height: boxH,
     transform: `translate(${tx}px, ${ty}px) rotate(${s.rotation}deg)`,
