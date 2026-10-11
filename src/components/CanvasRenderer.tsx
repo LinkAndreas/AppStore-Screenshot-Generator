@@ -3,7 +3,7 @@ import { useConfig } from '../store/ConfigContext';
 import type { ScreenConfig } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
 import { acceptedSizesText, checkScreenshot } from '../utils/imageValidation';
-import { DEVICES } from '../shared/layout';
+import { DEVICES, offsetLimit } from '../shared/layout';
 import { ScreenArtwork } from './ScreenArtwork';
 import { ImagePlus, Smartphone } from 'lucide-react';
 
@@ -18,7 +18,7 @@ interface ScreenCardProps {
 
 /** A screen on the canvas: the full-size artwork shown at 25%, editable in place. */
 const ScreenCard = ({ screen, index, isSelected, onSelect, onFileSelect, updateScreen }: ScreenCardProps) => {
-  const { activeDeviceType, setRightSidebarTab, setExpandedSections, t } = useConfig();
+  const { activeDeviceType, setRightSidebarTab, setExpandedSections, canvasZoom, t } = useConfig();
   const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
 
   return (
@@ -42,6 +42,8 @@ const ScreenCard = ({ screen, index, isSelected, onSelect, onFileSelect, updateS
           onFileSelect,
           titlePlaceholder: t('content.titlePlaceholder'),
           subtitlePlaceholder: t('content.subtitlePlaceholder'),
+          displayScale: 0.25 * canvasZoom,
+          maxOffset: offsetLimit(activeDeviceType),
         }}
       />
     </div>

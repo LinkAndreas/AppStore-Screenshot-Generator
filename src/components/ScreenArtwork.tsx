@@ -46,6 +46,10 @@ export interface ScreenEditing {
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   titlePlaceholder: string;
   subtitlePlaceholder: string;
+  /** On-screen pixels per artwork pixel (canvas preview scale × zoom), for dragging the device. */
+  displayScale: number;
+  /** Largest allowed device offset in either direction. */
+  maxOffset: number;
 }
 
 interface ScreenArtworkProps {
@@ -64,6 +68,43 @@ interface ScreenArtworkProps {
  */
 export const ScreenArtwork = ({ screen, device, className, style, editing, idPrefix = '' }: ScreenArtworkProps) => {
   const [focused, setFocused] = useState<'title' | 'subtitle' | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const drag = React.useRef<{ x: number; y: number; offsetX: number; offsetY: number; moved: boolean } | null>(null);
+  const justDragged = React.useRef(false);
+
+  // Drag the device to move it; a click without movement still reaches the upload placeholder.
+  const dragHandlers = editing ? {
+    onPointerDown: (e: React.PointerEvent) => {
+      if (e.button !== 0) return;
+      drag.current = { x: e.clientX, y: e.clientY, offsetX: screen.offsetX, offsetY: screen.offsetY, moved: false };
+      e.currentTarget.setPointerCapture(e.pointerId);
+    },
+    onPointerMove: (e: React.PointerEvent) => {
+      const d = drag.current;
+      if (!d) return;
+      const dx = (e.clientX - d.x) / editing.displayScale;
+      const dy = (e.clientY - d.y) / editing.displayScale;
+      if (!d.moved && Math.hypot(e.clientX - d.x, e.clientY - d.y) < 4) return;
+      d.moved = true;
+      setDragging(true);
+      const clamp = (v: number) => Math.round(Math.max(-editing.maxOffset, Math.min(editing.maxOffset, v)));
+      editing.onChange({ offsetX: clamp(d.offsetX + dx), offsetY: clamp(d.offsetY + dy) });
+    },
+    onPointerUp: () => {
+      justDragged.current = !!drag.current?.moved;
+      drag.current = null;
+      setDragging(false);
+    },
+    onPointerCancel: () => {
+      drag.current = null;
+      setDragging(false);
+    },
+    // A drag ends with a click; don't let it open the file picker or reselect.
+    onClickCapture: (e: React.MouseEvent) => {
+      if (justDragged.current) e.stopPropagation();
+      justDragged.current = false;
+    },
+  } : {};
   const spec = DEVICES[device];
   const layout = spec.layout;
   const bezel = resolveBezel(screen.bezelName, device);
@@ -138,9 +179,13 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
 
       {/* The box occupies the device's scaled size in the layout; the inner layer applies the transform. */}
       <div
+        {...dragHandlers}
+        className={editing ? 'device-drag' : undefined}
         style={{
           position: 'relative',
           flexShrink: 0,
+          cursor: editing ? (dragging ? 'grabbing' : 'grab') : undefined,
+          touchAction: editing ? 'none' : undefined,
           width: bezel.width * actualScale,
           height: bezel.height * actualScale,
           marginTop: position === 'bottom' || position === 'center' ? 'auto' : undefined,
