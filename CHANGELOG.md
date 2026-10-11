@@ -4,7 +4,7 @@ All notable changes to the App Store Screenshot Generator. The app's "What's New
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
-## [Unreleased]
+## [1.11.0] - 2026-10-11
 
 Easier controls, more devices and more backgrounds.
 
