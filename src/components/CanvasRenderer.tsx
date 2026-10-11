@@ -5,7 +5,8 @@ import { SCREEN_DIMENSIONS } from '../constants';
 import { acceptedSizesText, checkScreenshot } from '../utils/imageValidation';
 import { DEVICES, offsetLimit } from '../shared/layout';
 import { ScreenArtwork } from './ScreenArtwork';
-import { ImagePlus, Smartphone } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import { BrandMark } from './BrandMark';
 
 interface ScreenCardProps {
   screen: ScreenConfig;
@@ -57,6 +58,26 @@ const ScreenCard = ({ screen, index, isSelected, onSelect, onFileSelect, updateS
 export const CanvasRenderer = () => {
   const { screens, selectedScreenId, setSelectedScreenId, canvasZoom, updateScreen, addScreen, t, activeDeviceType, setAppError } = useConfig();
 
+  // Arrow keys nudge the selected device (Shift for bigger steps), unless the user is typing.
+  const selected = screens.find(s => s.id === selectedScreenId);
+  React.useEffect(() => {
+    if (!selected) return;
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('input, textarea, select, [contenteditable="true"]')) return;
+      const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+      if (!dir || e.metaKey || e.ctrlKey || e.altKey) return;
+      e.preventDefault();
+      const { width } = SCREEN_DIMENSIONS[activeDeviceType];
+      const step = Math.max(1, Math.round(width * (e.shiftKey ? 0.025 : 0.0025)));
+      const limit = offsetLimit(activeDeviceType);
+      const clamp = (v: number) => Math.max(-limit, Math.min(limit, v));
+      updateScreen(selected.id, { offsetX: clamp(selected.offsetX + dir[0] * step), offsetY: clamp(selected.offsetY + dir[1] * step) });
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [selected, activeDeviceType, updateScreen]);
+
   const handleFileSelect = async (screenId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -107,7 +128,7 @@ export const CanvasRenderer = () => {
 
       {screens.length === 0 && (
         <div className="empty-state">
-          <div className="empty-icon"><Smartphone size={34} strokeWidth={1.75} /></div>
+          <BrandMark size={76} className="empty-brand" />
           <h2>{t('canvas.empty.title')}</h2>
           <p>{t('canvas.empty.desc')}</p>
           <div className="empty-actions">

@@ -1,8 +1,19 @@
 # Changelog
 
-All notable changes to the App Store Screenshot Generator. The app's "What's New" sheet is
+All notable changes to Storyframe (formerly the App Store Screenshot Generator). The app's "What's New" sheet is
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
+
+## [1.12.0] - 2026-10-11
+
+Meet Storyframe: the screenshot generator has a name, a logo and its own colour, plus ready-made layouts and precise placement.
+
+- New name and look: Storyframe, because App Store screenshots tell your app's story frame by frame. With an indigo accent, a new icon and a home-screen icon when added to your phone.
+- Exported ZIPs are named after Storyframe, for example Storyframe_iPhone_6.9_en-US.zip.
+- Six layouts to start from, shown as live previews of your screen: Classic, Big & Bold, Floating, Text Below, and Tilted Left and Right for iPhone and iPad.
+- Text can now sit below the device. Large devices always bleed off the edge away from the text, never into it.
+- Fine-tune any layout: position, size, tilt, left/right and up/down are always at hand, the device snaps to the centre while dragging, and the arrow keys nudge it (Shift for bigger steps).
+- AI agents can use the same layouts through the MCP server (layoutPreset, textPosition).
 
 ## [1.11.0] - 2026-10-11
 
