@@ -114,7 +114,7 @@ export const BottomBar = () => {
     <div className="bottom-bar">
       <div className="bottom-bar-scroll">
         <label className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }}>
-          <input type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
+          <input id="batch-import-input" type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
           <ImagePlus size={18} strokeWidth={1.5} />
           <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.batchImport')}</span>
         </label>
@@ -258,7 +258,7 @@ export const BottomBar = () => {
                 })()}
 
 
-                <span className="thumb-index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="thumb-index">{index + 1}</span>
               </div>
               <button 
                 className="thumb-delete" 
