@@ -6,6 +6,7 @@ import { ZoomControls } from './components/ZoomControls';
 import { ProcessingOverlay } from './components/ProcessingOverlay';
 import { TutorialOverlay } from './components/TutorialOverlay';
 import { ErrorToast } from './components/ErrorToast';
+import { WhatsNew } from './components/WhatsNew';
 import { useConfig } from './store/ConfigContext';
 import { Settings, Image as ImageIcon, Palette } from 'lucide-react';
 
@@ -55,6 +56,7 @@ function App() {
       <ProcessingOverlay />
       <TutorialOverlay />
       <ErrorToast />
+      <WhatsNew />
 
       <div className="mobile-nav">
         <button 

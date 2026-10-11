@@ -4,7 +4,7 @@ import {
   screenshotFits, type DeviceType,
 } from '../../src/shared/layout';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, type ScreenFontId } from '../../src/shared/fonts';
-import { GRADIENT_PRESETS, SOLID_PRESETS } from '../../src/shared/presets';
+import { GRADIENT_PRESETS, SOLID_PRESETS, readableTextColor } from '../../src/shared/presets';
 import type { LoadedImage } from './inputs';
 import type { ResolvedScreen } from './render';
 
@@ -105,6 +105,9 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
   }
 
   const textAlign = pick('textAlign') ?? 'center';
+  const background = layerBackground(screen) ?? layerBackground(brand) ?? { type: 'gradient', from: '#0f172a', to: '#3b82f6' };
+  // Without explicit colours, text is white or near-black, whichever reads better (as "Auto" in the editor).
+  const autoText = background.type === 'gradient' ? readableTextColor(background.from, background.to) : readableTextColor(background.color);
   return {
     device,
     locale: screen.locale ?? 'en-US',
@@ -112,9 +115,9 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
     image,
     title: screen.title ?? '',
     subtitle: screen.subtitle ?? '',
-    background: layerBackground(screen) ?? layerBackground(brand) ?? { type: 'gradient', from: '#0f172a', to: '#3b82f6' },
-    titleColor: pick('titleColor') ?? '#ffffff',
-    subtitleColor: pick('subtitleColor') ?? '#ffffff',
+    background,
+    titleColor: pick('titleColor') ?? autoText,
+    subtitleColor: pick('subtitleColor') ?? pick('titleColor') ?? autoText,
     titleFont: pick('titleFont') ?? DEFAULT_TITLE_FONT,
     subtitleFont: pick('subtitleFont') ?? DEFAULT_SUBTITLE_FONT,
     titleSize: pick('titleSize') ?? layout.defaultTitleSize,
@@ -167,7 +170,7 @@ export const designOptions = () => ({
     };
   }),
   fonts: SCREEN_FONTS.map(f => ({ id: f.id, name: f.label, category: f.category, weights: f.weights, italic: f.hasItalic })),
-  gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, from: p.start, to: p.end })),
+  gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, category: p.category, from: p.start, to: p.end, textColor: readableTextColor(p.start, p.end) })),
   solidPresets: SOLID_PRESETS.map(p => ({ name: p.name, color: p.color })),
   layout: {
     devicePosition: ['top', 'center', 'bottom'],
@@ -178,8 +181,8 @@ export const designOptions = () => ({
   },
   defaults: {
     background: { gradientFrom: '#0f172a', gradientTo: '#3b82f6' },
-    titleColor: '#ffffff',
-    subtitleColor: '#ffffff',
+    titleColor: 'auto: white, or #1d1d1f on light backgrounds',
+    subtitleColor: 'same as titleColor',
     titleFont: DEFAULT_TITLE_FONT,
     subtitleFont: DEFAULT_SUBTITLE_FONT,
     devicePosition: 'top',

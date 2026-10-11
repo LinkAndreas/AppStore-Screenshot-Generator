@@ -9,6 +9,9 @@ import {
 } from '../shared/layout';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, getScreenFont, screenFontStack } from '../shared/fonts';
 
+/** Colours behind the text, for picking a readable text colour. */
+export const backgroundColors = (s: ScreenConfig) => s.bgType === 'gradient' ? [s.bgGradientStart, s.bgGradientEnd] : [s.bgColor];
+
 /** CSS background of a screen. */
 export const screenBackground = (screen: ScreenConfig) =>
   screen.bgType === 'gradient'

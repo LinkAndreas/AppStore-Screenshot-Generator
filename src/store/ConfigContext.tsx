@@ -3,6 +3,19 @@ import { TRANSLATIONS, LOCALIZATION_PRESETS } from '../translations';
 import { DEVICE_TYPES, isDeviceType, type DeviceType } from '../shared/layout';
 import type { ScreenFontId } from '../shared/fonts';
 import { createScreen, LOCALIZED_DEFAULTS } from './screenFactory';
+import { CURRENT_VERSION } from '../releaseNotes';
+
+/** Style a screen can share with others: colours, typography (not the text itself). */
+const SHARED_STYLE_KEYS = [
+  'bgType', 'bgColor', 'bgGradientStart', 'bgGradientEnd',
+  'titleColor', 'subtitleColor', 'titleFont', 'subtitleFont', 'titleSize', 'subtitleSize',
+  'titleBold', 'subtitleBold', 'titleItalic', 'subtitleItalic', 'titleUnderline', 'subtitleUnderline',
+  'titleAlign', 'subtitleAlign',
+] as const satisfies readonly (keyof ScreenConfig)[];
+
+const pickLayout = (s: ScreenConfig): Partial<ScreenConfig> => ({
+  bezelName: s.bezelName, scale: s.scale, rotation: s.rotation, offsetX: s.offsetX, offsetY: s.offsetY, positioning: s.positioning,
+});
 
 export interface ScreenConfig {
   id: string;
@@ -92,6 +105,10 @@ export interface AppContextType {
   setMobileTab: (tab: MobileTab) => void;
   showTutorial: boolean;
   setShowTutorial: (val: boolean) => void;
+  showWhatsNew: boolean;
+  setShowWhatsNew: (val: boolean) => void;
+  /** Copies background, text style, frame and placement from one screen to every screen. Returns how many changed. */
+  applyStyleToAll: (sourceId: string) => number;
   uiLanguage: string;
   t: (key: string, params?: Record<string, string>) => string;
   projectHasScreens: boolean;
@@ -164,7 +181,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
-  const [rightSidebarTab, setRightSidebarTab] = useState<'layout' | 'style' | 'content'>('layout');
+  const [rightSidebarTab, setRightSidebarTab] = useState<'layout' | 'style' | 'content'>('content');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'light' || saved === 'dark') return saved;
@@ -281,6 +298,27 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     setSelectedScreenId(null);
   };
 
+  // Returning users see "What's New" once per release; first-time users get the tutorial instead.
+  const [showWhatsNew, setShowWhatsNewState] = useState<boolean>(() =>
+    localStorage.getItem('tutorialCompleted') === 'true' && localStorage.getItem('lastSeenVersion') !== CURRENT_VERSION);
+  const setShowWhatsNew = (val: boolean) => {
+    setShowWhatsNewState(val);
+    if (!val) localStorage.setItem('lastSeenVersion', CURRENT_VERSION);
+  };
+
+  const applyStyleToAll = (sourceId: string) => {
+    const source = screens.find(s => s.id === sourceId);
+    if (!source) return 0;
+    const style = Object.fromEntries(SHARED_STYLE_KEYS.map(key => [key, source[key]])) as Partial<ScreenConfig>;
+    const changed = Object.values(screenSets).reduce((n, set) => n + set.filter(s => s.id !== sourceId).length, 0);
+    setScreenSets(prev => Object.fromEntries(Object.entries(prev).map(([key, set]) => {
+      // Frame, size and placement only make sense on the same device.
+      const sameDevice = key.startsWith(`${activeDeviceType}-`);
+      return [key, set.map(s => s.id === sourceId ? s : { ...s, ...style, ...(sameDevice ? pickLayout(source) : {}) })];
+    })));
+    return changed;
+  };
+
   const handleSetShowTutorial = (val: boolean) => {
     setShowTutorial(val);
     if (!val) {
@@ -316,6 +354,8 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       processingMessage, setProcessingMessage,
       mobileTab, setMobileTab,
       showTutorial, setShowTutorial: handleSetShowTutorial,
+      showWhatsNew, setShowWhatsNew,
+      applyStyleToAll,
       uiLanguage,
       t,
       projectHasScreens,
