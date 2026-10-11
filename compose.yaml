@@ -11,6 +11,19 @@ services:
       - web
     restart: unless-stopped
 
+  # MCP server for AI agents; the web container proxies https://<domain>/mcp to it.
+  appstore-screenshot-mcp:
+    image: ghcr.io/linkandreas/appstore-screenshot-mcp:${TAG:-latest}
+    container_name: appstore-screenshot-mcp
+    environment:
+      PUBLIC_URL: https://screenshots.linkandreas.de/mcp
+    networks:
+      - web
+    restart: unless-stopped
+    # Rendering is CPU and memory heavy; keep it from starving the other services on the VPS.
+    cpus: 1.5
+    mem_limit: 1g
+
 networks:
   web:
     external: true

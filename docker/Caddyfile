@@ -1,4 +1,4 @@
-# Serves the built app on port 32775 (plain HTTP). HTTPS and the domain are handled by the
+# Serves the built app on port 32775 (plain HTTP) and proxies /mcp to the MCP server. HTTPS and the domain are handled by the
 # Cloudflare Tunnel in front of it on the VPS.
 {
 	admin off
@@ -26,7 +26,14 @@
 	@pages path / *.html
 	header @pages Cache-Control "no-cache"
 
-	# Single-page app: every path without a file is served index.html.
-	try_files {path} /index.html
-	file_server
+	# MCP server for AI agents (separate container, see compose.yaml).
+	handle /mcp* {
+		reverse_proxy appstore-screenshot-mcp:3000
+	}
+
+	handle {
+		# Single-page app: every path without a file is served index.html.
+		try_files {path} /index.html
+		file_server
+	}
 }
