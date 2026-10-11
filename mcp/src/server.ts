@@ -11,7 +11,7 @@ import { loadImage, MAX_IMAGE_BYTES, toImage, type InputPolicy, type LoadedImage
 import { renderScreen } from './render';
 import { brandSchema, designOptions, outputFolder, resolveScreen, screenSchema } from './spec';
 
-const VERSION = '1.10.0';
+const VERSION = '1.11.0';
 const MAX_SCREENS_PER_CALL = 40;
 const MAX_PREVIEWS = 6;
 const FILE_TTL_MS = 60 * 60 * 1000;
@@ -67,9 +67,9 @@ export const buildServer = (mode: Mode) => {
     { name: 'appstore-screenshots', title: 'App Store Screenshot Generator', version: VERSION },
     {
       instructions:
-        'Renders App Store marketing screenshots: the app screenshot inside an iPhone 17 Pro Max or iPad Pro 13" frame, ' +
-        'on a branded background with a headline and description, at the exact sizes App Store Connect requires ' +
-        '(1320×2868 iPhone 6.9", 2064×2752 iPad 13"). Call get_design_options once, then render_screenshots with a brand ' +
+        'Renders App Store marketing screenshots: the app screenshot inside an Apple device frame (iPhone 18/17 Pro Max, ' +
+        'iPhone Duo open or closed, iPad Pro 13", MacBook Pro/Air, Apple Watch Ultra 3 / Series 11) on a branded background ' +
+        'with a headline and description, at the exact sizes App Store Connect requires for each slot. Call get_design_options once, then render_screenshots with a brand ' +
         'and one entry per screen (repeat entries per device and locale). Check the returned previews and adjust. ' +
         inputHelp(mode),
     },
@@ -87,7 +87,7 @@ export const buildServer = (mode: Mode) => {
         imageInput: inputHelp(mode),
         ...(mode.kind === 'http' ? { upload: { method: 'POST', url: `${mode.baseUrl}/uploads`, body: 'raw PNG or JPEG bytes', maxBytes: MAX_IMAGE_BYTES, returns: '{"image":"upload:<id>"}' } } : {}),
         output: mode.kind === 'stdio'
-          ? 'PNG files written to outputDir as <device>/<locale>/screen_<n>.png (iPhone_6.9, iPad_13), plus screenshots.zip when zip is true.'
+          ? 'PNG files written to outputDir as <device>/<locale>/screen_<n>.png (iPhone_6.9, iPhone_Duo_Inner, iPad_13, Mac, Watch_Ultra, …), plus screenshots.zip when zip is true.'
           : 'Download links to each PNG and to a ZIP of the whole set (<device>/<locale>/screen_<n>.png), valid for one hour.',
       }, null, 2),
     }],

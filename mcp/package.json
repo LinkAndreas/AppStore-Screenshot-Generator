@@ -1,6 +1,6 @@
 {
   "name": "appstore-screenshot-mcp",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "MCP server that renders branded App Store screenshots with the same layout as the App Store Screenshot Generator.",
   "license": "MIT",
   "private": true,
@@ -33,6 +33,7 @@
   "devDependencies": {
     "@types/node": "^26.6.5",
     "esbuild": "^0.28.2",
+    "pngjs": "^7.0.0",
     "typescript": "^7.0.2"
   }
 }

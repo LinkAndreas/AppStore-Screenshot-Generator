@@ -1,7 +1,10 @@
 import { z } from 'zod';
-import { BEZELS, DEFAULT_BEZEL, DEVICE_EXPORT_NAMES, DEVICE_LAYOUT, LAYOUT_LIMITS, SCREEN_DIMENSIONS, type DeviceType } from '../../src/shared/layout';
+import {
+  BEZELS, DEFAULT_BEZEL, DEVICES, DEVICE_EXPORT_NAMES, DEVICE_LAYOUT, DEVICE_TYPES, LAYOUT_LIMITS, bezelsForDevice, offsetLimit,
+  screenshotFits, type DeviceType,
+} from '../../src/shared/layout';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, type ScreenFontId } from '../../src/shared/fonts';
-import { GRADIENT_PRESETS, SOLID_PRESETS } from '../../src/shared/presets';
+import { GRADIENT_PRESETS, SOLID_PRESETS, readableTextColor } from '../../src/shared/presets';
 import type { LoadedImage } from './inputs';
 import type { ResolvedScreen } from './render';
 
@@ -19,26 +22,28 @@ export const styleShape = {
   subtitleColor: hex.optional(),
   titleFont: fontId.optional().describe(`Headline typeface (default ${DEFAULT_TITLE_FONT}).`),
   subtitleFont: fontId.optional().describe(`Description typeface (default ${DEFAULT_SUBTITLE_FONT}).`),
-  titleSize: z.number().int().min(24).max(320).optional().describe('Headline size in px of the final image (default 120 iPhone / 144 iPad).'),
-  subtitleSize: z.number().int().min(16).max(200).optional().describe('Description size in px (default 60 iPhone / 72 iPad).'),
+  titleSize: z.number().int().min(12).max(320).optional().describe('Headline size in px of the final image (defaults per device, e.g. 120 iPhone, 144 iPad, 36 Watch).'),
+  subtitleSize: z.number().int().min(10).max(200).optional().describe('Description size in px (defaults per device, e.g. 60 iPhone, 72 iPad, 19 Watch).'),
   titleBold: z.boolean().optional().describe('Default true.'),
   subtitleBold: z.boolean().optional().describe('Default false.'),
   titleItalic: z.boolean().optional(),
   subtitleItalic: z.boolean().optional(),
   textAlign: align.optional().describe('Alignment of both text lines (default center).'),
-  bezelColor: z.string().optional().describe('Device frame colour: iPhone Silver | Deep Blue | Cosmic Orange; iPad Silver | Space Gray.'),
+  frameModel: z.string().optional().describe('Device frame model, e.g. "iPhone 18 Pro Max", "iPhone 17 Pro Max", "MacBook Air" (see get_design_options). Default: the newest model.'),
+  bezelColor: z.string().optional().describe('Device frame colour, e.g. Silver, Black, Cosmic Orange, Space Black, Midnight (see get_design_options).'),
   devicePosition: z.enum(['top', 'center', 'bottom']).optional().describe('Where the device sits below the text (default top).'),
-  scale: z.number().min(0.2).max(LAYOUT_LIMITS.scale.max).optional().describe('Device size; 1 = 1120 px wide (default 1 iPhone / 1.5 iPad). Values above 1 let the device bleed off the bottom.'),
+  scale: z.number().min(0.2).max(LAYOUT_LIMITS.scale.max).optional().describe('Device size relative to the default width (1; iPad 1.5). Values above 1 let the device bleed off the bottom.'),
   rotation: z.number().min(LAYOUT_LIMITS.rotation.min).max(LAYOUT_LIMITS.rotation.max).optional().describe('Device rotation in degrees.'),
-  offsetX: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Horizontal device shift in px.'),
-  offsetY: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Vertical device shift in px.'),
+  offsetX: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Horizontal device shift in px (Watch: ±200).'),
+  offsetY: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Vertical device shift in px (Watch: ±200).'),
 };
 
 export const brandSchema = z.object(styleShape).describe('Brand defaults applied to every screen.');
 
 export const screenSchema = z.object({
   image: z.string().optional().describe('The app screenshot: a local file path (local server only), an https URL, a data URI, or an "upload:<id>" reference. Omit for an empty device frame.'),
-  device: z.enum(['iPhone', 'iPad']).optional().describe('Defaults to the device matching the image aspect ratio, else iPhone.'),
+  device: z.enum(DEVICE_TYPES as [DeviceType, ...DeviceType[]]).optional().describe(
+    'App Store slot: iPhone (6.9"), iPhoneDuoInner, iPhoneDuoOuter, iPad (13"), Mac, WatchUltra, Watch. Defaults to the slot matching the image size, else iPhone.'),
   locale: z.string().optional().describe('Locale folder for the output, e.g. en-US, de-DE (default en-US).'),
   title: z.string().max(200).optional().describe('Headline. Use \\n for line breaks. Empty hides it.'),
   subtitle: z.string().max(400).optional().describe('Description line. Empty hides it.'),
@@ -65,9 +70,17 @@ const layerBackground = (layer: StyleInput): Background | undefined => {
   return undefined;
 };
 
-/** Guesses the device from the screenshot's aspect ratio (iPhone ≈ 0.46, iPad ≈ 0.75). */
-const inferDevice = (image: LoadedImage | null): DeviceType =>
-  image && image.width / image.height > 0.6 ? 'iPad' : 'iPhone';
+/** Picks the slot whose App Store size matches the image, else the closest aspect ratio, else iPhone. */
+const inferDevice = (image: LoadedImage | null): DeviceType => {
+  if (!image) return 'iPhone';
+  const exact = DEVICE_TYPES.find(d => DEVICES[d].acceptedScreenshots.some(s => s.width === image.width && s.height === image.height));
+  if (exact) return exact;
+  const ratio = image.width / image.height;
+  return DEVICE_TYPES.reduce((best, d) => {
+    const diff = (x: DeviceType) => Math.abs(DEVICES[x].width / DEVICES[x].height - ratio);
+    return diff(d) < diff(best) ? d : best;
+  }, 'iPhone' as DeviceType);
+};
 
 /** Merges defaults, brand and screen into a screen the renderer can draw; collects warnings. */
 export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: LoadedImage | null, warnings: string[], label: string): ResolvedScreen => {
@@ -75,25 +88,26 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
   const layout = DEVICE_LAYOUT[device];
   const pick = <K extends keyof StyleInput>(key: K): StyleInput[K] => (screen[key] !== undefined ? screen[key] : brand[key]);
 
-  const bezelColor = pick('bezelColor');
-  const bezel = bezelColor
-    ? BEZELS.find(b => b.device === device && b.color.toLowerCase() === bezelColor.toLowerCase())
-    : BEZELS.find(b => b.name === DEFAULT_BEZEL[device]);
+  const bezel = findFrame(device, pick('frameModel'), pick('bezelColor'));
   if (!bezel) {
-    const options = BEZELS.filter(b => b.device === device).map(b => b.color).join(', ');
-    throw new Error(`${label}: no ${device} frame in "${bezelColor}". Available: ${options}.`);
+    const options = bezelsForDevice(device).map(b => `${b.model} ${b.color}`).join(', ');
+    throw new Error(`${label}: no ${device} frame matches model "${pick('frameModel') ?? 'any'}" and colour "${pick('bezelColor') ?? 'any'}". Available: ${options}.`);
+  }
+  const maxOffset = offsetLimit(device);
+  for (const key of ['offsetX', 'offsetY'] as const) {
+    const v = pick(key);
+    if (v !== undefined && Math.abs(v) > maxOffset) warnings.push(`${label}: ${key} ${v} is outside ±${maxOffset} for ${device}; the device may leave the image.`);
   }
 
-  if (image) {
-    const want = SCREEN_DIMENSIONS[device];
-    if (image.width !== want.width || image.height !== want.height) {
-      const ratioDiff = Math.abs(image.width / image.height - want.width / want.height) / (want.width / want.height);
-      warnings.push(`${label}: image is ${image.width}×${image.height}; ${device} screenshots should be ${want.width}×${want.height}. ` +
-        (ratioDiff > 0.02 ? 'The aspect ratio differs, so it was scaled to fill and cropped.' : 'It was scaled to fit.'));
-    }
+  if (image && !screenshotFits(device, image.width, image.height)) {
+    const sizes = DEVICES[device].acceptedScreenshots.map(s => `${s.width}×${s.height}`).join(' or ');
+    warnings.push(`${label}: image is ${image.width}×${image.height}; ${device} screenshots should be ${sizes}. It was scaled to the screen width and may be cropped.`);
   }
 
   const textAlign = pick('textAlign') ?? 'center';
+  const background = layerBackground(screen) ?? layerBackground(brand) ?? { type: 'gradient', from: '#0f172a', to: '#3b82f6' };
+  // Without explicit colours, text is white or near-black, whichever reads better (as "Auto" in the editor).
+  const autoText = background.type === 'gradient' ? readableTextColor(background.from, background.to) : readableTextColor(background.color);
   return {
     device,
     locale: screen.locale ?? 'en-US',
@@ -101,9 +115,9 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
     image,
     title: screen.title ?? '',
     subtitle: screen.subtitle ?? '',
-    background: layerBackground(screen) ?? layerBackground(brand) ?? { type: 'gradient', from: '#0f172a', to: '#3b82f6' },
-    titleColor: pick('titleColor') ?? '#ffffff',
-    subtitleColor: pick('subtitleColor') ?? '#ffffff',
+    background,
+    titleColor: pick('titleColor') ?? autoText,
+    subtitleColor: pick('subtitleColor') ?? pick('titleColor') ?? autoText,
     titleFont: pick('titleFont') ?? DEFAULT_TITLE_FONT,
     subtitleFont: pick('subtitleFont') ?? DEFAULT_SUBTITLE_FONT,
     titleSize: pick('titleSize') ?? layout.defaultTitleSize,
@@ -122,27 +136,41 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
   };
 };
 
+/** A frame by model and colour (case-insensitive, partial matches allowed), or the device default. */
+const findFrame = (device: DeviceType, model?: string, color?: string) => {
+  const norm = (v: string) => v.toLowerCase().replace(/["″]/g, '').replace(/\s+/g, ' ').trim();
+  const candidates = bezelsForDevice(device).filter(b => !model || norm(b.model).includes(norm(model)));
+  if (!color) return candidates.find(b => b.name === DEFAULT_BEZEL[device]) ?? candidates[0];
+  return candidates.find(b => norm(b.color) === norm(color)) ?? candidates.find(b => norm(b.color).includes(norm(color)));
+};
+
 /** Output path of a screen, matching the web app's ZIP layout: iPhone_6.9/en-US/screen_1.png. */
 export const outputFolder = (device: DeviceType, locale: string) =>
   `${DEVICE_EXPORT_NAMES[device]}/${locale.replace(/[^A-Za-z0-9_-]/g, '_')}`;
 
 /** Everything a model needs to choose options, returned by get_design_options. */
 export const designOptions = () => ({
-  devices: (['iPhone', 'iPad'] as const).map(device => ({
-    device,
-    appStoreDisplay: device === 'iPhone' ? 'iPhone 6.9" (iPhone 17 Pro Max)' : 'iPad 13" (iPad Pro M4)',
-    outputSize: SCREEN_DIMENSIONS[device],
-    expectedScreenshotSize: SCREEN_DIMENSIONS[device],
-    bezelColors: BEZELS.filter(b => b.device === device).map(b => b.color),
-    defaults: {
-      bezelColor: BEZELS.find(b => b.name === DEFAULT_BEZEL[device])!.color,
-      scale: DEVICE_LAYOUT[device].defaultScale,
-      titleSize: DEVICE_LAYOUT[device].defaultTitleSize,
-      subtitleSize: DEVICE_LAYOUT[device].defaultSubtitleSize,
-    },
-  })),
+  devices: DEVICE_TYPES.map(device => {
+    const spec = DEVICES[device];
+    const models = [...new Set(bezelsForDevice(device).map(b => b.model))];
+    const defaultBezel = BEZELS.find(b => b.name === DEFAULT_BEZEL[device])!;
+    return {
+      device,
+      appStoreDisplay: spec.appStoreDisplay,
+      outputSize: { width: spec.width, height: spec.height },
+      acceptedScreenshotSizes: spec.acceptedScreenshots,
+      frames: models.map(model => ({ model, colors: bezelsForDevice(device).filter(b => b.model === model).map(b => b.color) })),
+      defaults: {
+        frameModel: defaultBezel.model,
+        bezelColor: defaultBezel.color,
+        scale: spec.layout.defaultScale,
+        titleSize: spec.layout.defaultTitleSize,
+        subtitleSize: spec.layout.defaultSubtitleSize,
+      },
+    };
+  }),
   fonts: SCREEN_FONTS.map(f => ({ id: f.id, name: f.label, category: f.category, weights: f.weights, italic: f.hasItalic })),
-  gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, from: p.start, to: p.end })),
+  gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, category: p.category, from: p.start, to: p.end, textColor: readableTextColor(p.start, p.end) })),
   solidPresets: SOLID_PRESETS.map(p => ({ name: p.name, color: p.color })),
   layout: {
     devicePosition: ['top', 'center', 'bottom'],
@@ -153,8 +181,8 @@ export const designOptions = () => ({
   },
   defaults: {
     background: { gradientFrom: '#0f172a', gradientTo: '#3b82f6' },
-    titleColor: '#ffffff',
-    subtitleColor: '#ffffff',
+    titleColor: 'auto: white, or #1d1d1f on light backgrounds',
+    subtitleColor: 'same as titleColor',
     titleFont: DEFAULT_TITLE_FONT,
     subtitleFont: DEFAULT_SUBTITLE_FONT,
     devicePosition: 'top',

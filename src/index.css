@@ -345,6 +345,301 @@ button {
   margin: 14px 14px 12px;
 }
 
+/* Frame colour chips. */
+.frame-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.frame-color {
+  padding: 5px 11px;
+  border: none;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.frame-color:hover:not(.active) {
+  background: var(--fill-strong);
+}
+
+.frame-color.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ── Inspector controls ──────────────────────────────────────────────────── */
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* Category filter: one row that scrolls sideways. */
+.chip-row.scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  margin: 0 -14px;
+  padding: 0 14px 2px;
+  scrollbar-width: none;
+}
+
+.chip-row.scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 11px;
+  border: none;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.chip:hover:not(.active) {
+  background: var(--fill-strong);
+}
+
+.chip.active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.chip-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+.inline-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.inline-controls .segmented.compact button {
+  min-width: 34px;
+}
+
+.card.is-disabled > *:not(textarea) {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.color-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+
+.swatch.small {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.color-well {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.color-well input[type='color'] {
+  width: 30px;
+  height: 30px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.color-row .color-well input[type='color'] {
+  width: 24px;
+  height: 24px;
+  background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+}
+
+.color-row .color-well-label {
+  display: none;
+}
+
+.color-well-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.custom-gradient {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gradient-preview {
+  flex: 1;
+  height: 30px;
+  align-self: flex-start;
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.preset-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.preset-tile {
+  aspect-ratio: 3 / 4;
+  padding: 0;
+  border: none;
+  border-radius: 9px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.preset-tile:hover {
+  transform: translateY(-1px);
+}
+
+.preset-tile.active {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 0 0 2px var(--bg-color), 0 0 0 4px var(--accent);
+}
+
+.disclosure {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  padding: 2px 0;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.disclosure:hover {
+  color: var(--text-main);
+}
+
+.panel-group .section-title-row .text-link {
+  padding: 0 4px;
+  font-size: 12px;
+}
+
+.file-drop-thumb {
+  height: 64px;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+}
+
+.inspector-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--separator);
+}
+
+/* ── What's New ──────────────────────────────────────────────────────────── */
+
+.whats-new-link {
+  align-self: center;
+  margin: 2px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.whats-new-link:hover {
+  color: var(--accent);
+}
+
+.whats-new {
+  max-width: 440px;
+  max-height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
+}
+
+.whats-new-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 28px 24px 12px;
+  text-align: center;
+}
+
+.whats-new-head .sheet-icon {
+  margin-bottom: 4px;
+}
+
+.whats-new-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.whats-new-summary {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.whats-new-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-soft);
+}
+
+.whats-new-release {
+  padding-top: 12px;
+  border-top: 1px solid var(--separator);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.whats-new-release h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 /* ── Language list ───────────────────────────────────────────────────────── */
 
 .loc-list {
@@ -392,6 +687,49 @@ button {
 .loc-name {
   flex: 1;
   font-size: 13px;
+}
+
+.device-row {
+  min-height: 46px;
+}
+
+.device-row + .device-row::before {
+  left: 44px;
+}
+
+.device-icon {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.device-row.active .device-icon {
+  color: var(--accent);
+}
+
+.device-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.device-size {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.device-count {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .loc-check {
@@ -1670,5 +2008,9 @@ input[type='range']::-moz-range-thumb {
 
   .gradient-swatches {
     grid-template-columns: repeat(10, 1fr);
+  }
+
+  .inspector-footer .hint {
+    display: none;
   }
 }
