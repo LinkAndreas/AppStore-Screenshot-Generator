@@ -57,12 +57,4 @@ export const getBezelCategories = (name: string) => {
   const orientation = isLandscape ? 'Landscape' : 'Portrait';
   return { device, orientation };
 }
-export const getDefaultBezel = () => {
-  const preferred = 'iPhone 17 Pro Max - Silver - Portrait';
-  if (AVAILABLE_BEZELS.includes(preferred)) return preferred;
-  return AVAILABLE_BEZELS.length > 0 ? AVAILABLE_BEZELS[0] : '';
-};
-export const SCREEN_DIMENSIONS = {
-  iPhone: { width: 1320, height: 2868 },
-  iPad: { width: 2064, height: 2752 }
-};
+export { SCREEN_DIMENSIONS } from './shared/layout';
