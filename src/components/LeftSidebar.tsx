@@ -4,6 +4,7 @@ import { SCREEN_DIMENSIONS } from '../constants';
 import { LOCALIZATION_PRESETS } from '../translations';
 import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check, Laptop, Watch, BookOpen, type LucideIcon } from 'lucide-react';
 import { DEVICES, DEVICE_EXPORT_NAMES, DEVICE_TYPES, type DeviceType as Device } from '../shared/layout';
+import { CURRENT_VERSION } from '../releaseNotes';
 
 const DEVICE_ICONS: Record<Device, LucideIcon> = {
   iPhone: Smartphone,
@@ -419,6 +420,9 @@ export const LeftSidebar = () => {
         <div className="export-status">
           {processingMessage || currentMode.title}
         </div>
+        <button className="whats-new-link" onClick={() => config.setShowWhatsNew(true)}>
+          {t('whatsNew.version', { version: CURRENT_VERSION || '—' })} · {t('whatsNew.link')}
+        </button>
       </div>
     </div>
   );
