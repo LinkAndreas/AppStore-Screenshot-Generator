@@ -28,6 +28,7 @@ export const createScreen = (
     offsetY: 0,
     rotation: 0,
     positioning: 'top',
+    textPosition: 'top',
     ...typography,
     titleAlign: 'center',
     subtitleAlign: 'center',
