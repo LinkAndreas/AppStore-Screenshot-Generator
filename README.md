@@ -29,7 +29,7 @@ or from AI agents over MCP.
 - **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
 - **🎨 Backgrounds**: 52 gradients for App Store screenshots in Vibrant, Warm, Cool, Soft and Dark, 28 solid colors, or your own, with text that stays readable automatically.
 - **✋ Simple Controls**: Text, Background and Device tabs in plain language; drag the device on the canvas; apply one screen's style to all screens.
-- **📐 Layouts**: Classic, Big & Bold, Rising, Floating, Tilted and Text Below presets as live previews, with full manual control (snap to centre, arrow-key nudging).
+- **📐 Layouts**: Classic, Big & Bold, Floating, Text Below and Tilted presets as live previews, with full manual control (snap to centre, arrow-key nudging).
 - **🆕 What's New**: Release notes in the app, generated from [CHANGELOG.md](CHANGELOG.md).
 - **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
 - **🌓 Light & Dark Mode**: A clean, native-feeling editor that leaves the color to your screenshots.

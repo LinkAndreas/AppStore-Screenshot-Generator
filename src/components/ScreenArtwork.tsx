@@ -196,8 +196,9 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
         className={editing ? 'device-drag' : undefined}
         style={{
           position: 'relative',
-          // The box may shrink when device and text overflow the canvas; the device is drawn from the
-          // box's top either way, so both renderers place it the same (see mcp/src/render.ts).
+          // The box may shrink when device and text overflow the canvas. The device is anchored to
+          // the side facing the text, so a large device bleeds off the far edge instead of covering
+          // the text. Both renderers place it the same way (see mcp/src/render.ts).
           flexShrink: 1,
           minHeight: 0,
           cursor: editing ? (dragging ? 'grabbing' : 'grab') : undefined,
@@ -211,13 +212,13 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
         <div
           style={{
             position: 'absolute',
-            top: 0,
+            ...(textBelow ? { bottom: 0 } : { top: 0 }),
             left: '50%',
             width: bezel.width,
             height: bezel.height,
             marginLeft: -bezel.width / 2,
             transform: `translate(${screen.offsetX}px, ${screen.offsetY}px) scale(${actualScale}) rotate(${screen.rotation}deg)`,
-            transformOrigin: 'top center',
+            transformOrigin: textBelow ? 'bottom center' : 'top center',
           }}
         >
           <DeviceFrame
