@@ -72,7 +72,7 @@ export const DEVICES: Record<DeviceType, DeviceSpec> = {
     id: 'Mac', label: 'Mac', appStoreDisplay: 'Mac', exportName: 'Mac',
     width: 2880, height: 1800,
     acceptedScreenshots: [{ width: 2880, height: 1800 }, { width: 2560, height: 1600 }, { width: 1440, height: 900 }, { width: 1280, height: 800 }],
-    layout: { paddingTop: 110, textMarginBottom: 70, titleMarginBottom: 28, deviceWidth: 1900, defaultScale: 1.0, defaultTitleSize: 120, defaultSubtitleSize: 60, autoTitleSize: 96, autoSubtitleSize: 52, unit: 1 },
+    layout: { paddingTop: 110, textMarginBottom: 70, titleMarginBottom: 28, deviceWidth: 1750, defaultScale: 1.0, defaultTitleSize: 120, defaultSubtitleSize: 60, autoTitleSize: 96, autoSubtitleSize: 52, unit: 1 },
   },
   WatchUltra: {
     id: 'WatchUltra', label: 'Apple Watch Ultra', appStoreDisplay: 'Apple Watch Ultra 3', exportName: 'Watch_Ultra',

@@ -1,7 +1,7 @@
 import { ArrowDownToLine, ArrowUpToLine, Crosshair, FoldVertical, ImagePlus, Move } from 'lucide-react';
 import type { ScreenConfig } from '../../store/ConfigContext';
 import { DEVICES, DEVICE_LAYOUT, bezelsForDevice, getBezelSpec, offsetLimit, type DeviceType } from '../../shared/layout';
-import { LAYOUT_PRESETS, matchPreset, presetValues } from '../../shared/layoutPresets';
+import { matchPreset, presetValues, presetsForDevice } from '../../shared/layoutPresets';
 import { acceptedSizesText } from '../../utils/imageValidation';
 import { ScreenArtwork } from '../ScreenArtwork';
 import { Group, Row, Segmented, Slider } from './controls';
@@ -37,7 +37,7 @@ export const DevicePanel = ({ screen, device, update, onUpload, t }: Props) => {
     <>
       <Group title={t('layout.presets')}>
         <div className="layout-grid" style={{ gridTemplateColumns: `repeat(auto-fill, minmax(${Math.ceil(spec.width * tileScale)}px, 1fr))` }}>
-          {LAYOUT_PRESETS.map(p => {
+          {presetsForDevice(device).map(p => {
             const values = presetValues(device, p.id);
             return (
               <button
