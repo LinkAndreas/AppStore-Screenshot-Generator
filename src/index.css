@@ -563,6 +563,53 @@ button {
   border-top: 1px solid var(--separator);
 }
 
+/* Layout presets: live miniatures of the selected screen. */
+.layout-grid {
+  display: grid;
+  gap: 10px 8px;
+}
+
+.layout-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--text-main);
+  cursor: pointer;
+}
+
+.layout-tile-art {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm), inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+
+.layout-tile:hover .layout-tile-art {
+  transform: translateY(-1px);
+}
+
+.layout-tile.active .layout-tile-art {
+  box-shadow: 0 0 0 2px var(--card-bg), 0 0 0 4px var(--accent);
+}
+
+.layout-tile-label {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+  color: var(--text-soft);
+}
+
+.layout-tile.active .layout-tile-label {
+  color: var(--accent);
+}
+
 /* ── What's New ──────────────────────────────────────────────────────────── */
 
 .whats-new-link {
