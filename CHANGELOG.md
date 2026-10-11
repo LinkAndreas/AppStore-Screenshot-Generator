@@ -4,7 +4,7 @@ All notable changes to Storyframe (formerly the App Store Screenshot Generator).
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
-## [Unreleased]
+## [1.12.0] - 2026-10-11
 
 Meet Storyframe: the screenshot generator has a name, a logo and its own colour, plus ready-made layouts and precise placement.
 

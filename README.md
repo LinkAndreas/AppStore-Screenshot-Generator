@@ -8,7 +8,7 @@
 
 <p align="center"><b>🔗 <a href="https://screenshots.linkandreas.de/">Open Storyframe</a></b></p>
 
-[![Version](https://img.shields.io/badge/version-1.11.0-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-1.12.0-blue.svg)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6-purple?logo=vite)](https://vitejs.dev/)
