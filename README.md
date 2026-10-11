@@ -1,176 +1,178 @@
 <p align="center">
-  <img src="public/icon-192.png" width="96" height="96" alt="Storyframe logo">
+  <a href="https://screenshots.linkandreas.de/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/readme/hero-dark.png">
+      <img src="docs/readme/hero-light.png" alt="Storyframe: your app's story, frame by frame. App Store screenshots for iPhone, iPad, Mac and Apple Watch." width="100%">
+    </picture>
+  </a>
 </p>
 
-<h1 align="center">Storyframe</h1>
+<p align="center">
+  <a href="https://screenshots.linkandreas.de/"><img src="https://img.shields.io/badge/Open_Storyframe-5856D6?style=for-the-badge" alt="Open Storyframe"></a>
+  <a href="#-for-ai-agents-mcp"><img src="https://img.shields.io/badge/MCP-ready-5856D6?style=for-the-badge" alt="MCP ready"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.12.0-1d1d1f?style=for-the-badge" alt="Version 1.12.0"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1d1d1f?style=for-the-badge" alt="MIT license"></a>
+</p>
 
-<p align="center"><b>Your app's story, frame by frame.</b></p>
+<p align="center">
+  <a href="https://screenshots.linkandreas.de/"><b>Open the app</b></a> ·
+  <a href="#-features">Features</a> ·
+  <a href="#-every-app-store-slot">Devices</a> ·
+  <a href="#-for-ai-agents-mcp">AI agents</a> ·
+  <a href="#-run-it-yourself">Run it yourself</a> ·
+  <a href="CHANGELOG.md">What's new</a>
+</p>
 
-<p align="center"><b>🔗 <a href="https://screenshots.linkandreas.de/">Open Storyframe</a></b></p>
+<br>
 
-[![Version](https://img.shields.io/badge/version-1.12.0-blue.svg)](package.json)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
-[![Vite](https://img.shields.io/badge/Vite-6-purple?logo=vite)](https://vitejs.dev/)
+App Store screenshots tell your app's story, one frame at a time. **Storyframe** turns your raw app
+screenshots into that story: pick a layout, a background and an official Apple device frame, write
+your headlines, and export pixel-perfect screenshots for every device and language, ready for App
+Store Connect. Free, in your browser, no sign-up. Your screenshots never leave your machine.
 
-App Store screenshots tell your app's story, one frame at a time. Storyframe turns your app's raw
-screenshots into that story: pick a layout, a background and an Apple device frame, write the
-headlines, and export pixel-perfect screenshots for every device and language. Free in the browser,
-or from AI agents over MCP.
+## ✨ How it works
 
-![Storyframe](public/og-image.png)
+| 1. Add screenshots | 2. Style each screen | 3. Export |
+| --- | --- | --- |
+| Drop in your app's screenshots for iPhone, iPhone Duo, iPad, Mac or Apple Watch. | Pick a layout, a background and a frame, and write a headline. Add languages to localize. | Download every device and language as one ZIP, sorted the way App Store Connect expects. |
 
-*Coded using Google Antigravity.*
+## 🎯 Features
 
-## 🚀 Features
+| Feature | What you get |
+| --- | --- |
+| 📐 **Layouts that work** | Classic, Big & Bold, Floating, Text Below and Tilted, shown as live previews of your screen, with devices kept clear of your text. |
+| 📱 **Official Apple frames** | iPhone 18 & 17 Pro Max, iPhone Duo, iPad Pro M5 & M4, MacBook Pro & Air, Apple Watch Ultra 3 & Series 11, fitted pixel-perfectly. |
+| 🎨 **Backgrounds** | 52 gradients made for App Store screenshots, 28 solid colors, or your own, with text that stays readable automatically. |
+| 🔤 **Typography** | Eight typefaces, sizes S to XL, alignment and colors for headline and subtitle. |
+| 🌍 **Every language** | A set of screens per language; non-Latin scripts like Japanese and Chinese render correctly. |
+| ✋ **Precise control** | Drag the device on the canvas, nudge it with the arrow keys, snap to center, tilt and scale. |
+| ⚡ **One-click export** | All devices and languages at App Store resolution in one ZIP. |
+| 🤖 **AI agents** | An MCP server lets Claude, Cursor and other agents create complete, branded sets for you. |
+| 🌓 **Native feel** | A clean, Mac-like editor in light and dark mode that works on phones too. |
 
-- **⚡ Bulk Export**: Generate high-resolution assets for multiple devices (iPhone & iPad) and all localizations in a single click.
-- **📱 Every App Store Slot**: iPhone 6.9", iPhone Duo (open and closed), iPad 13", Mac and Apple Watch (Ultra and Series), with Apple's latest frames: iPhone 18 Pro Max, iPhone Duo, iPad Pro M5, MacBook Pro and MacBook Air M5, Apple Watch Ultra 3 and Series 11 (plus iPhone 17 Pro Max and iPad Pro M4).
-- **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
-- **🎨 Backgrounds**: 52 gradients for App Store screenshots in Vibrant, Warm, Cool, Soft and Dark, 28 solid colors, or your own, with text that stays readable automatically.
-- **✋ Simple Controls**: Text, Background and Device tabs in plain language; drag the device on the canvas; apply one screen's style to all screens.
-- **📐 Layouts**: Classic, Big & Bold, Floating, Text Below and Tilted presets as live previews, with full manual control (snap to centre, arrow-key nudging).
-- **🆕 What's New**: Release notes in the app, generated from [CHANGELOG.md](CHANGELOG.md).
-- **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
-- **🌓 Light & Dark Mode**: A clean, native-feeling editor that leaves the color to your screenshots.
-- **🤖 MCP Server**: Let Claude, Cursor or any MCP client render branded screenshot sets for you ([below](#-mcp-server-for-ai-agents)).
-- **⚙️ Precise Control**: Fine-tune scale, rotation, and offsets with a live, 60fps preview.
+## 📱 Every App Store slot
 
-## 🛠 Tech Stack
+<p align="center">
+  <img src="docs/readme/devices.png" alt="The same app framed for iPhone, iPad, Mac and Apple Watch" width="100%">
+</p>
 
-- **Core**: React 19 + TypeScript
-- **Build Tool**: Vite 6
-- **Styling**: Vanilla CSS (High Performance)
-- **Engine**: `html-to-image` for high-resolution canvas capture
-- **Compression**: `JSZip` for automated bulk downloads
+| Slot | Export size | Frames | Folder in the ZIP |
+| --- | --- | --- | --- |
+| iPhone 6.9" | 1320 × 2868 | iPhone 18 Pro Max, iPhone 17 Pro Max | `iPhone_6.9` |
+| iPhone Duo, open | 2007 × 2853 | iPhone Duo | `iPhone_Duo_Inner` |
+| iPhone Duo, closed | 1398 × 2034 | iPhone Duo | `iPhone_Duo_Outer` |
+| iPad 13" | 2064 × 2752 | iPad Pro 13" (M5, M4) | `iPad_13` |
+| Mac | 2880 × 1800 | MacBook Pro 16", MacBook Air 15" | `Mac` |
+| Apple Watch Ultra | 422 × 514 | Apple Watch Ultra 3 | `Watch_Ultra` |
+| Apple Watch | 416 × 496 | Apple Watch Series 11 (46 mm) | `Watch_Series` |
 
-## 📦 Getting Started
+Upload screenshots at the App Store size. Other accepted sizes (for example Mac 1440 × 900) and the
+same aspect ratio are scaled automatically. Exports are organized as `<folder>/<language>/screen_<n>.png`.
 
-### Prerequisites
+## 🤖 For AI agents (MCP)
 
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [npm](https://www.npmjs.com/) or [pnpm](https://pnpm.io/)
+Storyframe includes a [Model Context Protocol](https://modelcontextprotocol.io) server that renders
+the same screenshots as the editor (same frames, layouts and typefaces) without a browser, so an
+agent can turn your app's raw screenshots into a complete, branded set.
 
-### Installation
+> *"Use Storyframe to make App Store screenshots for my habit tracker from `./shots/*.png`, in
+> English and German. Coral gradient, white Manrope headlines, Big & Bold layout."*
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/app-store-screenshot-generator.git
-   cd app-store-screenshot-generator
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-### Productivity Tips
-
-- **Exporting**: Click "Download All Locales" to receive a pre-organized ZIP file categorized by device and localization.
-- **Alignment**: Select a screen in the center canvas to reveal fine-tuning controls in the right sidebar.
-
-## 🤖 MCP Server for AI Agents
-
-The `mcp/` package is Storyframe's [Model Context Protocol](https://modelcontextprotocol.io) server that renders
-the same screenshots as the editor (same frames, layout and typefaces) without a browser, so an AI
-agent can produce a complete, branded set from your app's raw screenshots.
-
-### Hosted (no install)
-
-Add `https://screenshots.linkandreas.de/mcp` as a remote MCP server (Streamable HTTP):
+### Hosted: nothing to install
 
 ```bash
 # Claude Code
 claude mcp add --transport http storyframe https://screenshots.linkandreas.de/mcp
 ```
 
-In Claude (web/desktop) add it under *Settings → Connectors → Add custom connector*; in Cursor add
-`{"mcpServers": {"storyframe": {"url": "https://screenshots.linkandreas.de/mcp"}}}` to
-`.cursor/mcp.json`.
+- **Claude (web and desktop):** *Settings → Connectors → Add custom connector* with
+  `https://screenshots.linkandreas.de/mcp`.
+- **Cursor:** add `{"mcpServers": {"storyframe": {"url": "https://screenshots.linkandreas.de/mcp"}}}`
+  to `.cursor/mcp.json`.
 
-The hosted server can't read files on your machine. Pass screenshots as https URLs, or upload them
-first and pass the returned reference:
+The hosted server can't read files on your machine: pass screenshots as https URLs, or upload them
+first and use the returned reference. Results come back as download links (each PNG plus a ZIP)
+that expire after an hour.
 
 ```bash
 curl -s --data-binary @screen.png https://screenshots.linkandreas.de/mcp/uploads
 # → {"image":"upload:…","width":1320,"height":2868,"expiresAt":"…"}
 ```
 
-Results come back as download links (each PNG plus a ZIP of the set) that expire after an hour.
-
-### Local (reads and writes files directly)
+### Local: reads and writes your files
 
 ```bash
 npm run mcp:install && npm run mcp:build
 claude mcp add storyframe -- node "$PWD/mcp/dist/server.js"
 ```
 
-Locally, `image` can be a file path and the PNGs are written to `outputDir` (default
-`./appstore-screenshots`, relative to where the agent starts the server).
+Locally, screenshots can be file paths, and the PNGs are written to `outputDir` (default
+`./appstore-screenshots` in the directory the agent starts the server from).
 
 ### Tools
 
 | Tool | What it does |
 | --- | --- |
-| `get_design_options` | Devices and required screenshot sizes, frame colors, typefaces, background presets, layout limits, defaults and copywriting tips. |
-| `render_screenshots` | Renders a set: a `brand` (background, text colors, typefaces, frame color, device position…) plus one `screens` entry per image with its `title`, `subtitle`, `locale`, `device` and optional overrides. Returns file locations, warnings and small previews the agent can check. |
+| `get_design_options` | Devices and screenshot sizes, frames, typefaces, backgrounds, layouts, defaults and copywriting tips. |
+| `render_screenshots` | Renders a set from a shared `brand` (background, text colors, typefaces, frame, layout) plus one `screens` entry per screenshot with `title`, `subtitle`, `locale`, `device` and optional overrides. Returns the files, warnings and small previews the agent can check. |
 
-The `app_store_screenshot_set` prompt walks an agent through planning the copy, choosing a brand,
-rendering and reviewing. Output follows the editor's ZIP layout:
-`<device>/<locale>/screen_<n>.png`, one folder per App Store slot:
+The `app_store_screenshot_set` prompt guides an agent through writing the copy, choosing a brand,
+rendering and reviewing. Japanese, Chinese, Korean and other non-Latin text uses Noto fonts fetched
+on demand.
 
-| Folder | Size | Frames |
-| --- | --- | --- |
-| `iPhone_6.9` | 1320 × 2868 | iPhone 18 Pro Max, iPhone 17 Pro Max |
-| `iPhone_Duo_Inner` | 2007 × 2853 | iPhone Duo (open) |
-| `iPhone_Duo_Outer` | 1398 × 2034 | iPhone Duo (closed) |
-| `iPad_13` | 2064 × 2752 | iPad Pro 13" (M5, M4) |
-| `Mac` | 2880 × 1800 | MacBook Pro 16", MacBook Air 15" |
-| `Watch_Ultra` | 422 × 514 | Apple Watch Ultra 3 |
-| `Watch_Series` | 416 × 496 | Apple Watch Series 11 (46 mm) |
+## 🛠 Run it yourself
 
-Screenshots of another accepted size (e.g. Mac 1440 × 900) or the same aspect ratio are scaled.
+Requires [Node.js](https://nodejs.org/) 22 or later.
 
-Example request to an agent:
+```bash
+git clone https://github.com/LinkAndreas/AppStore-Screenshot-Generator.git
+cd AppStore-Screenshot-Generator
+npm install
+npm run dev
+```
 
-> Use the Storyframe tools to make App Store screenshots for my habit tracker from
-> `./shots/*.png`, in English and German. Brand: cream background `#f3ede2`, ink text, Instrument
-> Serif headlines, Cosmic Orange frame.
+| Command | |
+| --- | --- |
+| `npm run dev` | Editor with hot reload |
+| `npm run build` | Type-check and build the editor into `dist/` |
+| `npm run lint` | Lint the project |
+| `npm run mcp:install`, `mcp:build`, `mcp:test` | Install, build and test the MCP server |
+| `npm run mcp:start`, `mcp:start:http` | Run the MCP server over stdio or HTTP |
 
-Japanese, Chinese, Korean and other non-Latin text is rendered with Noto fonts fetched from Google
-Fonts on demand. Run the tests with `npm run mcp:test`.
+**Built with** React 19, TypeScript and Vite. The editor exports with `html-to-image` and `JSZip`;
+the MCP server renders with `satori` and `resvg`. Both share the device catalog, layouts, fonts and
+presets in `src/shared`, so they produce the same images.
 
-## 🖼 Adding a Device Frame
+<details>
+<summary><b>Adding a device frame</b></summary>
 
 1. Copy the portrait PNG from Apple's bezel download into `src/assets/Bezels/<pack>/PNG/`.
 2. Measure it: `node scripts/measure-bezels.mjs "src/assets/Bezels/<pack>/PNG/<file>.png"` prints
-   the bezel size, the screen opening (should equal the App Store screenshot size) and the corner
+   the bezel size, the screen opening (it should equal the App Store screenshot size) and the corner
    radii that make the screenshot fit.
 3. Add it to `BEZELS` in `src/shared/layout.ts` with those numbers.
-4. `npm run mcp:test` renders every frame and fails if the background shows through anywhere
-   around the screen or the screenshot shows outside the device.
+4. `npm run mcp:test` renders every frame and fails if the background shows through anywhere around
+   the screen or the screenshot shows outside the device.
 
-## 🚢 Deployment
+</details>
+
+<details>
+<summary><b>Releases and deployment</b></summary>
+
+Release notes live in [CHANGELOG.md](CHANGELOG.md), which also feeds the app's "What's New" sheet.
 
 Every push to `main` runs `.github/workflows/deploy.yml`: GitHub tests the MCP server, builds the
 Docker images and pushes them, tagged with the commit SHA:
 
-- `ghcr.io/linkandreas/appstore-screenshot-generator`: the Vite build served by
-  [Caddy](https://caddyserver.com) (configured in `docker/Caddyfile`), which also proxies `/mcp`
-  to the MCP container.
+- `ghcr.io/linkandreas/appstore-screenshot-generator`: the editor served by
+  [Caddy](https://caddyserver.com) (`docker/Caddyfile`), which also proxies `/mcp` to the MCP container.
 - `ghcr.io/linkandreas/appstore-screenshot-mcp`: the MCP server (`Dockerfile` target `mcp`).
 
 The Hostinger VPS only receives `compose.yaml` in `~/appstore-screenshot-generator`, pulls those
-images and restarts the containers.
-
-The container publishes no ports; it joins the shared Docker network `web`, where the
-`cloudflared` container reaches it at `http://appstore-screenshot-generator:32775` and serves it
-with HTTPS at <https://screenshots.linkandreas.de>.
+images and restarts the containers. They publish no ports: they join the shared Docker network
+`web`, where the `cloudflared` container reaches the editor at
+`http://appstore-screenshot-generator:32775` and serves it with HTTPS at
+<https://screenshots.linkandreas.de>.
 
 Repository secrets: `HOSTINGER_HOST`, `HOSTINGER_USERNAME`, `HOSTINGER_SSH_KEY`.
 
@@ -181,29 +183,29 @@ To run the production image locally:
 `docker build -t appstore-screenshot-generator . && docker run --rm -p 32775:32775 appstore-screenshot-generator`
 → <http://localhost:32775>.
 
-## 📜 License
+</details>
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## 🙏 Credits
 
-## 📦 Assets & Attribution
+Device frames come from Apple's official
+[product bezels](https://developer.apple.com/design/resources/#product-bezels). All rights to
+these assets belong to Apple; they are used in accordance with Apple's design guidelines.
 
-- Device Bezels: device frames are sourced from Apple’s official [design resources](https://developer.apple.com/design/resources/#product-bezels):
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-17.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-M4.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-18.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-Duo.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-(M5).dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Pro-M5.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Air-M5.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Ultra-3-2025.dmg
-  - https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Series-11-2025.dmg
+<details>
+<summary>Bezel downloads used</summary>
 
-All rights to these assets belong to Apple and are used in accordance with their design guidelines.
+- [iPhone 18](https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-18.dmg) · [iPhone 17](https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-17.dmg) · [iPhone Duo](https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-Duo.dmg)
+- [iPad Pro (M5)](https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-(M5).dmg) · [iPad Pro M4](https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-M4.dmg)
+- [MacBook Pro M5](https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Pro-M5.dmg) · [MacBook Air M5](https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Air-M5.dmg)
+- [Apple Watch Ultra 3](https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Ultra-3-2025.dmg) · [Apple Watch Series 11](https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Series-11-2025.dmg)
 
-## 🤝 Contributing
+</details>
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+App Store, iPhone, iPad, Mac and Apple Watch are trademarks of Apple Inc. Storyframe is not
+affiliated with Apple.
 
----
-*Created with ❤️ for the Apple Developer community.*
+## 📄 License
 
+[MIT](LICENSE) © 2026 Andreas Link. Contributions are welcome: open an issue or a pull request.
+
+<sub>Originally coded using Google Antigravity. Made with ❤️ for the Apple developer community.</sub>
