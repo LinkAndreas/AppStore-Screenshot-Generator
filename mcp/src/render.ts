@@ -40,6 +40,7 @@ export interface ResolvedScreen {
   titleAlign: 'left' | 'center' | 'right';
   subtitleAlign: 'left' | 'center' | 'right';
   devicePosition: 'top' | 'center' | 'bottom';
+  textPosition: 'top' | 'bottom';
   scale: number;
   rotation: number;
   offsetX: number;
@@ -146,13 +147,16 @@ const buildTree = (s: ResolvedScreen): El => {
   };
 
   const children: El[] = [];
+  const textBelow = s.textPosition === 'bottom';
   if (showText) {
     children.push(h('div', {
       display: 'flex',
       flexDirection: 'column',
       width: '100%',
+      boxSizing: 'border-box',
       padding: `0 ${TEXT_PADDING_X * layout.unit}px`,
-      marginBottom: layout.textMarginBottom,
+      marginTop: textBelow ? layout.textMarginBottom : 0,
+      marginBottom: textBelow ? 0 : layout.textMarginBottom,
       flexShrink: 0,
     }, [showTitle && textLine(s.title, 'title'), showSubtitle && textLine(s.subtitle, 'subtitle')].filter(Boolean)));
   }
@@ -164,7 +168,9 @@ const buildTree = (s: ResolvedScreen): El => {
   children.push(h('div', {
     display: 'flex',
     position: 'relative',
-    flexShrink: 0,
+    // May shrink when device and text overflow the canvas; drawn from the top either way.
+    flexShrink: 1,
+    minHeight: 0,
     width: boxW,
     height: boxH,
     marginTop: pos === 'bottom' || pos === 'center' ? 'auto' : 0,
@@ -179,6 +185,9 @@ const buildTree = (s: ResolvedScreen): El => {
     transform: `translate(${tx}px, ${ty}px) rotate(${s.rotation}deg)`,
   }, deviceLayers)]));
 
+  // Text below the device: the device comes first in the column.
+  if (textBelow) children.reverse();
+
   const background = s.background.type === 'gradient'
     ? `linear-gradient(${BACKGROUND_GRADIENT_ANGLE}deg, ${s.background.from}, ${s.background.to})`
     : s.background.color;
@@ -187,10 +196,13 @@ const buildTree = (s: ResolvedScreen): El => {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    justifyContent: showText ? 'flex-start' : 'center',
+    justifyContent: showText ? (textBelow ? 'flex-end' : 'flex-start') : 'center',
     width,
     height,
-    paddingTop: showText ? layout.paddingTop : 0,
+    // Satori sizes boxes without their padding by default; the editor (CSS) includes it.
+    boxSizing: 'border-box',
+    paddingTop: showText && !textBelow ? layout.paddingTop : 0,
+    paddingBottom: showText && textBelow ? layout.paddingTop : 0,
     backgroundColor: s.background.type === 'solid' ? s.background.color : undefined,
     backgroundImage: s.background.type === 'gradient' ? background : undefined,
     overflow: 'hidden',

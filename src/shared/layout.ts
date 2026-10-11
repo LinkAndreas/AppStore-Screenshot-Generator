@@ -229,12 +229,12 @@ export const textShadow = (unit: number) => `0 ${8 * unit}px ${24 * unit}px rgba
 export const TITLE_TYPOGRAPHY = { lineHeight: 1.4, letterSpacing: -3, boldWeight: 800, regularWeight: 500 };
 export const SUBTITLE_TYPOGRAPHY = { lineHeight: 1.35, letterSpacing: -1, boldWeight: 700, regularWeight: 400 };
 
-/** Range of the layout sliders in the editor; the MCP server validates against the same bounds. */
+/** Range of the layout controls; offsets are further limited per device by offsetLimit. */
 export const LAYOUT_LIMITS = {
-  scale: { min: 0, max: 2 },
+  scale: { min: 0.2, max: 2 },
   rotation: { min: -45, max: 45 },
-  offset: { min: -400, max: 400 },
+  offset: { min: -3000, max: 3000 },
 };
 
-/** Offset range for a device: smaller canvases get a proportionally smaller range. */
-export const offsetLimit = (device: DeviceType) => Math.round(LAYOUT_LIMITS.offset.max * Math.max(DEVICE_LAYOUT[device].unit, 0.5));
+/** How far the device may move from its place: up to half the canvas, enough to leave the edge. */
+export const offsetLimit = (device: DeviceType) => Math.round(0.5 * Math.max(DEVICES[device].width, DEVICES[device].height));
