@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Gift, X } from 'lucide-react';
+import { X } from 'lucide-react';
+import { BrandMark } from './BrandMark';
 import { useConfig } from '../store/ConfigContext';
 import { RELEASES } from '../releaseNotes';
 
@@ -24,7 +25,7 @@ export const WhatsNew = () => {
         </button>
 
         <div className="whats-new-head">
-          <div className="sheet-icon"><Gift size={26} /></div>
+          <BrandMark size={56} />
           <h2 id="whats-new-title" className="sheet-title">{t('whatsNew.title')}</h2>
           <p className="sheet-body muted">{t('whatsNew.version', { version: latest.version })} · {formatDate(latest.date, uiLanguage)}</p>
         </div>
