@@ -4,6 +4,15 @@ All notable changes to the App Store Screenshot Generator. The app's "What's New
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
+## [Unreleased]
+
+Ready-made layouts and precise placement.
+
+- Seven layouts to start from, shown as live previews of your screen: Classic, Big & Bold, Rising, Floating, Tilted Left, Tilted Right and Text Below.
+- Text can now sit below the device.
+- Fine-tune any layout: position, size, tilt, left/right and up/down are always at hand, the device snaps to the centre while dragging, and the arrow keys nudge it (Shift for bigger steps).
+- AI agents can use the same layouts through the MCP server (layoutPreset, textPosition).
+
 ## [1.11.0] - 2026-10-11
 
 Easier controls, more devices and more backgrounds.

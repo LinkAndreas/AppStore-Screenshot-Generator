@@ -88,7 +88,13 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
       d.moved = true;
       setDragging(true);
       const clamp = (v: number) => Math.round(Math.max(-editing.maxOffset, Math.min(editing.maxOffset, v)));
-      editing.onChange({ offsetX: clamp(d.offsetX + dx), offsetY: clamp(d.offsetY + dy) });
+      // Shift keeps the movement horizontal or vertical; near the middle the device snaps to centre.
+      const lockX = e.shiftKey && Math.abs(dy) > Math.abs(dx);
+      const lockY = e.shiftKey && !lockX;
+      let x = lockX ? d.offsetX : d.offsetX + dx;
+      if (Math.abs(x) < 8 / editing.displayScale) x = 0;
+      const y = lockY ? d.offsetY : d.offsetY + dy;
+      editing.onChange({ offsetX: clamp(x), offsetY: clamp(y) });
     },
     onPointerUp: () => {
       justDragged.current = !!drag.current?.moved;
@@ -116,6 +122,7 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
 
   const actualScale = screen.scale * (layout.deviceWidth / bezel.width);
   const position = screen.positioning ?? 'center';
+  const textBelow = screen.textPosition === 'bottom';
   const linePadding = `0 ${TEXT_LINE_PADDING_X * layout.unit}px`;
 
   const line = (kind: 'title' | 'subtitle') => {
@@ -149,6 +156,8 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
     <div
       className={className}
       style={{
+        // Callers may position the artwork (thumbnails use absolute), so this is only the default.
+        position: 'relative',
         ...style,
         width: spec.width,
         height: spec.height,
@@ -156,8 +165,9 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: showText ? 'flex-start' : 'center',
-        paddingTop: showText ? layout.paddingTop : 0,
+        justifyContent: showText ? (textBelow ? 'flex-end' : 'flex-start') : 'center',
+        paddingTop: showText && !textBelow ? layout.paddingTop : 0,
+        paddingBottom: showText && textBelow ? layout.paddingTop : 0,
         overflow: 'hidden',
       }}
     >
@@ -166,7 +176,10 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
           className="header-text"
           style={{
             width: '100%',
-            marginBottom: layout.textMarginBottom,
+            flexShrink: 0,
+            order: textBelow ? 1 : 0,
+            marginTop: textBelow ? layout.textMarginBottom : 0,
+            marginBottom: textBelow ? 0 : layout.textMarginBottom,
             padding: `0 ${TEXT_PADDING_X * layout.unit}px`,
             boxSizing: 'border-box',
             textShadow: textShadow(layout.unit),
@@ -183,7 +196,10 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
         className={editing ? 'device-drag' : undefined}
         style={{
           position: 'relative',
-          flexShrink: 0,
+          // The box may shrink when device and text overflow the canvas; the device is drawn from the
+          // box's top either way, so both renderers place it the same (see mcp/src/render.ts).
+          flexShrink: 1,
+          minHeight: 0,
           cursor: editing ? (dragging ? 'grabbing' : 'grab') : undefined,
           touchAction: editing ? 'none' : undefined,
           width: bezel.width * actualScale,
@@ -212,6 +228,11 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
           />
         </div>
       </div>
+
+      {/* Centre guide while dragging, when the device has snapped to the middle. */}
+      {dragging && screen.offsetX === 0 && (
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 6, marginLeft: -3, background: '#0a84ff', opacity: 0.8, pointerEvents: 'none' }} />
+      )}
     </div>
   );
 };
