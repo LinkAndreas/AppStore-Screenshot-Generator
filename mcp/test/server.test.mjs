@@ -15,6 +15,9 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const server = join(root, 'dist/server.js');
 const iphone = join(root, 'test/fixtures/iphone.png');
 const ipad = join(root, 'test/fixtures/ipad.png');
+const mac = join(root, 'test/fixtures/mac.png');
+const watch = join(root, 'test/fixtures/watch-ultra.png');
+const duo = join(root, 'test/fixtures/duo-inner.png');
 const PORT = 3917;
 
 let outDir;
@@ -83,10 +86,43 @@ test('stdio: renders a branded set per device and locale into the output folder'
   assert.equal(result.content.filter(c => c.type === 'image').length, 4);
 });
 
+test('stdio: renders Mac, iPhone Duo and Apple Watch, detecting the device from the image size', async () => {
+  const result = await stdio.callTool({
+    name: 'render_screenshots',
+    arguments: {
+      brand: { backgroundPreset: 'Midnight' },
+      screens: [
+        { image: mac, title: 'Made for Mac', frameModel: 'MacBook Air', bezelColor: 'Sky Blue' },
+        { image: duo, title: 'Unfold more' },
+        { image: watch, title: 'On your wrist', bezelColor: 'Natural · Alpine Loop' },
+        { image: iphone, title: 'Classic', frameModel: 'iPhone 17 Pro Max', bezelColor: 'cosmic orange' },
+      ],
+      outputDir: 'devices',
+      previews: false,
+    },
+  });
+  assert.ok(!result.isError, text(result));
+  const expected = { 'Mac/en-US/screen_1.png': [2880, 1800], 'iPhone_Duo_Inner/en-US/screen_1.png': [2007, 2853], 'Watch_Ultra/en-US/screen_1.png': [422, 514], 'iPhone_6.9/en-US/screen_1.png': [1320, 2868] };
+  for (const [f, wh] of Object.entries(expected)) {
+    const size = imageSize(await readFile(join(outDir, 'devices', f)));
+    assert.deepEqual([size.width, size.height], wh, f);
+  }
+  assert.doesNotMatch(text(result), /warnings/);
+});
+
+test('get_design_options lists frames per device', async () => {
+  const options = JSON.parse(text(await stdio.callTool({ name: 'get_design_options', arguments: {} })));
+  const ids = options.devices.map(d => d.device);
+  assert.deepEqual(ids, ['iPhone', 'iPhoneDuoInner', 'iPhoneDuoOuter', 'iPad', 'Mac', 'WatchUltra', 'Watch']);
+  const mac = options.devices.find(d => d.device === 'Mac');
+  assert.ok(mac.frames.some(f => f.model === 'MacBook Air 15"' && f.colors.includes('Starlight')));
+  assert.equal(mac.acceptedScreenshotSizes.length, 4);
+});
+
 test('stdio: reports invalid frame colours clearly', async () => {
   const result = await stdio.callTool({ name: 'render_screenshots', arguments: { screens: [{ image: iphone, bezelColor: 'Gold' }] } });
   assert.ok(result.isError);
-  assert.match(text(result), /no iPhone frame in "Gold".*Silver/);
+  assert.match(text(result), /no iPhone frame matches .*"Gold".*iPhone 18 Pro Max Silver/);
 });
 
 test('stdio: warns about screenshots of the wrong size', async () => {

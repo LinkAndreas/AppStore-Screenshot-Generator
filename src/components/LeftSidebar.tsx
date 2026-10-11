@@ -2,7 +2,19 @@ import { useState, useRef, useEffect } from 'react';
 import { useConfig, type Localization, type DeviceType } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
 import { LOCALIZATION_PRESETS } from '../translations';
-import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check } from 'lucide-react';
+import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check, Laptop, Watch, BookOpen, type LucideIcon } from 'lucide-react';
+import { DEVICES, DEVICE_EXPORT_NAMES, DEVICE_TYPES, type DeviceType as Device } from '../shared/layout';
+import { CURRENT_VERSION } from '../releaseNotes';
+
+const DEVICE_ICONS: Record<Device, LucideIcon> = {
+  iPhone: Smartphone,
+  iPhoneDuoInner: BookOpen,
+  iPhoneDuoOuter: Smartphone,
+  iPad: Tablet,
+  Mac: Laptop,
+  WatchUltra: Watch,
+  Watch: Watch,
+};
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { toBlob } from 'html-to-image';
@@ -108,6 +120,9 @@ export const LeftSidebar = () => {
     }
   };
 
+  /** Devices with screens (in one language, or in any), so exports skip empty folders. */
+  const exportDevices = (locId?: string) => DEVICE_TYPES.filter(d => config.screenCount(d, locId) > 0);
+
   const handleExportSelected = async () => {
     setIsProcessing(true);
     setProcessingMessage(config.t('processing.capturing', { device: config.activeDeviceType }));
@@ -116,8 +131,7 @@ export const LeftSidebar = () => {
     const zip = new JSZip();
     try {
       await captureCurrentScreens(zip, config.activeDeviceType);
-      const deviceName = config.activeDeviceType === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
-      await triggerDownload(zip, `AppStore_${deviceName}_${config.activeLocalizationId}.zip`);
+      await triggerDownload(zip, `AppStore_${DEVICE_EXPORT_NAMES[config.activeDeviceType]}_${config.activeLocalizationId}.zip`);
     } catch (err) {
       console.error('[Export] Error:', err);
       alert('Export failed. Check console.');
@@ -129,7 +143,7 @@ export const LeftSidebar = () => {
 
   const handleExportAll = async () => {
     setIsProcessing(true);
-    const deviceName = config.activeDeviceType === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
+    const deviceName = DEVICE_EXPORT_NAMES[config.activeDeviceType];
     setProcessingMessage(config.t('processing.preparing.device', { device: deviceName }));
     await new Promise(resolve => setTimeout(resolve, 150));
 
@@ -163,11 +177,11 @@ export const LeftSidebar = () => {
     const originalDeviceType = config.activeDeviceType;
 
     try {
-      const devices: ('iPhone' | 'iPad')[] = ['iPhone', 'iPad'];
-      for (const device of devices) {
+      for (const device of exportDevices()) {
         config.setActiveDeviceType(device);
-        const deviceDir = device === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
+        const deviceDir = DEVICE_EXPORT_NAMES[device];
         for (const loc of config.localizations) {
+          if (config.screenCount(device, loc.id) === 0) continue;
           setProcessingMessage(config.t('processing.capturing.loc', { device, locale: loc.id }));
           config.setActiveLocalizationId(loc.id);
           await new Promise(resolve => setTimeout(resolve, 800));
@@ -195,12 +209,11 @@ export const LeftSidebar = () => {
     const zip = new JSZip();
     const originalDeviceType = config.activeDeviceType;
     try {
-      const devices: ('iPhone' | 'iPad')[] = ['iPhone', 'iPad'];
-      for (const device of devices) {
+      for (const device of exportDevices(config.activeLocalizationId)) {
         config.setActiveDeviceType(device);
-        setProcessingMessage(config.t('processing.capturing', { device }));
+        setProcessingMessage(config.t('processing.capturing', { device: DEVICES[device].label }));
         await new Promise(resolve => setTimeout(resolve, 800));
-        const deviceDir = device === 'iPad' ? 'iPad_13' : 'iPhone_6.9';
+        const deviceDir = DEVICE_EXPORT_NAMES[device];
         await captureCurrentScreens(zip, device, deviceDir);
       }
       config.setActiveDeviceType(originalDeviceType);
@@ -217,10 +230,10 @@ export const LeftSidebar = () => {
   // --- Export Mode Configuration ---
 
   const activeLanguage = config.localizations.find(l => l.id === config.activeLocalizationId)?.name ?? config.activeLocalizationId;
-  const deviceName = t(`device.${config.activeDeviceType.toLowerCase()}`);
-  const bothDevices = `${t('device.iphone')} & ${t('device.ipad')}`;
+  const deviceName = t(`device.${config.activeDeviceType}`);
+  const bothDevices = t('export.allDevices');
 
-  // Each mode reads as "what" · "which languages", e.g. "iPhone & iPad · All languages".
+  // Each mode reads as "what" · "which languages", e.g. "All devices · All languages".
   const EXPORT_MODES = {
     selected: {
       title: `${deviceName} · ${activeLanguage}`,
@@ -256,10 +269,6 @@ export const LeftSidebar = () => {
     }
   };
 
-  const DEVICES = [
-    { type: 'iPhone' as const, label: 'iPhone', Icon: Smartphone },
-    { type: 'iPad' as const, label: 'iPad', Icon: Tablet },
-  ];
 
   return (
     <div className="sidebar sidebar-left">
@@ -284,23 +293,30 @@ export const LeftSidebar = () => {
       <div className="sidebar-content">
         <div className="panel-group">
           <h3>{t('device.section')}</h3>
-          <div className="segmented large">
-            {DEVICES.map(({ type, Icon }) => (
-              <button
-                key={type}
-                className={config.activeDeviceType === type ? 'active' : ''}
-                onClick={() => config.setActiveDeviceType(type)}
-              >
-                <Icon size={15} />
-                {t(`device.${type.toLowerCase()}`)}
-              </button>
-            ))}
-          </div>
-          <p className="hint" style={{ padding: '0 4px' }}>
-            {t('device.hint', {
-              size: `${SCREEN_DIMENSIONS[config.activeDeviceType].width} × ${SCREEN_DIMENSIONS[config.activeDeviceType].height}`,
+          <div className="card flush loc-list" role="listbox" aria-label={t('device.section')}>
+            {DEVICE_TYPES.map(device => {
+              const isActive = config.activeDeviceType === device;
+              const Icon = DEVICE_ICONS[device];
+              const count = config.screenCount(device, config.activeLocalizationId);
+              return (
+                <div
+                  key={device}
+                  role="option"
+                  aria-selected={isActive}
+                  className={`loc-row device-row ${isActive ? 'active' : ''}`}
+                  onClick={() => config.setActiveDeviceType(device)}
+                >
+                  <span className="device-icon"><Icon size={17} /></span>
+                  <span className="device-text">
+                    <span className="loc-name">{t(`device.${device}`)}</span>
+                    <span className="device-size">{SCREEN_DIMENSIONS[device].width} × {SCREEN_DIMENSIONS[device].height}</span>
+                  </span>
+                  {count > 0 && <span className="device-count">{count}</span>}
+                  {isActive && <span className="loc-check"><Check size={16} strokeWidth={2.5} /></span>}
+                </div>
+              );
             })}
-          </p>
+          </div>
         </div>
 
         <div className="panel-group">
@@ -404,6 +420,9 @@ export const LeftSidebar = () => {
         <div className="export-status">
           {processingMessage || currentMode.title}
         </div>
+        <button className="whats-new-link" onClick={() => config.setShowWhatsNew(true)}>
+          {t('whatsNew.version', { version: CURRENT_VERSION || '—' })} · {t('whatsNew.link')}
+        </button>
       </div>
     </div>
   );
