@@ -4,8 +4,9 @@ import type { ScreenConfig } from '../store/ConfigContext';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
 import { validateImageDimensions } from '../utils/imageValidation';
 import { screenBackground, subtitleStyle, titleStyle } from '../utils/screenStyle';
-import { DEVICE_EXPORT_NAMES, DEVICE_LAYOUT, DEVICE_REFERENCE_WIDTH, TEXT_LINE_PADDING_X, TEXT_PADDING_X, TEXT_SHADOW } from '../shared/layout';
+import { DEVICE_LAYOUT, DEVICE_REFERENCE_WIDTH, TEXT_LINE_PADDING_X, TEXT_PADDING_X, TEXT_SHADOW } from '../shared/layout';
 import { DeviceFrame } from './DeviceFrame';
+import { ImagePlus, Smartphone } from 'lucide-react';
 
 // ---------------------------------------------------------------------------
 // Auto-Height Textarea for flawless React controlled input
@@ -106,7 +107,7 @@ const ScreenCard = ({ screen, index, isSelected, onSelect, onFileSelect, onTextC
   return (
     <div
       className={`screen-wrapper ${isSelected ? 'selected' : ''}`}
-      data-label={`${String(index + 1).padStart(2, '0')}   ${DEVICE_EXPORT_NAMES[activeDeviceType].replace('_', ' ')}″   ${canvasDim.width}×${canvasDim.height}`}
+      data-label={t('canvas.screenLabel', { n: String(index + 1) })}
       onClick={onSelect}
       style={{
         width: `${canvasDim.width * 0.25}px`,
@@ -284,15 +285,28 @@ export const CanvasRenderer = () => {
 
       {screens.length === 0 && (
         <div className="empty-state">
-          <span className="eyebrow">{t('canvas.empty.eyebrow')}</span>
+          <div className="empty-icon"><Smartphone size={34} strokeWidth={1.75} /></div>
           <h2>{t('canvas.empty.title')}</h2>
           <p>{t('canvas.empty.desc')}</p>
-          <button className="primary" onClick={addScreen}>
-            {t('canvas.empty.button')}
-          </button>
-          <div className="spec">
-            iPhone 6.9″ — {SCREEN_DIMENSIONS.iPhone.width} × {SCREEN_DIMENSIONS.iPhone.height} px<br />
-            iPad 13″ — {SCREEN_DIMENSIONS.iPad.width} × {SCREEN_DIMENSIONS.iPad.height} px
+          <div className="empty-actions">
+            <label htmlFor="batch-import-input" className="primary-btn-label large" style={{ padding: '11px 22px', fontSize: '15px' }}>
+              <ImagePlus size={17} /> {t('canvas.empty.upload')}
+            </label>
+            <button className="secondary-btn large" onClick={addScreen}>
+              {t('canvas.empty.button')}
+            </button>
+          </div>
+          <div className="steps">
+            {[1, 2, 3].map(n => (
+              <div className="step" key={n}>
+                <span className="step-number">{n}</span>
+                <strong>{t(`canvas.step${n}.title`)}</strong>
+                <span>{t(`canvas.step${n}.desc`, {
+                  iphone: `${SCREEN_DIMENSIONS.iPhone.width} × ${SCREEN_DIMENSIONS.iPhone.height}`,
+                  ipad: `${SCREEN_DIMENSIONS.iPad.width} × ${SCREEN_DIMENSIONS.iPad.height}`,
+                })}</span>
+              </div>
+            ))}
           </div>
         </div>
       )}

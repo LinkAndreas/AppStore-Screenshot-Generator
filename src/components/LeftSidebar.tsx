@@ -2,20 +2,10 @@ import { useState, useRef, useEffect } from 'react';
 import { useConfig, type Localization, type DeviceType } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
 import { LOCALIZATION_PRESETS } from '../translations';
-import { Plus, Sun, Moon, X, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check } from 'lucide-react';
+import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check } from 'lucide-react';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { toBlob } from 'html-to-image';
-
-/** Crop marks framing a phone: the editor's mark. */
-const BrandMark = () => (
-  <svg className="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-    <path d="M1 7V1h6M27 1h6v6M33 27v6h-6M7 33H1v-6" stroke="currentColor" strokeWidth="1.5" />
-    <rect x="11" y="6" width="12" height="22" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-    <rect className="accent" x="13.5" y="10" width="7" height="2" fill="currentColor" />
-    <rect x="13.5" y="14" width="7" height="1" fill="currentColor" opacity="0.5" />
-  </svg>
-);
 
 export const LeftSidebar = () => {
   const config = useConfig();
@@ -226,32 +216,33 @@ export const LeftSidebar = () => {
 
   // --- Export Mode Configuration ---
 
+  const activeLanguage = config.localizations.find(l => l.id === config.activeLocalizationId)?.name ?? config.activeLocalizationId;
+  const deviceName = t(`device.${config.activeDeviceType.toLowerCase()}`);
+  const bothDevices = `${t('device.iphone')} & ${t('device.ipad')}`;
+
+  // Each mode reads as "what" · "which languages", e.g. "iPhone & iPad · All languages".
   const EXPORT_MODES = {
     selected: {
-      title: `${t('export.menu.item.selected')} (${config.activeLocalizationId})`,
+      title: `${deviceName} · ${activeLanguage}`,
       icon: <Download size={14} />,
-      mainIcon: <Download size={18} />,
       handler: handleExportSelected,
       isEnabled: config.projectHasScreens
     },
     locales: {
-      title: t('export.menu.item.all'),
+      title: `${deviceName} · ${t('export.allLanguages')}`,
       icon: <Layers size={14} />,
-      mainIcon: <Layers size={18} />,
       handler: handleExportAll,
       isEnabled: config.projectHasScreens
     },
     devices: {
-      title: `${t('export.menu.item.selected')} (${config.activeLocalizationId})`,
+      title: `${bothDevices} · ${activeLanguage}`,
       icon: <Smartphone size={14} />,
-      mainIcon: <Smartphone size={18} />,
       handler: handleExportDevices,
       isEnabled: config.projectHasScreens
     },
     full: {
-      title: t('export.menu.full.title'),
+      title: `${bothDevices} · ${t('export.allLanguages')}`,
       icon: <Package size={14} />,
-      mainIcon: <Package size={18} />,
       handler: handleExportEverything,
       isEnabled: config.projectHasScreens
     }
@@ -273,39 +264,43 @@ export const LeftSidebar = () => {
   return (
     <div className="sidebar sidebar-left">
       <div className="sidebar-header">
-        <div className="brand-row">
-          <BrandMark />
-          <button
-            className="icon-btn"
-            onClick={config.toggleTheme}
-            title={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
-            aria-label={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
-          >
-            {config.theme === 'dark' ? <Sun size={15} strokeWidth={1.75} /> : <Moon size={15} strokeWidth={1.75} />}
-          </button>
+        <div className="app-icon" aria-hidden="true">
+          <Smartphone size={22} strokeWidth={2} />
         </div>
-        <p className="branding-subtitle eyebrow">{t('app.title')}</p>
-        <h1 className="branding-title">{t('app.subtitle')}</h1>
+        <div className="branding">
+          <h1 className="branding-title">{t('app.subtitle')}</h1>
+          <p className="branding-subtitle">{t('app.title')}</p>
+        </div>
+        <button
+          className="icon-btn"
+          onClick={config.toggleTheme}
+          title={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
+          aria-label={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
+        >
+          {config.theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
+        </button>
       </div>
 
       <div className="sidebar-content">
         <div className="panel-group">
           <h3>{t('device.section')}</h3>
-          <div className="segmented">
+          <div className="segmented large">
             {DEVICES.map(({ type, Icon }) => (
               <button
                 key={type}
                 className={config.activeDeviceType === type ? 'active' : ''}
                 onClick={() => config.setActiveDeviceType(type)}
               >
-                <Icon size={14} strokeWidth={1.75} />
+                <Icon size={15} />
                 {t(`device.${type.toLowerCase()}`)}
               </button>
             ))}
           </div>
-          <div className="mono" style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-            {SCREEN_DIMENSIONS[config.activeDeviceType].width} × {SCREEN_DIMENSIONS[config.activeDeviceType].height} px
-          </div>
+          <p className="hint" style={{ padding: '0 4px' }}>
+            {t('device.hint', {
+              size: `${SCREEN_DIMENSIONS[config.activeDeviceType].width} × ${SCREEN_DIMENSIONS[config.activeDeviceType].height}`,
+            })}
+          </p>
         </div>
 
         <div className="panel-group">
@@ -328,13 +323,13 @@ export const LeftSidebar = () => {
                   <option key={p.id} value={p.id}>{p.flag} {p.name}</option>
                 ))}
               </select>
-              <button className="icon-btn small" tabIndex={-1} disabled={isProcessing}>
-                <Plus size={14} strokeWidth={1.75} />
+              <button className="icon-btn small accent" tabIndex={-1} disabled={isProcessing}>
+                <Plus size={16} />
               </button>
             </div>
           </div>
 
-          <div className="loc-list">
+          <div className="card flush loc-list">
             {config.localizations.map(loc => {
               const isActive = config.activeLocalizationId === loc.id;
               return (
@@ -345,72 +340,42 @@ export const LeftSidebar = () => {
                 >
                   <span className="loc-flag">{loc.flag}</span>
                   <span className="loc-name">{loc.name}</span>
-                  <span className="loc-code">{loc.id}</span>
                   {loc.id !== 'en-US' && !isProcessing && (
                     <button
                       className="loc-remove"
                       onClick={(e) => { e.stopPropagation(); config.removeLocalization(loc.id); }}
                       aria-label={`Remove ${loc.name}`}
                     >
-                      <X size={13} />
+                      <Trash2 size={14} />
                     </button>
                   )}
+                  {isActive && <span className="loc-check"><Check size={16} strokeWidth={2.5} /></span>}
                 </div>
               );
             })}
           </div>
+          <p className="hint" style={{ padding: '0 4px' }}>{t('language.hint')}</p>
         </div>
       </div>
 
       <div className="sidebar-footer">
-        {processingMessage && (
-          <div className="export-status">
-            {processingMessage}
-          </div>
-        )}
 
         <div className="export-container" ref={menuRef}>
           {showExportMenu && !isProcessing && (
-            <div className="export-dropdown">
-              {/* --- Group: Selected Device --- */}
-              <div className="dropdown-section">
-                <div className="section-header">{t('export.menu.group.selected', { device: config.activeDeviceType })}</div>
-
-                <div className={`dropdown-item ${exportMode === 'selected' ? 'active' : ''}`} onClick={() => { setExportMode('selected'); setShowExportMenu(false); }}>
-                  <div className="item-icon">{exportMode === 'selected' ? <Check size={14} /> : <Download size={14} />}</div>
-                  <div className="item-text single-line">
-                    <span className="item-title">{EXPORT_MODES.selected.title}</span>
-                  </div>
+            <div className="export-dropdown" role="menu">
+              <div className="section-header">{t('export.menu.heading')}</div>
+              {(Object.keys(EXPORT_MODES) as (keyof typeof EXPORT_MODES)[]).map(mode => (
+                <div
+                  key={mode}
+                  role="menuitemradio"
+                  aria-checked={exportMode === mode}
+                  className={`dropdown-item ${exportMode === mode ? 'active' : ''}`}
+                  onClick={() => { setExportMode(mode); setShowExportMenu(false); }}
+                >
+                  <div className="item-icon">{exportMode === mode ? <Check size={14} strokeWidth={2.5} /> : EXPORT_MODES[mode].icon}</div>
+                  <div className="item-text">{EXPORT_MODES[mode].title}</div>
                 </div>
-
-                <div className={`dropdown-item ${exportMode === 'locales' ? 'active' : ''}`} onClick={() => { setExportMode('locales'); setShowExportMenu(false); }}>
-                  <div className="item-icon">{exportMode === 'locales' ? <Check size={14} /> : <Layers size={14} />}</div>
-                  <div className="item-text single-line">
-                    <span className="item-title">{EXPORT_MODES.locales.title}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="dropdown-divider" />
-
-              {/* --- Group: All Devices --- */}
-              <div className="dropdown-section">
-                <div className="section-header">{t('export.menu.group.all')}</div>
-
-                <div className={`dropdown-item ${exportMode === 'devices' ? 'active' : ''}`} onClick={() => { setExportMode('devices'); setShowExportMenu(false); }}>
-                  <div className="item-icon">{exportMode === 'devices' ? <Check size={14} /> : <Download size={14} />}</div>
-                  <div className="item-text single-line">
-                    <span className="item-title">{EXPORT_MODES.devices.title}</span>
-                  </div>
-                </div>
-
-                <div className={`dropdown-item primary-item ${exportMode === 'full' ? 'active' : ''}`} onClick={() => { setExportMode('full'); setShowExportMenu(false); }}>
-                  <div className="item-icon">{exportMode === 'full' ? <Check size={14} /> : <Package size={14} />}</div>
-                  <div className="item-text single-line">
-                    <span className="item-title">{EXPORT_MODES.full.title}</span>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           )}
 
@@ -423,17 +388,21 @@ export const LeftSidebar = () => {
               {isProcessing ? (
                 <><span className="spinner-mini" /> {t('processing.title')}…</>
               ) : (
-                <>{currentMode.mainIcon} {currentMode.title}</>
+                <><Download size={15} /> {t('export.button')}</>
               )}
             </button>
             <button
               className="primary toggle-action"
+              aria-label={t('export.menu.heading')}
               onClick={() => setShowExportMenu(!showExportMenu)}
               disabled={isProcessing}
             >
-              <ChevronDown size={18} style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              <ChevronDown size={16} style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
             </button>
           </div>
+        </div>
+        <div className="export-status">
+          {processingMessage || currentMode.title}
         </div>
       </div>
     </div>
