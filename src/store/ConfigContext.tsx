@@ -1,6 +1,8 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import { getDefaultBezel } from '../constants';
 import { TRANSLATIONS, LOCALIZATION_PRESETS } from '../translations';
+import type { DeviceType } from '../shared/layout';
+import type { ScreenFontId } from '../shared/fonts';
+import { createScreen, LOCALIZED_DEFAULTS } from './screenFactory';
 
 export interface ScreenConfig {
   id: string;
@@ -31,6 +33,9 @@ export interface ScreenConfig {
   subtitleBold?: boolean;
   showTitle?: boolean;
   showSubtitle?: boolean;
+  /** Typefaces from src/shared/fonts.ts; unset means the defaults (Outfit / Inter). */
+  titleFont?: ScreenFontId;
+  subtitleFont?: ScreenFontId;
 }
 
 // Localization no longer owns deviceType or screens directly
@@ -40,22 +45,12 @@ export interface Localization {
   flag: string;
 }
 
-export type DeviceType = 'iPhone' | 'iPad';
+export type { DeviceType };
 export type MobileTab = 'setup' | 'editor' | 'customize';
 
 // Key pattern: "iPhone-en-US", "iPad-de-DE", etc.
 export type ScreenSetKey = string;
 const makeKey = (device: DeviceType, locId: string): ScreenSetKey => `${device}-${locId}`;
-
-const LOCALIZED_DEFAULTS: Record<string, { title: string; subtitle: string }> = {
-  'en-US': { title: 'Feature Title', subtitle: 'A short description here' },
-  'de-DE': { title: 'Feature Titel', subtitle: 'Kurze Beschreibung hier' },
-  'fr-FR': { title: 'Titre du Feature', subtitle: 'Description courte ici' },
-  'es-ES': { title: 'Título', subtitle: 'Breve descripción aquí' },
-  'it-IT': { title: 'Titolo', subtitle: 'Breve descrizione' },
-  'ja-JP': { title: 'タイトル', subtitle: 'ここに簡単な説明' },
-  'zh-CN': { title: '标题', subtitle: '在此输入简短描述' },
-};
 
 export interface AppContextType {
   // Device (top-level)
@@ -168,7 +163,9 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
   const [rightSidebarTab, setRightSidebarTab] = useState<'layout' | 'style' | 'content'>('layout');
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    return (localStorage.getItem('theme') as 'light' | 'dark') || 'dark';
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light' || saved === 'dark') return saved;
+    return window.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
   });
   const [canvasZoom, setCanvasZoom] = useState<number>(1.0);
   const [expandedSections, setExpandedSections] = useState<string[]>(['title']);
@@ -220,41 +217,13 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     setScreenSets(prev => ({ ...prev, [activeKey]: updater(prev[activeKey] ?? []) }));
   };
 
-  const getDefaultBezelForDevice = (device: DeviceType) =>
-    device === 'iPad' ? 'iPad Pro 13 - M4 - Silver - Portrait' : getDefaultBezel();
-
   const getDefaultTypography = (locId: string) => 
     LOCALIZED_DEFAULTS[locId] || LOCALIZED_DEFAULTS['en-US'];
 
   const addScreen = () => {
-    const id = crypto.randomUUID();
-    const newScreen: ScreenConfig = {
-      id,
-      imageObjUrl: null,
-      bezelName: getDefaultBezelForDevice(activeDeviceType),
-      scale: activeDeviceType === 'iPad' ? 1.5 : 1.0,
-      offsetX: 0,
-      offsetY: 0,
-      rotation: 0,
-      positioning: 'top',
-      ...getDefaultTypography(activeLocalizationId),
-      titleAlign: 'center',
-      subtitleAlign: 'center',
-      titleSize: activeDeviceType === 'iPad' ? 144 : 120,
-      subtitleSize: activeDeviceType === 'iPad' ? 72 : 60,
-      titleBold: true,
-      subtitleBold: false,
-      bgType: 'gradient',
-      bgColor: '#ffffff',
-      bgGradientStart: '#0f172a',
-      bgGradientEnd: '#3b82f6',
-      titleColor: '#ffffff',
-      subtitleColor: '#ffffff',
-      showTitle: true,
-      showSubtitle: true,
-    };
+    const newScreen = createScreen(activeDeviceType, getDefaultTypography(activeLocalizationId));
     updateCurrentScreens(prev => [...prev, newScreen]);
-    setSelectedScreenId(id);
+    setSelectedScreenId(newScreen.id);
   };
 
   const removeScreen = (id: string) => {
