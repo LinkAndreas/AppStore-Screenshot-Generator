@@ -3,6 +3,8 @@ import { useConfig } from '../store/ConfigContext';
 import type { ScreenConfig } from '../store/ConfigContext';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
 import { validateImageDimensions } from '../utils/imageValidation';
+import { screenBackground, subtitleStyle, titleStyle } from '../utils/screenStyle';
+import { DEVICE_EXPORT_NAMES, DEVICE_LAYOUT, DEVICE_REFERENCE_WIDTH, TEXT_LINE_PADDING_X, TEXT_PADDING_X, TEXT_SHADOW } from '../shared/layout';
 import { DeviceFrame } from './DeviceFrame';
 
 // ---------------------------------------------------------------------------
@@ -47,7 +49,7 @@ const EditableText = ({
         background: 'transparent',
         border: 'none',
         outline: 'none',
-        padding: '0 10px',
+        padding: `0 ${TEXT_LINE_PADDING_X}px`,
         display: 'block',
         width: '100%',
         boxSizing: 'border-box',
@@ -69,6 +71,7 @@ interface Dims { w: number; h: number }
 
 interface ScreenCardProps {
   screen: ScreenConfig;
+  index: number;
   isSelected: boolean;
   onSelect: () => void;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -76,7 +79,7 @@ interface ScreenCardProps {
   updateScreen: (id: string, updates: Partial<ScreenConfig>) => void;
 }
 
-const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, updateScreen }: ScreenCardProps) => {
+const ScreenCard = ({ screen, index, isSelected, onSelect, onFileSelect, onTextClick, updateScreen }: ScreenCardProps) => {
   const { activeDeviceType, setRightSidebarTab, setExpandedSections, t } = useConfig();
   const [bezelDims, setBezelDims] = useState<Dims | null>(null);
 
@@ -85,11 +88,12 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
   const bezelSrc = getBezelPath(screen.bezelName);
   const { device } = getBezelCategories(screen.bezelName);
   const isIpad = device === 'iPad';
+  const layout = DEVICE_LAYOUT[device as 'iPhone' | 'iPad'];
 
   // ------------------------------------------------------------------
   // Layout Constants
   // ------------------------------------------------------------------
-  const referenceWidth = 1120; // Visual width in workspace
+  const referenceWidth = DEVICE_REFERENCE_WIDTH;
   const internalWidth = bezelDims?.w || referenceWidth;
   const internalHeight = bezelDims?.h || (referenceWidth / (isIpad ? (3 / 4) : (9 / 19.5)));
   const baseScale = referenceWidth / internalWidth;
@@ -102,6 +106,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
   return (
     <div
       className={`screen-wrapper ${isSelected ? 'selected' : ''}`}
+      data-label={`${String(index + 1).padStart(2, '0')}   ${DEVICE_EXPORT_NAMES[activeDeviceType].replace('_', ' ')}″   ${canvasDim.width}×${canvasDim.height}`}
       onClick={onSelect}
       style={{
         width: `${canvasDim.width * 0.25}px`,
@@ -113,13 +118,11 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
         style={{
           width: `${canvasDim.width}px`,
           height: `${canvasDim.height}px`,
-          background: screen.bgType === 'gradient'
-            ? `linear-gradient(135deg, ${screen.bgGradientStart}, ${screen.bgGradientEnd})`
-            : screen.bgColor,
+          background: screenBackground(screen),
           display: 'flex',
           flexDirection: 'column',
           justifyContent: showText ? 'flex-start' : 'center',
-          paddingTop: showText ? (isIpad ? '200px' : '100px') : '0',
+          paddingTop: showText ? `${layout.paddingTop}px` : '0',
           alignItems: 'center',
           paddingLeft: '0', paddingRight: '0', paddingBottom: '0'
         }}
@@ -128,11 +131,11 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
           <div
             className="header-text"
             style={{
-              marginBottom: isIpad ? '120px' : '80px',
+              marginBottom: `${layout.textMarginBottom}px`,
               width: '100%',
-              padding: '0 80px',
+              padding: `0 ${TEXT_PADDING_X}px`,
               boxSizing: 'border-box',
-              textShadow: '0 8px 24px rgba(0,0,0,0.4)',
+              textShadow: TEXT_SHADOW,
               display: showText ? 'block' : 'none'
             }}
           >
@@ -150,16 +153,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
                   onTextClick();
                 }}
                 style={{
-                  fontSize: screen.titleSize ? `${screen.titleSize}px` : `${isIpad ? 84 : 92}px`,
-                  color: screen.titleColor || '#ffffff',
-                  fontStyle: screen.titleItalic ? 'italic' : 'normal',
-                  textDecoration: screen.titleUnderline ? 'underline' : 'none',
-                  margin: `0 0 ${isIpad ? '60px' : '40px'} 0`,
-                  lineHeight: 1.4,
-                  letterSpacing: '-3px',
-                  fontWeight: screen.titleBold !== false ? 800 : 500,
-                  fontFamily: 'var(--font-display)',
-                  textAlign: screen.titleAlign || 'center',
+                  ...titleStyle(screen, device as 'iPhone' | 'iPad'),
                   display: screen.title.trim() === '' && document.activeElement !== document.querySelector(`.title-${screen.id}`) ? 'none' : 'block'
                 }}
               />
@@ -178,16 +172,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
                   onTextClick();
                 }}
                 style={{
-                  fontSize: screen.subtitleSize ? `${screen.subtitleSize}px` : `${isIpad ? 48 : 52}px`,
-                  color: screen.subtitleColor || '#ffffff',
-                  fontStyle: screen.subtitleItalic ? 'italic' : 'normal',
-                  textDecoration: screen.subtitleUnderline ? 'underline' : 'none',
-                  opacity: screen.subtitleColor ? 1 : 0.9,
-                  margin: 0,
-                  lineHeight: 1.35,
-                  letterSpacing: '-1px',
-                  fontWeight: screen.subtitleBold !== false ? 700 : 400,
-                  textAlign: screen.subtitleAlign || 'center',
+                  ...subtitleStyle(screen, device as 'iPhone' | 'iPad'),
                   display: screen.subtitle.trim() === '' && document.activeElement !== document.querySelector(`.subtitle-${screen.id}`) ? 'none' : 'block'
                 }}
               />
@@ -229,7 +214,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
               screenId={screen.id}
               onFileSelect={onFileSelect}
               onBezelLoad={(dims) => setBezelDims(dims)}
-              cornerRadiusPx={isIpad ? 60 : 100}
+              cornerRadiusPx={layout.screenCornerRadius}
             />
           </div>
         </div>
@@ -284,10 +269,11 @@ export const CanvasRenderer = () => {
             marginRight: `calc(${canvasZoom - 1} * 100%)`  // Rough approximation for width
           }}
         >
-      {screens.map((screen) => (
+      {screens.map((screen, index) => (
         <ScreenCard
           key={screen.id}
           screen={screen}
+          index={index}
           isSelected={selectedScreenId === screen.id}
           onSelect={() => setSelectedScreenId(screen.id)}
           onFileSelect={(e) => handleFileSelect(screen.id, e)}
@@ -297,33 +283,17 @@ export const CanvasRenderer = () => {
       ))}
 
       {screens.length === 0 && (
-        <div style={{
-          display: 'flex', flexDirection: 'column',
-          alignItems: 'center', justifyContent: 'center',
-          padding: '120px 40px', color: 'var(--text-muted)',
-          textAlign: 'center', width: '100%',
-        }}>
-          <div style={{
-            width: '80px', height: '80px', borderRadius: '24px',
-            background: 'var(--card-bg)', border: '1px solid var(--panel-border)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            marginBottom: '32px', color: 'var(--accent)',
-          }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"
-              fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M3 9h18" /><path d="M9 21V9" />
-            </svg>
-          </div>
-          <h2 style={{ color: 'var(--text-main)', marginBottom: '12px', fontSize: '24px', fontWeight: '700' }}>
-            {t('canvas.empty.title')}
-          </h2>
-          <p style={{ maxWidth: '400px', lineHeight: '1.6', marginBottom: '32px' }}>
-            {t('canvas.empty.desc')}
-          </p>
-          <button className="primary" onClick={addScreen} style={{ padding: '14px 28px' }}>
+        <div className="empty-state">
+          <span className="eyebrow">{t('canvas.empty.eyebrow')}</span>
+          <h2>{t('canvas.empty.title')}</h2>
+          <p>{t('canvas.empty.desc')}</p>
+          <button className="primary" onClick={addScreen}>
             {t('canvas.empty.button')}
           </button>
+          <div className="spec">
+            iPhone 6.9″ — {SCREEN_DIMENSIONS.iPhone.width} × {SCREEN_DIMENSIONS.iPhone.height} px<br />
+            iPad 13″ — {SCREEN_DIMENSIONS.iPad.width} × {SCREEN_DIMENSIONS.iPad.height} px
+          </div>
         </div>
       )}
         </div>

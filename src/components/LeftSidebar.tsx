@@ -2,10 +2,20 @@ import { useState, useRef, useEffect } from 'react';
 import { useConfig, type Localization, type DeviceType } from '../store/ConfigContext';
 import { SCREEN_DIMENSIONS } from '../constants';
 import { LOCALIZATION_PRESETS } from '../translations';
-import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Zap, ChevronDown, Check } from 'lucide-react';
+import { Plus, Sun, Moon, X, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check } from 'lucide-react';
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { toBlob } from 'html-to-image';
+
+/** Crop marks framing a phone: the editor's mark. */
+const BrandMark = () => (
+  <svg className="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+    <path d="M1 7V1h6M27 1h6v6M33 27v6h-6M7 33H1v-6" stroke="currentColor" strokeWidth="1.5" />
+    <rect x="11" y="6" width="12" height="22" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <rect className="accent" x="13.5" y="10" width="7" height="2" fill="currentColor" />
+    <rect x="13.5" y="14" width="7" height="1" fill="currentColor" opacity="0.5" />
+  </svg>
+);
 
 export const LeftSidebar = () => {
   const config = useConfig();
@@ -240,8 +250,8 @@ export const LeftSidebar = () => {
     },
     full: {
       title: t('export.menu.full.title'),
-      icon: <Zap size={14} />,
-      mainIcon: <Zap size={18} />,
+      icon: <Package size={14} />,
+      mainIcon: <Package size={18} />,
       handler: handleExportEverything,
       isEnabled: config.projectHasScreens
     }
@@ -262,76 +272,46 @@ export const LeftSidebar = () => {
 
   return (
     <div className="sidebar sidebar-left">
-      <div className="sidebar-header" style={{ padding: '32px 24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 12px rgba(37, 99, 235, 0.3)' }}>
-            <Layers size={28} color="white" />
-          </div>
+      <div className="sidebar-header">
+        <div className="brand-row">
+          <BrandMark />
           <button
+            className="icon-btn"
             onClick={config.toggleTheme}
-            style={{
-              marginLeft: 'auto',
-              padding: '8px',
-              background: 'var(--card-bg)',
-              border: '1px solid var(--panel-border)',
-              borderRadius: '8px',
-              color: config.theme === 'dark' ? '#fbbf24' : '#64748b',
-              cursor: 'pointer'
-            }}
+            title={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
+            aria-label={config.theme === 'dark' ? t('theme.light') : t('theme.dark')}
           >
-            {config.theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            {config.theme === 'dark' ? <Sun size={15} strokeWidth={1.75} /> : <Moon size={15} strokeWidth={1.75} />}
           </button>
         </div>
-        <h1 className="branding-title">{t('app.title')}</h1>
-        <p className="branding-subtitle">{t('app.subtitle')}</p>
+        <p className="branding-subtitle eyebrow">{t('app.title')}</p>
+        <h1 className="branding-title">{t('app.subtitle')}</h1>
       </div>
 
       <div className="sidebar-content">
         <div className="panel-group">
-
-          {/* ── Level 1: Device Type ── */}
           <h3>{t('device.section')}</h3>
-          <div style={{ display: 'flex', background: 'var(--input-bg)', padding: '4px', borderRadius: '10px', gap: '4px', marginBottom: '8px' }}>
-            {DEVICES.map(({ type, Icon }) => {
-              const isActive = config.activeDeviceType === type;
-              return (
-                <button
-                  key={type}
-                  onClick={() => config.setActiveDeviceType(type)}
-                  style={{
-                    flex: 1,
-                    padding: '10px 8px',
-                    border: 'none',
-                    background: isActive ? 'var(--accent)' : 'transparent',
-                    color: isActive ? '#fff' : 'var(--text-muted)',
-                    borderRadius: '7px',
-                    cursor: 'pointer',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isActive ? '0 2px 8px var(--accent-glow)' : 'none',
-                  }}
-                >
-                  <Icon size={14} />
-                  {t(`device.${type.toLowerCase()}`)}
-                </button>
-              );
-            })}
+          <div className="segmented">
+            {DEVICES.map(({ type, Icon }) => (
+              <button
+                key={type}
+                className={config.activeDeviceType === type ? 'active' : ''}
+                onClick={() => config.setActiveDeviceType(type)}
+              >
+                <Icon size={14} strokeWidth={1.75} />
+                {t(`device.${type.toLowerCase()}`)}
+              </button>
+            ))}
           </div>
+          <div className="mono" style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
+            {SCREEN_DIMENSIONS[config.activeDeviceType].width} × {SCREEN_DIMENSIONS[config.activeDeviceType].height} px
+          </div>
+        </div>
 
-          {/* ── Divider ── */}
-          <hr style={{ border: 'none', borderTop: '1px solid var(--panel-border)', margin: '4px -16px 12px' }} />
-
-          {/* ── Level 2: Language ── */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-            <span style={{ fontSize: '10px', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1.2px', fontWeight: 800, fontFamily: 'var(--font-display)' }}>
-              {t('language.section')}
-            </span>
-            <div style={{ position: 'relative' }}>
+        <div className="panel-group">
+          <div className="section-title-row">
+            <h3 className="section-title">{t('language.section')}</h3>
+            <div className="add-locale">
               <select
                 onChange={(e) => {
                   const preset = LOCALIZATION_PRESETS.find(p => p.id === e.target.value);
@@ -340,76 +320,51 @@ export const LeftSidebar = () => {
                 }}
                 disabled={isProcessing}
                 value=""
-                style={{
-                  position: 'absolute',
-                  opacity: 0,
-                  width: '28px',
-                  height: '28px',
-                  cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  zIndex: 2
-                }}
+                aria-label={t('language.add')}
+                title={t('language.add')}
               >
-                <option value="" disabled>+</option>
+                <option value="" disabled>{t('language.add')}</option>
                 {LOCALIZATION_PRESETS.filter(p => !config.localizations.some(l => l.id === p.id)).map(p => (
                   <option key={p.id} value={p.id}>{p.flag} {p.name}</option>
                 ))}
               </select>
-              <button className="secondary-btn" style={{ width: '28px', height: '28px', padding: 0, borderRadius: '8px' }}>
-                <Plus size={14} />
+              <button className="icon-btn small" tabIndex={-1} disabled={isProcessing}>
+                <Plus size={14} strokeWidth={1.75} />
               </button>
             </div>
           </div>
 
-          <div className="loc-list" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+          <div className="loc-list">
             {config.localizations.map(loc => {
               const isActive = config.activeLocalizationId === loc.id;
               return (
                 <div
                   key={loc.id}
+                  className={`loc-row ${isActive ? 'active' : ''} ${isProcessing && !isActive ? 'disabled' : ''}`}
                   onClick={() => !isProcessing && config.setActiveLocalizationId(loc.id)}
-                  style={{
-                    padding: '9px 12px',
-                    borderRadius: '10px',
-                    background: isActive ? 'var(--accent)' : 'var(--card-bg)',
-                    color: isActive ? 'white' : 'var(--text-main)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: isProcessing ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s ease',
-                    border: '1px solid var(--panel-border)',
-                    opacity: isProcessing && !isActive ? 0.6 : 1,
-                  }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ fontSize: '18px' }}>{loc.flag}</span>
-                    <span style={{ fontSize: '13px', fontWeight: 600 }}>{loc.name}</span>
-                  </div>
+                  <span className="loc-flag">{loc.flag}</span>
+                  <span className="loc-name">{loc.name}</span>
+                  <span className="loc-code">{loc.id}</span>
                   {loc.id !== 'en-US' && !isProcessing && (
                     <button
+                      className="loc-remove"
                       onClick={(e) => { e.stopPropagation(); config.removeLocalization(loc.id); }}
-                      style={{
-                        background: 'none',
-                        border: 'none',
-                        padding: '4px',
-                        color: isActive ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
-                        cursor: 'pointer'
-                      }}
+                      aria-label={`Remove ${loc.name}`}
                     >
-                      <Trash2 size={14} />
+                      <X size={13} />
                     </button>
                   )}
                 </div>
               );
             })}
           </div>
-
         </div>
       </div>
 
       <div className="sidebar-footer">
         {processingMessage && (
-          <div style={{ fontSize: '10px', color: 'var(--accent)', fontWeight: 700, textAlign: 'center', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+          <div className="export-status">
             {processingMessage}
           </div>
         )}
@@ -450,7 +405,7 @@ export const LeftSidebar = () => {
                 </div>
 
                 <div className={`dropdown-item primary-item ${exportMode === 'full' ? 'active' : ''}`} onClick={() => { setExportMode('full'); setShowExportMenu(false); }}>
-                  <div className="item-icon">{exportMode === 'full' ? <Check size={14} /> : <Zap size={14} />}</div>
+                  <div className="item-icon">{exportMode === 'full' ? <Check size={14} /> : <Package size={14} />}</div>
                   <div className="item-text single-line">
                     <span className="item-title">{EXPORT_MODES.full.title}</span>
                   </div>
@@ -466,7 +421,7 @@ export const LeftSidebar = () => {
               disabled={isProcessing || !currentMode.isEnabled}
             >
               {isProcessing ? (
-                <span style={{ fontSize: '11px' }}>{t('processing.title')}...</span>
+                <><span className="spinner-mini" /> {t('processing.title')}…</>
               ) : (
                 <>{currentMode.mainIcon} {currentMode.title}</>
               )}
@@ -476,7 +431,7 @@ export const LeftSidebar = () => {
               onClick={() => setShowExportMenu(!showExportMenu)}
               disabled={isProcessing}
             >
-              <ChevronDown size={20} style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
+              <ChevronDown size={18} style={{ transform: showExportMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
             </button>
           </div>
         </div>
