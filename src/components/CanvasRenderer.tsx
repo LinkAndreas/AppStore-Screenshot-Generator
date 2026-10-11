@@ -5,7 +5,8 @@ import { SCREEN_DIMENSIONS } from '../constants';
 import { acceptedSizesText, checkScreenshot } from '../utils/imageValidation';
 import { DEVICES, offsetLimit } from '../shared/layout';
 import { ScreenArtwork } from './ScreenArtwork';
-import { ImagePlus, Smartphone } from 'lucide-react';
+import { ImagePlus } from 'lucide-react';
+import { BrandMark } from './BrandMark';
 
 interface ScreenCardProps {
   screen: ScreenConfig;
@@ -127,7 +128,7 @@ export const CanvasRenderer = () => {
 
       {screens.length === 0 && (
         <div className="empty-state">
-          <div className="empty-icon"><Smartphone size={34} strokeWidth={1.75} /></div>
+          <BrandMark size={76} className="empty-brand" />
           <h2>{t('canvas.empty.title')}</h2>
           <p>{t('canvas.empty.desc')}</p>
           <div className="empty-actions">

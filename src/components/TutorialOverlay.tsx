@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useConfig } from '../store/ConfigContext';
+import { BrandMark } from './BrandMark';
 import { 
   X, 
   ChevronRight, 
@@ -80,7 +81,7 @@ export const TutorialOverlay = () => {
         </button>
 
         <div className="tutorial-content">
-          <div className="sheet-icon">{step.icon}</div>
+          {currentStep === 0 ? <BrandMark size={56} /> : <div className="sheet-icon">{step.icon}</div>}
           <h2 id="tutorial-title" className="sheet-title">{step.title}</h2>
           <p className="sheet-body">{step.description}</p>
           <div className="tutorial-dots" aria-label={`${currentStep + 1} / ${steps.length}`}>

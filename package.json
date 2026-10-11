@@ -1,6 +1,6 @@
 {
   "name": "app-store-screenshot-generator",
-  "description": "A high-performance, browser-based App Store screenshot generator with bulk export and device-accurate scaling.",
+  "description": "Storyframe: your app's story, frame by frame. A browser-based screenshot designer for iPhone, iPad, Mac and Apple Watch, with an MCP server for AI agents.",
   "author": "Andreas Link",
   "license": "MIT",
   "homepage": "https://screenshots.linkandreas.de/",
