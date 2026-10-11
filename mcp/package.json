@@ -1,6 +1,6 @@
 {
   "name": "appstore-screenshot-mcp",
-  "version": "1.12.0",
+  "version": "1.12.1",
   "description": "Storyframe MCP server: renders branded App Store screenshots with the same layouts and frames as the Storyframe editor.",
   "license": "MIT",
   "private": true,
