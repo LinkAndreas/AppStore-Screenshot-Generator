@@ -8,7 +8,7 @@ import {
   Palette, 
   Globe, 
   Download,
-  Crop
+  Smartphone
 } from 'lucide-react';
 
 interface Step {
@@ -28,27 +28,27 @@ export const TutorialOverlay = () => {
     {
       title: t('tutorial.step1.title'),
       description: t('tutorial.step1.desc'),
-      icon: <Crop size={18} strokeWidth={1.75} />
+      icon: <Smartphone size={26} />
     },
     {
       title: t('tutorial.step2.title'),
       description: t('tutorial.step2.desc'),
-      icon: <Monitor size={18} strokeWidth={1.75} />
+      icon: <Monitor size={26} />
     },
     {
       title: t('tutorial.step3.title'),
       description: t('tutorial.step3.desc'),
-      icon: <Globe size={18} strokeWidth={1.75} />
+      icon: <Globe size={26} />
     },
     {
       title: t('tutorial.step4.title'),
       description: t('tutorial.step4.desc'),
-      icon: <Palette size={18} strokeWidth={1.75} />
+      icon: <Palette size={26} />
     },
     {
       title: t('tutorial.step5.title'),
       description: t('tutorial.step5.desc'),
-      icon: <Download size={18} strokeWidth={1.75} />
+      icon: <Download size={26} />
     }
   ];
 
@@ -80,24 +80,18 @@ export const TutorialOverlay = () => {
         </button>
 
         <div className="tutorial-content">
-          <div className="tutorial-meta">
-            <span className="tutorial-icon">{step.icon}</span>
-            <span className="eyebrow">
-              {String(currentStep + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}
-            </span>
-          </div>
+          <div className="sheet-icon">{step.icon}</div>
           <h2 id="tutorial-title" className="sheet-title">{step.title}</h2>
           <p className="sheet-body">{step.description}</p>
-        </div>
-
-        <div className="tutorial-progress" aria-hidden="true">
-          {steps.map((_, i) => (
-            <span key={i} className={i <= currentStep ? 'done' : ''} />
-          ))}
+          <div className="tutorial-dots" aria-label={`${currentStep + 1} / ${steps.length}`}>
+            {steps.map((_, i) => (
+              <span key={i} className={i === currentStep ? 'active' : ''} />
+            ))}
+          </div>
         </div>
 
         <div className="tutorial-footer">
-          <button className="text-link" onClick={handleSkip} style={{ alignSelf: 'center' }}>
+          <button className="text-link" onClick={handleSkip}>
             {t('tutorial.skip')}
           </button>
           <div className="tutorial-nav-group">
@@ -117,55 +111,50 @@ export const TutorialOverlay = () => {
 
       <style>{`
         .tutorial-modal {
-          max-width: 480px;
+          max-width: 400px;
           display: flex;
           flex-direction: column;
         }
 
         .tutorial-close {
           position: absolute;
-          top: 16px;
-          right: 16px;
+          top: 12px;
+          right: 12px;
         }
 
         .tutorial-content {
-          padding: 32px 32px 28px;
+          padding: 36px 32px 8px;
           display: flex;
           flex-direction: column;
-          gap: 14px;
-        }
-
-        .tutorial-meta {
-          display: flex;
           align-items: center;
           gap: 12px;
-          margin-bottom: 8px;
+          text-align: center;
         }
 
-        .tutorial-icon {
-          display: inline-flex;
-          color: var(--accent);
+        .tutorial-content .sheet-icon {
+          margin-bottom: 6px;
         }
 
-        .tutorial-progress {
+        .tutorial-dots {
           display: flex;
-          gap: 4px;
-          padding: 0 32px;
+          gap: 6px;
+          margin-top: 10px;
         }
 
-        .tutorial-progress span {
-          flex: 1;
-          height: 2px;
-          background: var(--panel-border);
+        .tutorial-dots span {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: var(--fill-strong);
           transition: background 0.2s;
         }
 
-        .tutorial-progress span.done {
+        .tutorial-dots span.active {
           background: var(--accent);
         }
 
         .tutorial-footer {
-          padding: 20px 32px 24px;
+          padding: 20px 24px 24px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -175,18 +164,6 @@ export const TutorialOverlay = () => {
         .tutorial-nav-group {
           display: flex;
           gap: 8px;
-        }
-
-        @media (max-width: 640px) {
-          .tutorial-content {
-            padding: 28px 22px 22px;
-          }
-          .tutorial-progress {
-            padding: 0 22px;
-          }
-          .tutorial-footer {
-            padding: 18px 22px 22px;
-          }
         }
       `}</style>
     </div>
