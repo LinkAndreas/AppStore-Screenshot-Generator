@@ -55,6 +55,50 @@ const h = (type: string, style: Record<string, unknown>, children?: unknown, pro
   ({ type, props: { ...props, style, children } });
 
 /**
+ * The device at scale k: the screenshot in the measured screen opening (scaled to its width,
+ * bottom aligned, black above it, e.g. the Mac notch strip), corners following the opening,
+ * with the bezel PNG on top.
+ */
+const buildDeviceLayers = (bezel: BezelSpec, image: ResolvedScreen['image'], k: number): El[] => {
+  const layers: El[] = [];
+  if (image) {
+    const { screen } = bezel;
+    const rect = screenshotRect(bezel, image.width, image.height);
+    const corners = (r: number[]) => ({
+      borderTopLeftRadius: r[0] * k, borderTopRightRadius: r[1] * k, borderBottomRightRadius: r[2] * k, borderBottomLeftRadius: r[3] * k,
+    });
+    if (!rect.fills) {
+      layers.push(h('div', {
+        position: 'absolute', left: screen.x * k, top: screen.y * k, width: screen.width * k, height: screen.height * k,
+        backgroundColor: '#000', ...corners(screen.radius),
+      }));
+    }
+    layers.push(h('img', {
+      position: 'absolute',
+      left: rect.x * k,
+      top: rect.y * k,
+      width: rect.width * k,
+      height: rect.height * k,
+      objectFit: 'cover',
+      ...corners(rect.fills ? screen.radius : [0, 0, screen.radius[2], screen.radius[3]]),
+    }, undefined, { src: image.dataUri, width: rect.width * k, height: rect.height * k }));
+  }
+  layers.push(h('img', { position: 'absolute', left: 0, top: 0, width: bezel.width * k, height: bezel.height * k }, undefined,
+    { src: bezelDataUri(bezel), width: bezel.width * k, height: bezel.height * k }));
+  return layers;
+};
+
+/** Just the framed device at its native bezel size on a solid background, e.g. to check the fit. */
+export const renderDevice = async (bezel: BezelSpec, image: NonNullable<ResolvedScreen['image']>, background: string): Promise<Buffer> => {
+  const svg = await satori(h('div', {
+    display: 'flex', position: 'relative', width: bezel.width, height: bezel.height, backgroundColor: background,
+  }, buildDeviceLayers(bezel, image, 1)) as unknown as Parameters<typeof satori>[0], {
+    width: bezel.width, height: bezel.height, fonts: loadScreenFonts(),
+  });
+  return new Resvg(svg, { fitTo: { mode: 'original' }, font: { loadSystemFonts: false } }).render().asPng();
+};
+
+/**
  * Builds the element tree for one screen, following CanvasRenderer.tsx: a column with optional
  * text on top and the device below, pushed up, centred or down with auto margins.
  */
@@ -113,34 +157,8 @@ const buildTree = (s: ResolvedScreen): El => {
     }, [showTitle && textLine(s.title, 'title'), showSubtitle && textLine(s.subtitle, 'subtitle')].filter(Boolean)));
   }
 
-  const deviceLayers: El[] = [];
-  if (s.image) {
-    // The screenshot fills the measured screen opening (scaled to its width, bottom aligned);
-    // any space above it, like the Mac notch strip, is black. Corners follow the opening.
-    const { screen } = s.bezel;
-    const rect = screenshotRect(s.bezel, s.image.width, s.image.height);
-    const k = actualScale;
-    const corners = (r: number[]) => ({
-      borderTopLeftRadius: r[0] * k, borderTopRightRadius: r[1] * k, borderBottomRightRadius: r[2] * k, borderBottomLeftRadius: r[3] * k,
-    });
-    if (!rect.fills) {
-      deviceLayers.push(h('div', {
-        position: 'absolute', left: screen.x * k, top: screen.y * k, width: screen.width * k, height: screen.height * k,
-        backgroundColor: '#000', ...corners(screen.radius),
-      }));
-    }
-    deviceLayers.push(h('img', {
-      position: 'absolute',
-      left: rect.x * k,
-      top: rect.y * k,
-      width: rect.width * k,
-      height: rect.height * k,
-      objectFit: 'cover',
-      ...corners(rect.fills ? screen.radius : [0, 0, screen.radius[2], screen.radius[3]]),
-    }, undefined, { src: s.image.dataUri, width: rect.width * k, height: rect.height * k }));
-  }
-  deviceLayers.push(h('img', { position: 'absolute', left: 0, top: 0, width: boxW, height: boxH }, undefined,
-    { src: bezelDataUri(s.bezel), width: boxW, height: boxH }));
+  const deviceLayers = buildDeviceLayers(s.bezel, s.image, actualScale);
+
 
   const pos = s.devicePosition;
   children.push(h('div', {

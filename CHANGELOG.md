@@ -10,6 +10,7 @@ Easier controls, more devices and more backgrounds.
 
 - New devices: iPhone Duo (open and closed), Mac and Apple Watch, plus the latest iPhone 18 Pro Max and iPad Pro M5 frames.
 - Simpler inspector: Text, Background and Device tabs in plain language, with S–L text sizes and automatic readable text colours.
+- Screenshots now fit every frame pixel-perfectly: no background showing in the corners (previously visible on iPad) and no screenshot edges outside the device.
 - Drag the device on the canvas to move it.
 - 24 new gradients chosen for App Store screenshots, organised into Vibrant, Warm, Cool, Soft and Dark.
 - Apply a screen's style to every screen in one click.

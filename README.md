@@ -133,6 +133,16 @@ Example request to an agent:
 Japanese, Chinese, Korean and other non-Latin text is rendered with Noto fonts fetched from Google
 Fonts on demand. Run the tests with `npm run mcp:test`.
 
+## 🖼 Adding a Device Frame
+
+1. Copy the portrait PNG from Apple's bezel download into `src/assets/Bezels/<pack>/PNG/`.
+2. Measure it: `node scripts/measure-bezels.mjs "src/assets/Bezels/<pack>/PNG/<file>.png"` prints
+   the bezel size, the screen opening (should equal the App Store screenshot size) and the corner
+   radii that make the screenshot fit.
+3. Add it to `BEZELS` in `src/shared/layout.ts` with those numbers.
+4. `npm run mcp:test` renders every frame and fails if the background shows through anywhere
+   around the screen or the screenshot shows outside the device.
+
 ## 🚢 Deployment
 
 Every push to `main` runs `.github/workflows/deploy.yml`: GitHub tests the MCP server, builds the

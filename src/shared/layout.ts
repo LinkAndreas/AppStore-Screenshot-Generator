@@ -119,6 +119,11 @@ export interface BezelSpec {
   /**
    * The transparent screen opening, in bezel pixels (measured from the PNG). The screenshot is
    * scaled to its width and aligned to its bottom; any space above it (the Mac notch strip) is black.
+   *
+   * Corner radii (top-left, top-right, bottom-right, bottom-left) are the middle of the range in
+   * which the rounded screenshot covers every transparent pixel of the opening (no background
+   * showing through) while staying inside the opaque frame (no screenshot outside the device).
+   * Re-measure with scripts/measure-bezels.mjs when adding a bezel.
    */
   screen: { x: number; y: number; width: number; height: number; radius: Radii };
 }
@@ -137,50 +142,50 @@ const bezels = (
 const r = (n: number): Radii => [n, n, n, n];
 
 export const BEZELS: BezelSpec[] = [
-  ...bezels('iPhone', 'iPhone 18 Pro Max', 'Bezel-iPhone-18/PNG/iPhone 18 Pro Max', [1470, 3000], [75, 66, 1320, 2868], r(100), [
+  ...bezels('iPhone', 'iPhone 18 Pro Max', 'Bezel-iPhone-18/PNG/iPhone 18 Pro Max', [1470, 3000], [75, 66, 1320, 2868], r(134), [
     ['Silver', 'iPhone 18 Pro Max - Silver - Portrait.png'],
     ['Black', 'iPhone 18 Pro Max - Black - Portrait.png'],
     ['Glacier', 'iPhone 18 Pro Max - Glacier - Portrait.png'],
     ['Burgundy', 'iPhone 18 Pro Max - Burgundy - Portrait.png'],
   ]),
-  ...bezels('iPhone', 'iPhone 17 Pro Max', 'Bezel-iPhone-17/PNG/iPhone 17 Pro Max', [1470, 3000], [75, 66, 1320, 2868], r(100), [
+  ...bezels('iPhone', 'iPhone 17 Pro Max', 'Bezel-iPhone-17/PNG/iPhone 17 Pro Max', [1470, 3000], [75, 66, 1320, 2868], r(134), [
     ['Silver', 'iPhone 17 Pro Max - Silver - Portrait.png'],
     ['Deep Blue', 'iPhone 17 Pro Max - Deep Blue - Portrait.png'],
     ['Cosmic Orange', 'iPhone 17 Pro Max - Cosmic Orange - Portrait.png'],
   ]),
-  ...bezels('iPhoneDuoInner', 'iPhone Duo', 'Bezel-iPhone-Duo/PNG', [2247, 3093], [120, 120, 2007, 2853], r(60), [
+  ...bezels('iPhoneDuoInner', 'iPhone Duo', 'Bezel-iPhone-Duo/PNG', [2247, 3093], [120, 120, 2007, 2853], r(87), [
     ['Star White', 'iPhone Duo - Star White - Inner Open Portrait.png'],
     ['Night Sky', 'iPhone Duo - Night Sky - Inner Open Portrait.png'],
   ]),
-  ...bezels('iPhoneDuoOuter', 'iPhone Duo', 'Bezel-iPhone-Duo/PNG', [1574, 2194], [88, 80, 1398, 2034], r(27), [
+  ...bezels('iPhoneDuoOuter', 'iPhone Duo', 'Bezel-iPhone-Duo/PNG', [1574, 2194], [88, 80, 1398, 2034], [11, 117, 117, 11], [
     ['Star White', 'iPhone Duo - Star White - Outer Closed Portrait.png'],
     ['Night Sky', 'iPhone Duo - Night Sky - Outer Closed Portrait.png'],
   ]),
-  ...bezels('iPad', 'iPad Pro 13" (M5)', 'Bezel-iPad-Pro-M5/PNG', [2300, 3000], [118, 124, 2064, 2752], r(60), [
+  ...bezels('iPad', 'iPad Pro 13" (M5)', 'Bezel-iPad-Pro-M5/PNG', [2300, 3000], [118, 124, 2064, 2752], r(28), [
     ['Silver', 'iPad Pro 13 - M5 - Silver - Portrait.png'],
     ['Space Black', 'iPad Pro 13 - M5 - Space Black - Portrait.png'],
   ]),
-  ...bezels('iPad', 'iPad Pro 13" (M4)', 'Bezel-iPad-Pro-M4/PNG', [2300, 3000], [118, 124, 2064, 2752], r(60), [
+  ...bezels('iPad', 'iPad Pro 13" (M4)', 'Bezel-iPad-Pro-M4/PNG', [2300, 3000], [118, 124, 2064, 2752], r(28), [
     ['Silver', 'iPad Pro 13 - M4 - Silver - Portrait.png'],
     ['Space Gray', 'iPad Pro 13 - M4 - Space Gray - Portrait.png'],
   ]),
-  ...bezels('Mac', 'MacBook Pro 16"', 'Bezel-MacBook-Pro-M5/PNG', [4260, 2840], [402, 303, 3456, 2234], [41, 41, 0, 0], [
+  ...bezels('Mac', 'MacBook Pro 16"', 'Bezel-MacBook-Pro-M5/PNG', [4260, 2840], [402, 303, 3456, 2234], [18, 18, 0, 0], [
     ['Silver', 'MacBook Pro M5 16-inch Silver.png'],
     ['Space Black', 'MacBook Pro M5 16-inch Space Black.png'],
   ]),
-  ...bezels('Mac', 'MacBook Air 15"', 'Bezel-MacBook-Air-M5/PNG', [3540, 2300], [329, 218, 2880, 1864], [34, 34, 0, 0], [
+  ...bezels('Mac', 'MacBook Air 15"', 'Bezel-MacBook-Air-M5/PNG', [3540, 2300], [329, 218, 2880, 1864], [15, 15, 0, 0], [
     ['Midnight', 'MacBook Air M5 15-inch Midnight.png'],
     ['Silver', 'MacBook Air M5 15-inch Silver.png'],
     ['Sky Blue', 'MacBook Air M5 15-inch Sky Blue.png'],
     ['Starlight', 'MacBook Air M5 15-inch Starlight.png'],
   ]),
-  ...bezels('WatchUltra', 'Apple Watch Ultra 3', 'Bezel-Apple-Watch-Ultra-3/PNG', [600, 960], [89, 223, 422, 514], r(116), [
+  ...bezels('WatchUltra', 'Apple Watch Ultra 3', 'Bezel-Apple-Watch-Ultra-3/PNG', [600, 960], [89, 223, 422, 514], r(56), [
     ['Black · Ocean Band', 'AW Ultra 3 - Black + Ocean Band Black.png'],
     ['Natural · Ocean Band', 'AW Ultra 3 - Natural + Ocean Band Anchor Blue.png'],
     ['Black · Trail Loop', 'AW Ultra 3 - Black + Trail Loop Black Charcoal.png'],
     ['Natural · Alpine Loop', 'AW Ultra 3 - Natural + Alpine Loop Terra Cotta.png'],
   ]),
-  ...bezels('Watch', 'Apple Watch Series 11 (46 mm)', 'Bezel-Apple-Watch-Series-11/PNG', [560, 880], [72, 192, 416, 496], r(100), [
+  ...bezels('Watch', 'Apple Watch Series 11 (46 mm)', 'Bezel-Apple-Watch-Series-11/PNG', [560, 880], [72, 192, 416, 496], r(54), [
     ['Jet Black', 'Apple Watch S11 - 46mm - Aluminum Jet Black + Sport Band Black.png'],
     ['Silver', 'Apple Watch S11 - 46mm - Aluminum Silver + Sport Band Purple Fog.png'],
     ['Rose Gold', 'Apple Watch S11 - 46mm - Aluminum Rose Gold + Sport Band Light Blush.png'],
