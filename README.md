@@ -14,7 +14,7 @@ A professional, high-performance web tool designed for developers and designers 
 ## 🚀 Features
 
 - **⚡ Bulk Export**: Generate high-resolution assets for multiple devices (iPhone & iPad) and all localizations in a single click.
-- **📱 Device-Accurate Scaling**: Pre-configured with the latest Apple device dimensions (iPhone 17 Pro Max, iPad Pro M4).
+- **📱 Every App Store Slot**: iPhone 6.9", iPhone Duo (open and closed), iPad 13", Mac and Apple Watch (Ultra and Series), with Apple's latest frames: iPhone 18 Pro Max, iPhone Duo, iPad Pro M5, MacBook Pro and MacBook Air M5, Apple Watch Ultra 3 and Series 11 (plus iPhone 17 Pro Max and iPad Pro M4).
 - **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
 - **🎨 Premium Editor**: Curated palette of 28 high-impact gradients and 28 solid colors specifically chosen for marketing conversion.
 - **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
@@ -108,7 +108,19 @@ Locally, `image` can be a file path and the PNGs are written to `outputDir` (def
 
 The `app_store_screenshot_set` prompt walks an agent through planning the copy, choosing a brand,
 rendering and reviewing. Output follows the editor's ZIP layout:
-`iPhone_6.9/<locale>/screen_<n>.png` (1320×2868) and `iPad_13/<locale>/screen_<n>.png` (2064×2752).
+`<device>/<locale>/screen_<n>.png`, one folder per App Store slot:
+
+| Folder | Size | Frames |
+| --- | --- | --- |
+| `iPhone_6.9` | 1320 × 2868 | iPhone 18 Pro Max, iPhone 17 Pro Max |
+| `iPhone_Duo_Inner` | 2007 × 2853 | iPhone Duo (open) |
+| `iPhone_Duo_Outer` | 1398 × 2034 | iPhone Duo (closed) |
+| `iPad_13` | 2064 × 2752 | iPad Pro 13" (M5, M4) |
+| `Mac` | 2880 × 1800 | MacBook Pro 16", MacBook Air 15" |
+| `Watch_Ultra` | 422 × 514 | Apple Watch Ultra 3 |
+| `Watch_Series` | 416 × 496 | Apple Watch Series 11 (46 mm) |
+
+Screenshots of another accepted size (e.g. Mac 1440 × 900) or the same aspect ratio are scaled.
 
 Example request to an agent:
 
@@ -151,9 +163,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📦 Assets & Attribution
 
-- Device Bezels: iPhone and iPad device frames are sourced from Apple’s official design resources:
+- Device Bezels: device frames are sourced from Apple’s official [design resources](https://developer.apple.com/design/resources/#product-bezels):
   - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-17.dmg
   - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-M4.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-18.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPhone-Duo.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-iPad-Pro-(M5).dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Pro-M5.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-MacBook-Air-M5.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Ultra-3-2025.dmg
+  - https://devimages-cdn.apple.com/design/resources/download/Bezel-Apple-Watch-Series-11-2025.dmg
 
 All rights to these assets belong to Apple and are used in accordance with their design guidelines.
 
