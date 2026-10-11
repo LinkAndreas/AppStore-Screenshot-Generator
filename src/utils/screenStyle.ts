@@ -25,7 +25,7 @@ export const titleStyle = (screen: ScreenConfig, device: DeviceType): React.CSSP
   fontFamily: screenFontStack(getScreenFont(screen.titleFont, DEFAULT_TITLE_FONT)),
   margin: `0 0 ${DEVICE_LAYOUT[device].titleMarginBottom}px 0`,
   lineHeight: TITLE_TYPOGRAPHY.lineHeight,
-  letterSpacing: `${TITLE_TYPOGRAPHY.letterSpacing}px`,
+  letterSpacing: `${TITLE_TYPOGRAPHY.letterSpacing * DEVICE_LAYOUT[device].unit}px`,
   textAlign: screen.titleAlign || 'center',
 });
 
@@ -40,6 +40,6 @@ export const subtitleStyle = (screen: ScreenConfig, device: DeviceType): React.C
   fontFamily: screenFontStack(getScreenFont(screen.subtitleFont, DEFAULT_SUBTITLE_FONT)),
   margin: 0,
   lineHeight: SUBTITLE_TYPOGRAPHY.lineHeight,
-  letterSpacing: `${SUBTITLE_TYPOGRAPHY.letterSpacing}px`,
+  letterSpacing: `${SUBTITLE_TYPOGRAPHY.letterSpacing * DEVICE_LAYOUT[device].unit}px`,
   textAlign: screen.subtitleAlign || 'center',
 });

@@ -2,11 +2,9 @@ import React, { useState } from 'react';
 import { useConfig } from '../store/ConfigContext';
 import { createScreen } from '../store/screenFactory';
 import { X, Plus, ImagePlus } from 'lucide-react';
-import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
-import { DeviceFrame } from './DeviceFrame';
-import { validateImageDimensions } from '../utils/imageValidation';
-import { screenBackground, subtitleStyle, titleStyle } from '../utils/screenStyle';
-import { DEVICE_LAYOUT, DEVICE_REFERENCE_WIDTH, TEXT_LINE_PADDING_X, TEXT_PADDING_X, TEXT_SHADOW } from '../shared/layout';
+import { SCREEN_DIMENSIONS } from '../constants';
+import { ScreenArtwork } from './ScreenArtwork';
+import { checkScreenshot } from '../utils/imageValidation';
 
 export const BottomBar = () => {
   const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab, setAppError, t } = useConfig();
@@ -22,19 +20,16 @@ export const BottomBar = () => {
     files.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
     
     const validFiles = [];
-    let hadError = false;
+    let problem: Record<string, string> | null = null;
 
     for (const file of files) {
-      const isValid = await validateImageDimensions(file, activeDeviceType === 'iPad' ? 'iPad' : 'iPhone');
-      if (isValid) {
-        validFiles.push(file);
-      } else {
-        hadError = true;
-      }
+      const fileProblem = await checkScreenshot(file, activeDeviceType);
+      if (fileProblem) problem = fileProblem;
+      else validFiles.push(file);
     }
 
-    if (hadError) {
-      setAppError(t(activeDeviceType === 'iPad' ? 'error.dimension.ipad' : 'error.dimension.iphone'));
+    if (problem) {
+      setAppError(t('error.dimension', problem));
     }
 
     if (!validFiles.length) {
@@ -108,13 +103,13 @@ export const BottomBar = () => {
   const isMobile = window.innerWidth <= 1024;
   const thumbHeight = isMobile ? 90 : 140;
   const canvasDimForRef = SCREEN_DIMENSIONS[activeDeviceType];
-  const refThumbWidth = (canvasDimForRef.width / canvasDimForRef.height) * thumbHeight;
+  const refThumbWidth = Math.min((canvasDimForRef.width / canvasDimForRef.height) * thumbHeight, 110);
 
   return (
     <div className="bottom-bar">
       <div className="bottom-bar-scroll">
         <label className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }}>
-          <input id="batch-import-input" type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
+          <input id="batch-import-input" type="file" multiple accept="image/png,image/jpeg" style={{ display: 'none' }} onChange={handleBatchImport} />
           <ImagePlus size={18} strokeWidth={1.5} />
           <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.batchImport')}</span>
         </label>
@@ -125,11 +120,6 @@ export const BottomBar = () => {
           const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
           const thumbWidth = (canvasDim.width / canvasDim.height) * thumbHeight;
 
-          const bezelSrc = getBezelPath(screen.bezelName);
-          const { device } = getBezelCategories(screen.bezelName);
-          const isIpad = device === 'iPad';
-          const layout = DEVICE_LAYOUT[isIpad ? 'iPad' : 'iPhone'];
-          const deviceHeight = DEVICE_REFERENCE_WIDTH / (isIpad ? (3 / 4) : (9 / 19.5));
 
           return (
             <div
@@ -171,93 +161,14 @@ export const BottomBar = () => {
               >
               <div 
                 className="thumb-preview" 
-                style={{ 
-                  background: screenBackground(screen),
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
+                style={{ position: 'relative', overflow: 'hidden' }}
               >
-                {(() => {
-                  const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
-                  const thumbScale = thumbHeight / canvasDim.height;
-                  const isTitleVisible = screen.showTitle !== false && screen.title.trim() !== '';
-                  const isSubtitleVisible = screen.showSubtitle !== false && screen.subtitle.trim() !== '';
-                  const showText = isTitleVisible || isSubtitleVisible;
-                   
-                  return (
-                     <div style={{
-                       pointerEvents: 'none',
-                       position: 'absolute',
-                       top: 0,
-                       left: '50%',
-                       width: `${canvasDim.width}px`,
-                       height: `${canvasDim.height}px`,
-                       marginLeft: `-${canvasDim.width / 2}px`,
-                       transform: `scale(${thumbScale})`,
-                       transformOrigin: 'top center',
-                       display: 'flex',
-                       flexDirection: 'column',
-                       alignItems: 'center',
-                       justifyContent: showText ? 'flex-start' : 'center',
-                       paddingTop: showText ? `${layout.paddingTop}px` : '0'
-                     }}>
-                    {showText ? (
-                      <div className="header-text" style={{
-                        marginBottom: `${layout.textMarginBottom}px`,
-                        width: '100%',
-                        padding: `0 ${TEXT_PADDING_X}px`,
-                        boxSizing: 'border-box',
-                        textShadow: TEXT_SHADOW,
-                        display: 'block'
-                      }}>
-                        {(screen.showTitle !== false && screen.title.trim() !== '') && (
-                          <h1 style={{ ...titleStyle(screen, device as 'iPhone' | 'iPad'), padding: `0 ${TEXT_LINE_PADDING_X}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                            {screen.title}
-                          </h1>
-                        )}
-                        {(screen.showSubtitle !== false && screen.subtitle.trim() !== '') && (
-                          <p style={{ ...subtitleStyle(screen, device as 'iPhone' | 'iPad'), padding: `0 ${TEXT_LINE_PADDING_X}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                            {screen.subtitle}
-                          </p>
-                        )}
-                      </div>
-                    ) : null}
-
-                      {/* Thumbnail Outer Bounding Box */}
-                      <div style={{
-                        marginTop: (screen.positioning === 'bottom' || screen.positioning === 'center' || !screen.positioning) ? 'auto' : undefined,
-                        marginBottom: (screen.positioning === 'top' || screen.positioning === 'center' || !screen.positioning) ? 'auto' : undefined,
-                        width: `${DEVICE_REFERENCE_WIDTH * screen.scale}px`,
-                        height: `${deviceHeight * screen.scale}px`,
-                        flexShrink: 0,
-                        position: 'relative'
-                      }}>
-                        {/* Thumbnail Inner Transformer */}
-                        <div style={{
-                          transform: `translate(${screen.offsetX}px, ${screen.offsetY}px) scale(${screen.scale}) rotate(${screen.rotation}deg)`,
-                          transformOrigin: 'top center',
-                          width: `${DEVICE_REFERENCE_WIDTH}px`,
-                          height: `${deviceHeight}px`,
-                          position: 'absolute',
-                          left: '50%',
-                          marginLeft: `-${DEVICE_REFERENCE_WIDTH / 2}px`,
-                          top: 0
-                        }}>
-                          <DeviceFrame
-                            bezelSrc={bezelSrc}
-                            screenshotSrc={screen.imageObjUrl}
-                            screenId={`thumb-${screen.id}`}
-                            onFileSelect={() => {}}
-                            cornerRadiusPx={layout.screenCornerRadius}
-                            isThumbnail={true}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })()}
-
-
+                <ScreenArtwork
+                  screen={screen}
+                  device={activeDeviceType}
+                  idPrefix="thumb-"
+                  style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', transform: `scale(${thumbHeight / canvasDim.height})`, transformOrigin: 'top left' }}
+                />
                 <span className="thumb-index">{index + 1}</span>
               </div>
               <button 

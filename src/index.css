@@ -345,6 +345,34 @@ button {
   margin: 14px 14px 12px;
 }
 
+/* Frame colour chips. */
+.frame-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.frame-color {
+  padding: 5px 11px;
+  border: none;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.frame-color:hover:not(.active) {
+  background: var(--fill-strong);
+}
+
+.frame-color.active {
+  background: var(--accent);
+  color: #fff;
+}
+
 /* ── Language list ───────────────────────────────────────────────────────── */
 
 .loc-list {
@@ -392,6 +420,49 @@ button {
 .loc-name {
   flex: 1;
   font-size: 13px;
+}
+
+.device-row {
+  min-height: 46px;
+}
+
+.device-row + .device-row::before {
+  left: 44px;
+}
+
+.device-icon {
+  display: inline-flex;
+  width: 22px;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.device-row.active .device-icon {
+  color: var(--accent);
+}
+
+.device-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.device-size {
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.device-count {
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--fill);
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
 }
 
 .loc-check {
