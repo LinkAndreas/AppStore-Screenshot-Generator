@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { useConfig } from '../store/ConfigContext';
-import { Trash, Plus, Image as ImageIcon } from 'lucide-react';
+import { createScreen } from '../store/screenFactory';
+import { X, Plus, ImagePlus } from 'lucide-react';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
 import { DeviceFrame } from './DeviceFrame';
 import { validateImageDimensions } from '../utils/imageValidation';
+import { screenBackground, subtitleStyle, titleStyle } from '../utils/screenStyle';
+import { DEVICE_LAYOUT, DEVICE_REFERENCE_WIDTH, TEXT_LINE_PADDING_X, TEXT_PADDING_X, TEXT_SHADOW } from '../shared/layout';
 
 export const BottomBar = () => {
   const { screens, selectedScreenId, setSelectedScreenId, removeScreen, addScreen, batchAddScreens, reorderScreens, activeDeviceType, activeLocalizationId, getDefaultTypography, setMobileTab, setRightSidebarTab, setAppError, t } = useConfig();
@@ -39,31 +42,9 @@ export const BottomBar = () => {
       return;
     }
     
-    const newScreens = validFiles.map(file => ({
-      id: crypto.randomUUID(),
-      imageObjUrl: URL.createObjectURL(file),
-      bezelName: activeDeviceType === 'iPad' ? 'iPad Pro 13 - M4 - Silver - Portrait' : 'iPhone 17 Pro Max - Silver - Portrait',
-      scale: activeDeviceType === 'iPad' ? 1.7 : 1.0,
-      offsetX: 0,
-      offsetY: 0,
-      rotation: 0,
-      positioning: 'top' as const,
-      ...getDefaultTypography(activeLocalizationId),
-      titleAlign: 'center' as const,
-      subtitleAlign: 'center' as const,
-      titleSize: activeDeviceType === 'iPad' ? 144 : 120,
-      subtitleSize: activeDeviceType === 'iPad' ? 72 : 60,
-      titleBold: true,
-      subtitleBold: false,
-      showTitle: true,
-      showSubtitle: true,
-      bgType: 'gradient' as const,
-      bgColor: '#ffffff',
-      bgGradientStart: '#0f172a',
-      bgGradientEnd: '#3b82f6',
-      titleColor: '#ffffff',
-      subtitleColor: '#ffffff',
-    }));
+    const newScreens = validFiles.map(file =>
+      createScreen(activeDeviceType, getDefaultTypography(activeLocalizationId), URL.createObjectURL(file))
+    );
 
     batchAddScreens(newScreens);
     e.target.value = '';
@@ -134,11 +115,11 @@ export const BottomBar = () => {
       <div className="bottom-bar-scroll">
         <label className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }}>
           <input type="file" multiple accept="image/*" style={{ display: 'none' }} onChange={handleBatchImport} />
-          <ImageIcon size={20} />
+          <ImagePlus size={18} strokeWidth={1.5} />
           <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.batchImport')}</span>
         </label>
 
-        <div style={{ width: '1px', height: `${thumbHeight - 20}px`, background: 'var(--panel-border)', margin: '0 12px' }} />
+        <div className="bottom-bar-divider" />
 
         {screens.map((screen, index) => {
           const canvasDim = SCREEN_DIMENSIONS[activeDeviceType];
@@ -147,6 +128,8 @@ export const BottomBar = () => {
           const bezelSrc = getBezelPath(screen.bezelName);
           const { device } = getBezelCategories(screen.bezelName);
           const isIpad = device === 'iPad';
+          const layout = DEVICE_LAYOUT[isIpad ? 'iPad' : 'iPhone'];
+          const deviceHeight = DEVICE_REFERENCE_WIDTH / (isIpad ? (3 / 4) : (9 / 19.5));
 
           return (
             <div
@@ -189,9 +172,7 @@ export const BottomBar = () => {
               <div 
                 className="thumb-preview" 
                 style={{ 
-                  background: screen.bgType === 'gradient' 
-                    ? `linear-gradient(135deg, ${screen.bgGradientStart}, ${screen.bgGradientEnd})` 
-                    : screen.bgColor,
+                  background: screenBackground(screen),
                   position: 'relative',
                   overflow: 'hidden'
                 }}
@@ -218,46 +199,24 @@ export const BottomBar = () => {
                        flexDirection: 'column',
                        alignItems: 'center',
                        justifyContent: showText ? 'flex-start' : 'center',
-                       paddingTop: showText ? '80px' : '0'
+                       paddingTop: showText ? `${layout.paddingTop}px` : '0'
                      }}>
                     {showText ? (
                       <div className="header-text" style={{
-                        marginBottom: '80px',
+                        marginBottom: `${layout.textMarginBottom}px`,
                         width: '100%',
-                        padding: '0 80px',
+                        padding: `0 ${TEXT_PADDING_X}px`,
                         boxSizing: 'border-box',
-                        textShadow: '0 8px 24px rgba(0,0,0,0.4)',
+                        textShadow: TEXT_SHADOW,
                         display: 'block'
                       }}>
                         {(screen.showTitle !== false && screen.title.trim() !== '') && (
-                          <h1 style={{ 
-                            fontSize: screen.titleSize ? `${screen.titleSize}px` : `${isIpad ? 84 : 92}px`, 
-                            color: screen.titleColor || '#ffffff',
-                            fontStyle: screen.titleItalic ? 'italic' : 'normal',
-                            textDecoration: screen.titleUnderline ? 'underline' : 'none',
-                            fontWeight: screen.titleBold !== false ? 800 : 500,
-                            margin: `0 0 ${isIpad ? '60px' : '40px'} 0`, 
-                            lineHeight: 1.4, 
-                            letterSpacing: '-3px', 
-                            fontFamily: 'var(--font-display)',
-                            textAlign: screen.titleAlign || 'center',
-                          }}>
+                          <h1 style={{ ...titleStyle(screen, device as 'iPhone' | 'iPad'), padding: `0 ${TEXT_LINE_PADDING_X}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                             {screen.title}
                           </h1>
                         )}
                         {(screen.showSubtitle !== false && screen.subtitle.trim() !== '') && (
-                          <p style={{ 
-                            fontSize: screen.subtitleSize ? `${screen.subtitleSize}px` : `${isIpad ? 48 : 52}px`, 
-                            color: screen.subtitleColor || '#ffffff',
-                            fontStyle: screen.subtitleItalic ? 'italic' : 'normal',
-                            textDecoration: screen.subtitleUnderline ? 'underline' : 'none',
-                            fontWeight: screen.subtitleBold !== false ? 700 : 400,
-                            margin: 0, 
-                            opacity: screen.subtitleColor ? 1 : 0.9, 
-                            lineHeight: 1.35, 
-                            letterSpacing: '-1px',
-                            textAlign: screen.subtitleAlign || 'center',
-                          }}>
+                          <p style={{ ...subtitleStyle(screen, device as 'iPhone' | 'iPad'), padding: `0 ${TEXT_LINE_PADDING_X}px`, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                             {screen.subtitle}
                           </p>
                         )}
@@ -268,8 +227,8 @@ export const BottomBar = () => {
                       <div style={{
                         marginTop: (screen.positioning === 'bottom' || screen.positioning === 'center' || !screen.positioning) ? 'auto' : undefined,
                         marginBottom: (screen.positioning === 'top' || screen.positioning === 'center' || !screen.positioning) ? 'auto' : undefined,
-                        width: `${1120 * screen.scale}px`,
-                        height: `${(1120 / (isIpad ? (3 / 4) : (9 / 19.5))) * screen.scale}px`,
+                        width: `${DEVICE_REFERENCE_WIDTH * screen.scale}px`,
+                        height: `${deviceHeight * screen.scale}px`,
                         flexShrink: 0,
                         position: 'relative'
                       }}>
@@ -277,11 +236,11 @@ export const BottomBar = () => {
                         <div style={{
                           transform: `translate(${screen.offsetX}px, ${screen.offsetY}px) scale(${screen.scale}) rotate(${screen.rotation}deg)`,
                           transformOrigin: 'top center',
-                          width: '1120px',
-                          height: `${(1120 / (isIpad ? (3 / 4) : (9 / 19.5)))}px`,
+                          width: `${DEVICE_REFERENCE_WIDTH}px`,
+                          height: `${deviceHeight}px`,
                           position: 'absolute',
                           left: '50%',
-                          marginLeft: '-560px',
+                          marginLeft: `-${DEVICE_REFERENCE_WIDTH / 2}px`,
                           top: 0
                         }}>
                           <DeviceFrame
@@ -289,7 +248,7 @@ export const BottomBar = () => {
                             screenshotSrc={screen.imageObjUrl}
                             screenId={`thumb-${screen.id}`}
                             onFileSelect={() => {}}
-                            cornerRadiusPx={isIpad ? 60 : 100}
+                            cornerRadiusPx={layout.screenCornerRadius}
                             isThumbnail={true}
                           />
                         </div>
@@ -299,12 +258,7 @@ export const BottomBar = () => {
                 })()}
 
 
-                <span 
-                  className="thumb-index" 
-                  style={{ position: 'absolute', bottom: '6px', left: '6px', zIndex: 20 }}
-                >
-                  {index + 1}
-                </span>
+                <span className="thumb-index">{String(index + 1).padStart(2, '0')}</span>
               </div>
               <button 
                 className="thumb-delete" 
@@ -313,14 +267,14 @@ export const BottomBar = () => {
                   removeScreen(screen.id);
                 }}
               >
-                <Trash size={12} />
+                <X size={12} />
               </button>
               </div>
             </div>
           );
         })}
         <button className="bottom-bar-add" style={{ minWidth: `${refThumbWidth}px`, height: `${thumbHeight}px` }} onClick={addScreen}>
-          <Plus size={isMobile ? 16 : 20} />
+          <Plus size={isMobile ? 16 : 18} strokeWidth={1.5} />
           <span style={{ fontSize: isMobile ? '10px' : '12px' }}>{t('bottomBar.addScreen')}</span>
         </button>
       </div>

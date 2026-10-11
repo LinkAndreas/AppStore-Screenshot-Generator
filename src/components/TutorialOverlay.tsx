@@ -8,7 +8,7 @@ import {
   Palette, 
   Globe, 
   Download,
-  Sparkles
+  Crop
 } from 'lucide-react';
 
 interface Step {
@@ -28,27 +28,27 @@ export const TutorialOverlay = () => {
     {
       title: t('tutorial.step1.title'),
       description: t('tutorial.step1.desc'),
-      icon: <Sparkles size={48} className="tutorial-icon-pulse" />
+      icon: <Crop size={18} strokeWidth={1.75} />
     },
     {
       title: t('tutorial.step2.title'),
       description: t('tutorial.step2.desc'),
-      icon: <Monitor size={48} />
+      icon: <Monitor size={18} strokeWidth={1.75} />
     },
     {
       title: t('tutorial.step3.title'),
       description: t('tutorial.step3.desc'),
-      icon: <Globe size={48} />
+      icon: <Globe size={18} strokeWidth={1.75} />
     },
     {
       title: t('tutorial.step4.title'),
       description: t('tutorial.step4.desc'),
-      icon: <Palette size={48} />
+      icon: <Palette size={18} strokeWidth={1.75} />
     },
     {
       title: t('tutorial.step5.title'),
       description: t('tutorial.step5.desc'),
-      icon: <Download size={48} />
+      icon: <Download size={18} strokeWidth={1.75} />
     }
   ];
 
@@ -73,269 +73,119 @@ export const TutorialOverlay = () => {
   const step = steps[currentStep];
 
   return (
-    <div className="tutorial-overlay">
-      <div className="tutorial-modal">
-        <button className="tutorial-close" onClick={handleSkip} aria-label={t('tutorial.skip')}>
-          <X size={20} />
+    <div className="overlay tutorial-overlay" style={{ zIndex: 10000 }}>
+      <div className="sheet tutorial-modal" role="dialog" aria-labelledby="tutorial-title">
+        <button className="icon-btn small tutorial-close" onClick={handleSkip} aria-label={t('tutorial.skip')}>
+          <X size={14} />
         </button>
 
         <div className="tutorial-content">
-          <div className="tutorial-icon-wrapper">
-            {step.icon}
+          <div className="tutorial-meta">
+            <span className="tutorial-icon">{step.icon}</span>
+            <span className="eyebrow">
+              {String(currentStep + 1).padStart(2, '0')} / {String(steps.length).padStart(2, '0')}
+            </span>
           </div>
-          
-          <h2 className="tutorial-title">{step.title}</h2>
-          <p className="tutorial-description">{step.description}</p>
+          <h2 id="tutorial-title" className="sheet-title">{step.title}</h2>
+          <p className="sheet-body">{step.description}</p>
+        </div>
 
-          <div className="tutorial-dots">
-            {steps.map((_, i) => (
-              <div 
-                key={i} 
-                className={`tutorial-dot ${i === currentStep ? 'active' : ''}`}
-              />
-            ))}
-          </div>
+        <div className="tutorial-progress" aria-hidden="true">
+          {steps.map((_, i) => (
+            <span key={i} className={i <= currentStep ? 'done' : ''} />
+          ))}
         </div>
 
         <div className="tutorial-footer">
-          <button 
-            className="tutorial-btn tutorial-btn-link" 
-            onClick={handleSkip}
-          >
+          <button className="text-link" onClick={handleSkip} style={{ alignSelf: 'center' }}>
             {t('tutorial.skip')}
           </button>
-          
           <div className="tutorial-nav-group">
             {currentStep > 0 && (
-              <button 
-                className="tutorial-btn tutorial-btn-secondary" 
-                onClick={handleBack}
-              >
-                <ChevronLeft size={18} />
+              <button className="secondary-btn" onClick={handleBack} style={{ width: 'auto' }}>
+                <ChevronLeft size={15} />
                 {t('tutorial.back')}
               </button>
             )}
-            
-            <button 
-              className="tutorial-btn tutorial-btn-primary" 
-              onClick={handleNext}
-            >
+            <button className="primary" onClick={handleNext}>
               {currentStep === steps.length - 1 ? t('tutorial.getStarted') : t('tutorial.next')}
-              {currentStep < steps.length - 1 && <ChevronRight size={18} />}
+              {currentStep < steps.length - 1 && <ChevronRight size={15} />}
             </button>
           </div>
         </div>
       </div>
 
       <style>{`
-        .tutorial-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          z-index: 10000;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background-color: rgba(0, 0, 0, 0.4);
-          backdrop-filter: blur(12px);
-          WebkitBackdropFilter: blur(12px);
-          animation: fadeIn 0.3s ease-out;
-          padding: 20px;
-        }
-
         .tutorial-modal {
-          background: var(--panel-bg);
-          border: 1px solid var(--panel-border);
-          border-radius: 32px;
-          width: 100%;
           max-width: 480px;
-          position: relative;
-          box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
           display: flex;
           flex-direction: column;
-          overflow: hidden;
-          animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .tutorial-close {
           position: absolute;
-          top: 24px;
-          right: 24px;
-          background: transparent;
-          border: none;
-          color: var(--text-muted);
-          cursor: pointer;
-          opacity: 0.6;
-          transition: all 0.2s;
-          padding: 8px;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10;
-        }
-
-        .tutorial-close:hover {
-          opacity: 1;
-          background: var(--button-hover);
+          top: 16px;
+          right: 16px;
         }
 
         .tutorial-content {
-          padding: 60px 40px 40px;
-          text-align: center;
+          padding: 32px 32px 28px;
           display: flex;
           flex-direction: column;
-          align-items: center;
+          gap: 14px;
         }
 
-        .tutorial-icon-wrapper {
-          width: 100px;
-          height: 100px;
-          background: var(--accent-glow);
-          border-radius: 30px;
+        .tutorial-meta {
           display: flex;
           align-items: center;
-          justify-content: center;
+          gap: 12px;
+          margin-bottom: 8px;
+        }
+
+        .tutorial-icon {
+          display: inline-flex;
           color: var(--accent);
-          margin-bottom: 32px;
-          position: relative;
         }
 
-        .tutorial-icon-pulse {
-          animation: iconPulse 2s infinite ease-in-out;
-        }
-
-        .tutorial-title {
-          font-size: 24px;
-          font-weight: 800;
-          color: var(--text-main);
-          margin: 0 0 16px;
-          letter-spacing: -0.03em;
-          line-height: 1.2;
-        }
-
-        .tutorial-description {
-          font-size: 16px;
-          color: var(--text-muted);
-          margin: 0 0 32px;
-          line-height: 1.6;
-        }
-
-        .tutorial-dots {
+        .tutorial-progress {
           display: flex;
-          gap: 8px;
-          margin-top: auto;
+          gap: 4px;
+          padding: 0 32px;
         }
 
-        .tutorial-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 4px;
+        .tutorial-progress span {
+          flex: 1;
+          height: 2px;
           background: var(--panel-border);
-          transition: all 0.3s ease;
+          transition: background 0.2s;
         }
 
-        .tutorial-dot.active {
-          width: 24px;
+        .tutorial-progress span.done {
           background: var(--accent);
         }
 
         .tutorial-footer {
-          padding: 24px 32px;
-          background: var(--sub-panel-bg);
-          border-top: 1px solid var(--panel-border);
+          padding: 20px 32px 24px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-        }
-
-        .tutorial-btn {
-          height: 48px;
-          padding: 0 24px;
-          border-radius: 14px;
-          font-size: 15px;
-          font-weight: 700;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          border: none;
-        }
-
-        .tutorial-btn-primary {
-          background: var(--accent);
-          color: white;
-          box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        .tutorial-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 28px rgba(59, 130, 246, 0.4);
-          filter: brightness(1.1);
-        }
-
-        .tutorial-btn-secondary {
-          background: var(--button-bg);
-          color: var(--text-main);
-          border: 1px solid var(--panel-border);
-        }
-
-        .tutorial-btn-secondary:hover {
-          background: var(--button-hover);
-        }
-
-        .tutorial-btn-link {
-          background: transparent;
-          color: var(--text-muted);
-          padding: 0 12px;
-        }
-
-        .tutorial-btn-link:hover {
-          color: var(--text-main);
+          gap: 12px;
         }
 
         .tutorial-nav-group {
           display: flex;
-          gap: 12px;
-        }
-
-        @keyframes iconPulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.1); }
-          100% { transform: scale(1); }
-        }
-
-        @keyframes slideUp {
-          from { transform: translateY(30px) scale(0.95); opacity: 0; }
-          to { transform: translateY(0) scale(1); opacity: 1; }
+          gap: 8px;
         }
 
         @media (max-width: 640px) {
-          .tutorial-modal {
-            border-radius: 24px;
-          }
           .tutorial-content {
-            padding: 48px 24px 32px;
+            padding: 28px 22px 22px;
+          }
+          .tutorial-progress {
+            padding: 0 22px;
           }
           .tutorial-footer {
-            padding: 20px 24px;
-            flex-direction: column-reverse;
-            gap: 20px;
-          }
-          .tutorial-btn {
-            width: 100%;
-          }
-          .tutorial-nav-group {
-            width: 100%;
-            flex-direction: column;
-          }
-          .tutorial-btn-link {
-            height: auto;
-            padding: 4px;
+            padding: 18px 22px 22px;
           }
         }
       `}</style>

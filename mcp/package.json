@@ -1,0 +1,38 @@
+{
+  "name": "appstore-screenshot-mcp",
+  "version": "1.9.0",
+  "description": "MCP server that renders branded App Store screenshots with the same layout as the App Store Screenshot Generator.",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "appstore-screenshot-mcp": "dist/server.js"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && node build.mjs",
+    "start": "node dist/server.js",
+    "start:http": "node dist/server.js --http",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@fontsource/dm-sans": "^5.3.0",
+    "@fontsource/fraunces": "^5.3.0",
+    "@fontsource/instrument-serif": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/outfit": "^5.3.0",
+    "@fontsource/playfair-display": "^5.3.0",
+    "@fontsource/space-grotesk": "^5.3.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@resvg/resvg-js": "^2.6.2",
+    "image-size": "^2.0.4",
+    "jszip": "^3.10.2",
+    "satori": "^0.47.1",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
