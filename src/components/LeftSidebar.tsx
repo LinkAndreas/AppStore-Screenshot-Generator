@@ -5,6 +5,8 @@ import { LOCALIZATION_PRESETS } from '../translations';
 import { Plus, Sun, Moon, Trash2, Download, Layers, Smartphone, Tablet, Package, ChevronDown, Check, Laptop, Watch, BookOpen, type LucideIcon } from 'lucide-react';
 import { DEVICES, DEVICE_EXPORT_NAMES, DEVICE_TYPES, type DeviceType as Device } from '../shared/layout';
 import { CURRENT_VERSION } from '../releaseNotes';
+import { BrandMark } from './BrandMark';
+import { APP_NAME } from '../brand';
 
 const DEVICE_ICONS: Record<Device, LucideIcon> = {
   iPhone: Smartphone,
@@ -131,7 +133,7 @@ export const LeftSidebar = () => {
     const zip = new JSZip();
     try {
       await captureCurrentScreens(zip, config.activeDeviceType);
-      await triggerDownload(zip, `AppStore_${DEVICE_EXPORT_NAMES[config.activeDeviceType]}_${config.activeLocalizationId}.zip`);
+      await triggerDownload(zip, `${APP_NAME}_${DEVICE_EXPORT_NAMES[config.activeDeviceType]}_${config.activeLocalizationId}.zip`);
     } catch (err) {
       console.error('[Export] Error:', err);
       alert('Export failed. Check console.');
@@ -157,7 +159,7 @@ export const LeftSidebar = () => {
         await captureCurrentScreens(zip, config.activeDeviceType, loc.id);
       }
       config.setActiveLocalizationId(originalActiveId);
-      await triggerDownload(zip, `AppStore_Bulk_${deviceName}.zip`);
+      await triggerDownload(zip, `${APP_NAME}_${deviceName}_All_Languages.zip`);
     } catch (err) {
       console.error('[Export] Error:', err);
       alert('Bulk export failed.');
@@ -191,7 +193,7 @@ export const LeftSidebar = () => {
       config.setActiveDeviceType(originalDeviceType);
       config.setActiveLocalizationId(originalActiveId);
 
-      await triggerDownload(zip, 'AppStore_Total_Assets.zip');
+      await triggerDownload(zip, `${APP_NAME}_All_Screenshots.zip`);
     } catch (err) {
       console.error('[Export] Error:', err);
       alert('Total asset export failed.');
@@ -217,7 +219,7 @@ export const LeftSidebar = () => {
         await captureCurrentScreens(zip, device, deviceDir);
       }
       config.setActiveDeviceType(originalDeviceType);
-      await triggerDownload(zip, `AppStore_Devices_${config.activeLocalizationId}.zip`);
+      await triggerDownload(zip, `${APP_NAME}_All_Devices_${config.activeLocalizationId}.zip`);
     } catch (err) {
       console.error('[Export] Error:', err);
       alert('Export failed.');
@@ -273,12 +275,10 @@ export const LeftSidebar = () => {
   return (
     <div className="sidebar sidebar-left">
       <div className="sidebar-header">
-        <div className="app-icon" aria-hidden="true">
-          <Smartphone size={22} strokeWidth={2} />
-        </div>
+        <BrandMark size={40} className="brand-mark" />
         <div className="branding">
-          <h1 className="branding-title">{t('app.subtitle')}</h1>
-          <p className="branding-subtitle">{t('app.title')}</p>
+          <h1 className="branding-title">{APP_NAME}</h1>
+          <p className="branding-subtitle">{t('app.tagline')}</p>
         </div>
         <button
           className="icon-btn"
@@ -421,7 +421,7 @@ export const LeftSidebar = () => {
           {processingMessage || currentMode.title}
         </div>
         <button className="whats-new-link" onClick={() => config.setShowWhatsNew(true)}>
-          {t('whatsNew.version', { version: CURRENT_VERSION || '—' })} · {t('whatsNew.link')}
+          {APP_NAME} {CURRENT_VERSION} · {t('whatsNew.link')}
         </button>
       </div>
     </div>
