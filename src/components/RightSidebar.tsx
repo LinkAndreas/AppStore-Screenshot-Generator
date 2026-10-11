@@ -1,10 +1,9 @@
 import React from 'react';
-import { validateImageDimensions } from '../utils/imageValidation';
+import { acceptedSizesText, checkScreenshot } from '../utils/imageValidation';
 import { useConfig, type ScreenConfig } from '../store/ConfigContext';
-import { AVAILABLE_BEZELS, getBezelCategories } from '../constants';
 import { GRADIENT_PRESETS, SOLID_PRESETS, FONT_COLOR_PRESETS } from '../shared/presets';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, getScreenFont, screenFontStack, type ScreenFontId } from '../shared/fonts';
-import { DEVICE_LAYOUT, LAYOUT_LIMITS } from '../shared/layout';
+import { DEVICE_LAYOUT, LAYOUT_LIMITS, bezelsForDevice, getBezelSpec, offsetLimit } from '../shared/layout';
 import { ImagePlus, ArrowLeftRight, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, MousePointerClick } from 'lucide-react';
 
 const FONT_SIZE_OPTIONS = [
@@ -169,6 +168,7 @@ export const RightSidebar = () => {
     mobileSheetHeight,
     setMobileSheetHeight,
     setAppError,
+    activeDeviceType,
     t
   } = useConfig();
 
@@ -243,10 +243,9 @@ export const RightSidebar = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0] && selectedScreen) {
       const file = e.target.files[0];
-      const deviceType = bezelOptionsData?.device === 'iPad' ? 'iPad' : 'iPhone';
-      const isValid = await validateImageDimensions(file, deviceType);
-      if (!isValid) {
-        setAppError(t(deviceType === 'iPad' ? 'error.dimension.ipad' : 'error.dimension.iphone'));
+      const problem = await checkScreenshot(file, activeDeviceType);
+      if (problem) {
+        setAppError(t('error.dimension', problem));
         e.target.value = '';
         return;
       }
@@ -256,16 +255,12 @@ export const RightSidebar = () => {
     }
   };
 
-  // Helper for bezel options
-  const bezelOptionsData = selectedScreen ? (() => {
-    const { device, orientation } = getBezelCategories(selectedScreen.bezelName);
-    const validOptions = AVAILABLE_BEZELS.filter(b => {
-      const cats = getBezelCategories(b);
-      return cats.device === device && cats.orientation === orientation;
-    });
-    return { device, validOptions };
-  })() : null;
-  const deviceLayout = DEVICE_LAYOUT[bezelOptionsData?.device === 'iPad' ? 'iPad' : 'iPhone'];
+  const deviceLayout = DEVICE_LAYOUT[activeDeviceType];
+  const maxOffset = offsetLimit(activeDeviceType);
+  // Frames for this device, grouped by model (e.g. iPhone 18 Pro Max › Silver, Black, …).
+  const frameModels = [...new Set(bezelsForDevice(activeDeviceType).map(b => b.model))]
+    .map(model => ({ model, bezels: bezelsForDevice(activeDeviceType).filter(b => b.model === model) }));
+  const currentBezel = selectedScreen ? getBezelSpec(selectedScreen.bezelName, activeDeviceType) : null;
 
   const textSection = (type: 'title' | 'subtitle') => {
     if (!selectedScreen) return null;
@@ -356,19 +351,34 @@ export const RightSidebar = () => {
                 <div className="panel-group">
                   <h3>{t('layout.model')}</h3>
                   <div className="card">
-                  <div className="segmented wrap-free">
-                    {bezelOptionsData?.validOptions.map(name => {
-                      const display = name.split(' - ').slice(-2, -1)[0] ?? name;
-                      return (
+                  <div className="label-row">
+                    <span>{t('layout.frameModel')}</span>
+                    <select
+                      value={currentBezel?.model}
+                      style={{ width: '170px' }}
+                      onChange={e => {
+                        const model = frameModels.find(m => m.model === e.target.value);
+                        // Keep the colour when the new model has it.
+                        const next = model?.bezels.find(b => b.color === currentBezel?.color) ?? model?.bezels[0];
+                        if (next) updateScreen(selectedScreen.id, { bezelName: next.name });
+                      }}
+                    >
+                      {frameModels.map(m => <option key={m.model} value={m.model}>{m.model}</option>)}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <span className="field-label">{t('layout.frameColor')}</span>
+                    <div className="frame-colors">
+                      {frameModels.find(m => m.model === currentBezel?.model)?.bezels.map(b => (
                         <button
-                          key={name}
-                          className={selectedScreen.bezelName === name ? 'active' : ''}
-                          onClick={() => updateScreen(selectedScreen.id, { bezelName: name })}
+                          key={b.name}
+                          className={`frame-color ${currentBezel?.name === b.name ? 'active' : ''}`}
+                          onClick={() => updateScreen(selectedScreen.id, { bezelName: b.name })}
                         >
-                          {display}
+                          {b.color}
                         </button>
-                      );
-                    })}
+                      ))}
+                    </div>
                   </div>
                   </div>
                 </div>
@@ -412,14 +422,14 @@ export const RightSidebar = () => {
                     label={t('layout.offsetX')}
                     value={selectedScreen.offsetX || 0}
                     display={`${selectedScreen.offsetX || 0} px`}
-                    min={LAYOUT_LIMITS.offset.min} max={LAYOUT_LIMITS.offset.max} step={1}
+                    min={-maxOffset} max={maxOffset} step={1}
                     onChange={v => updateScreen(selectedScreen.id, { offsetX: Math.round(v) })}
                   />
                   <Slider
                     label={t('layout.offsetY')}
                     value={selectedScreen.offsetY || 0}
                     display={`${selectedScreen.offsetY || 0} px`}
-                    min={LAYOUT_LIMITS.offset.min} max={LAYOUT_LIMITS.offset.max} step={1}
+                    min={-maxOffset} max={maxOffset} step={1}
                     onChange={v => updateScreen(selectedScreen.id, { offsetY: Math.round(v) })}
                   />
                   <button
@@ -527,7 +537,7 @@ export const RightSidebar = () => {
                     <ImagePlus size={20} />
                     <span>{selectedScreen.imageObjUrl ? t('content.change') : t('content.upload')}</span>
                     <span className="hint">
-                      {t('content.sizeHint', { size: bezelOptionsData?.device === 'iPad' ? '2064 × 2752' : '1320 × 2868' })}
+                      {t('content.sizeHint', { size: acceptedSizesText(activeDeviceType) })}
                     </span>
                   </label>
                 </div>
