@@ -1,8 +1,8 @@
 name: Deploy to Hostinger VPS
 
-# GitHub builds the Docker image and pushes it to GitHub Container Registry, tagged with the commit
-# SHA. The VPS only receives compose.yaml, pulls that exact image and restarts the container. On the
-# VPS the container joins the shared `web` network, where the cloudflared container reaches it at
+# GitHub tests the MCP server, builds the Docker images (web app and MCP server) and pushes them to
+# GitHub Container Registry, tagged with the commit SHA. The VPS only receives compose.yaml, pulls
+# those exact images and restarts the containers. On the VPS the web container joins the shared `web` network, where the cloudflared container reaches it at
 # http://appstore-screenshot-generator:32775 and serves it (with HTTPS) at the domain.
 #
 # Roll back on the VPS: cd ~/appstore-screenshot-generator && TAG=<older commit sha> docker compose up -d
@@ -21,6 +21,7 @@ concurrency:
 
 env:
   IMAGE: ghcr.io/linkandreas/appstore-screenshot-generator
+  MCP_IMAGE: ghcr.io/linkandreas/appstore-screenshot-mcp
 
 jobs:
   build:
@@ -42,6 +43,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mcp/package-lock.json
+
+      - name: Test MCP server
+        working-directory: mcp
+        run: npm ci --no-audit --no-fund && npm run build && npm test
+
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
@@ -52,6 +64,18 @@ jobs:
             ${{ env.IMAGE }}:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Build and push MCP image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: mcp
+          push: true
+          tags: |
+            ${{ env.MCP_IMAGE }}:${{ github.sha }}
+            ${{ env.MCP_IMAGE }}:latest
+          cache-from: type=gha,scope=mcp
+          cache-to: type=gha,mode=max,scope=mcp
 
   deploy:
     needs: build
