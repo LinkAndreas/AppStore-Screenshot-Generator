@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { TRANSLATIONS, LOCALIZATION_PRESETS } from '../translations';
-import type { DeviceType } from '../shared/layout';
+import { DEVICE_TYPES, isDeviceType, type DeviceType } from '../shared/layout';
 import type { ScreenFontId } from '../shared/fonts';
 import { createScreen, LOCALIZED_DEFAULTS } from './screenFactory';
 
@@ -95,6 +95,8 @@ export interface AppContextType {
   uiLanguage: string;
   t: (key: string, params?: Record<string, string>) => string;
   projectHasScreens: boolean;
+  /** Number of screens for a device, in one language or (without locId) in all of them. */
+  screenCount: (device: DeviceType, locId?: string) => number;
   mobileSheetHeight: number;
   setMobileSheetHeight: (val: number) => void;
   appError: string | null;
@@ -105,7 +107,8 @@ const ConfigContext = createContext<AppContextType | null>(null);
 
 export const ConfigProvider = ({ children }: { children: ReactNode }) => {
   const [activeDeviceType, setActiveDeviceType] = useState<DeviceType>(() => {
-    return (localStorage.getItem('activeDeviceType') as DeviceType) || 'iPhone';
+    const saved = localStorage.getItem('activeDeviceType');
+    return isDeviceType(saved) ? saved : 'iPhone';
   });
 
   // Detect system language and find best match in presets
@@ -213,6 +216,11 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
 
   const projectHasScreens = Object.values(screenSets).some(set => set.length > 0);
 
+  const screenCount = (device: DeviceType, locId?: string) =>
+    locId !== undefined
+      ? screenSets[makeKey(device, locId)]?.length ?? 0
+      : localizations.reduce((n, l) => n + (screenSets[makeKey(device, l.id)]?.length ?? 0), 0);
+
   const updateCurrentScreens = (updater: (prev: ScreenConfig[]) => ScreenConfig[]) => {
     setScreenSets(prev => ({ ...prev, [activeKey]: updater(prev[activeKey] ?? []) }));
   };
@@ -261,8 +269,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     // Clean up all device×locale screen sets for this locale
     setScreenSets(prev => {
       const next = { ...prev };
-      delete next[makeKey('iPhone', id)];
-      delete next[makeKey('iPad', id)];
+      for (const device of DEVICE_TYPES) delete next[makeKey(device, id)];
       return next;
     });
     if (activeLocalizationId === id) setActiveLocalizationId('en-US');
@@ -312,6 +319,7 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
       uiLanguage,
       t,
       projectHasScreens,
+      screenCount,
       mobileSheetHeight,
       setMobileSheetHeight,
       appError,
