@@ -5,6 +5,7 @@ import {
 } from '../../src/shared/layout';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, type ScreenFontId } from '../../src/shared/fonts';
 import { GRADIENT_PRESETS, SOLID_PRESETS, readableTextColor } from '../../src/shared/presets';
+import { LAYOUT_PRESETS, presetValues, presetsForDevice, type LayoutPresetId } from '../../src/shared/layoutPresets';
 import type { LoadedImage } from './inputs';
 import type { ResolvedScreen } from './render';
 
@@ -31,11 +32,14 @@ export const styleShape = {
   textAlign: align.optional().describe('Alignment of both text lines (default center).'),
   frameModel: z.string().optional().describe('Device frame model, e.g. "iPhone 18 Pro Max", "iPhone 17 Pro Max", "MacBook Air" (see get_design_options). Default: the newest model.'),
   bezelColor: z.string().optional().describe('Device frame colour, e.g. Silver, Black, Cosmic Orange, Space Black, Midnight (see get_design_options).'),
-  devicePosition: z.enum(['top', 'center', 'bottom']).optional().describe('Where the device sits below the text (default top).'),
+  layoutPreset: z.enum(LAYOUT_PRESETS.map(p => p.id) as [LayoutPresetId, ...LayoutPresetId[]]).optional().describe(
+    'Composition: ' + LAYOUT_PRESETS.map(p => `${p.id} (${p.description})`).join('; ') + ' Default classic. scale, rotation, offsets, devicePosition and textPosition fine-tune it.'),
+  textPosition: z.enum(['top', 'bottom']).optional().describe('Text above (default) or below the device.'),
+  devicePosition: z.enum(['top', 'center', 'bottom']).optional().describe('Where the device sits in the space next to the text (default top).'),
   scale: z.number().min(0.2).max(LAYOUT_LIMITS.scale.max).optional().describe('Device size relative to the default width (1; iPad 1.5). Values above 1 let the device bleed off the bottom.'),
   rotation: z.number().min(LAYOUT_LIMITS.rotation.min).max(LAYOUT_LIMITS.rotation.max).optional().describe('Device rotation in degrees.'),
-  offsetX: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Horizontal device shift in px (Watch: ±200).'),
-  offsetY: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Vertical device shift in px (Watch: ±200).'),
+  offsetX: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Horizontal device shift in px of the output image, up to half the canvas.'),
+  offsetY: z.number().min(LAYOUT_LIMITS.offset.min).max(LAYOUT_LIMITS.offset.max).optional().describe('Vertical device shift in px (positive moves down), up to half the canvas.'),
 };
 
 export const brandSchema = z.object(styleShape).describe('Brand defaults applied to every screen.');
@@ -105,6 +109,28 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
   }
 
   const textAlign = pick('textAlign') ?? 'center';
+  // Placement: a layer's explicit values beat its preset; the screen's layer beats the brand's.
+  // Presets that don't suit the device (e.g. a tilted Mac) fall back to Classic.
+  const presetFor = (layer: StyleInput): LayoutPresetId | undefined => {
+    const id = layer.layoutPreset;
+    if (!id || presetsForDevice(device).some(p => p.id === id)) return id;
+    return 'classic';
+  };
+  for (const layer of [screen, brand]) {
+    if (layer.layoutPreset && presetFor(layer) !== layer.layoutPreset) {
+      warnings.push(`${label}: layoutPreset ${layer.layoutPreset} is not available for ${device}; used classic.`);
+      break;
+    }
+  }
+  const placement = (key: 'textPosition' | 'positioning' | 'scale' | 'rotation' | 'offsetX' | 'offsetY') => {
+    const field = key === 'positioning' ? 'devicePosition' : key;
+    for (const layer of [screen, brand]) {
+      if (layer[field] !== undefined) return layer[field];
+      const preset = presetFor(layer);
+      if (preset) return presetValues(device, preset)[key];
+    }
+    return presetValues(device, 'classic')[key];
+  };
   const background = layerBackground(screen) ?? layerBackground(brand) ?? { type: 'gradient', from: '#0f172a', to: '#3b82f6' };
   // Without explicit colours, text is white or near-black, whichever reads better (as "Auto" in the editor).
   const autoText = background.type === 'gradient' ? readableTextColor(background.from, background.to) : readableTextColor(background.color);
@@ -128,11 +154,12 @@ export const resolveScreen = (brand: StyleInput, screen: ScreenInput, image: Loa
     subtitleItalic: pick('subtitleItalic') ?? false,
     titleAlign: textAlign,
     subtitleAlign: textAlign,
-    devicePosition: pick('devicePosition') ?? 'top',
-    scale: pick('scale') ?? layout.defaultScale,
-    rotation: pick('rotation') ?? 0,
-    offsetX: pick('offsetX') ?? 0,
-    offsetY: pick('offsetY') ?? 0,
+    devicePosition: placement('positioning') as ResolvedScreen['devicePosition'],
+    textPosition: placement('textPosition') as ResolvedScreen['textPosition'],
+    scale: placement('scale') as number,
+    rotation: placement('rotation') as number,
+    offsetX: placement('offsetX') as number,
+    offsetY: placement('offsetY') as number,
   };
 };
 
@@ -172,7 +199,9 @@ export const designOptions = () => ({
   fonts: SCREEN_FONTS.map(f => ({ id: f.id, name: f.label, category: f.category, weights: f.weights, italic: f.hasItalic })),
   gradientPresets: GRADIENT_PRESETS.map(p => ({ name: p.name, category: p.category, from: p.start, to: p.end, textColor: readableTextColor(p.start, p.end) })),
   solidPresets: SOLID_PRESETS.map(p => ({ name: p.name, color: p.color })),
+  layoutPresets: LAYOUT_PRESETS.map(p => ({ id: p.id, name: p.name, description: p.description, devices: p.devices ?? DEVICE_TYPES })),
   layout: {
+    textPosition: ['top', 'bottom'],
     devicePosition: ['top', 'center', 'bottom'],
     scale: { min: 0.2, max: LAYOUT_LIMITS.scale.max },
     rotation: LAYOUT_LIMITS.rotation,

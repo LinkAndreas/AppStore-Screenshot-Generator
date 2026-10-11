@@ -15,6 +15,7 @@ const SHARED_STYLE_KEYS = [
 
 const pickLayout = (s: ScreenConfig): Partial<ScreenConfig> => ({
   bezelName: s.bezelName, scale: s.scale, rotation: s.rotation, offsetX: s.offsetX, offsetY: s.offsetY, positioning: s.positioning,
+  textPosition: s.textPosition,
 });
 
 export interface ScreenConfig {
@@ -46,6 +47,8 @@ export interface ScreenConfig {
   subtitleBold?: boolean;
   showTitle?: boolean;
   showSubtitle?: boolean;
+  /** Text above (default) or below the device. */
+  textPosition?: 'top' | 'bottom';
   /** Typefaces from src/shared/fonts.ts; unset means the defaults (Outfit / Inter). */
   titleFont?: ScreenFontId;
   subtitleFont?: ScreenFontId;

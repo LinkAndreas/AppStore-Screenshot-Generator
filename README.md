@@ -1,13 +1,24 @@
-# 📱 App Store Screenshot Generator
+<p align="center">
+  <img src="public/icon-192.png" width="96" height="96" alt="Storyframe logo">
+</p>
 
-**🔗 [Open AppStore Screenshot Generator](https://screenshots.linkandreas.de/)**
+<h1 align="center">Storyframe</h1>
 
-[![Version](https://img.shields.io/badge/version-1.11.0-blue.svg)](package.json)
+<p align="center"><b>Your app's story, frame by frame.</b></p>
+
+<p align="center"><b>🔗 <a href="https://screenshots.linkandreas.de/">Open Storyframe</a></b></p>
+
+[![Version](https://img.shields.io/badge/version-1.12.0-blue.svg)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6-purple?logo=vite)](https://vitejs.dev/)
 
-A professional, high-performance web tool designed for developers and designers to generate pixel-perfect App Store marketing screenshots in seconds. Stop wasting time with manual alignment and repetitive exports.
+App Store screenshots tell your app's story, one frame at a time. Storyframe turns your app's raw
+screenshots into that story: pick a layout, a background and an Apple device frame, write the
+headlines, and export pixel-perfect screenshots for every device and language. Free in the browser,
+or from AI agents over MCP.
+
+![Storyframe](public/og-image.png)
 
 *Coded using Google Antigravity.*
 
@@ -18,6 +29,7 @@ A professional, high-performance web tool designed for developers and designers 
 - **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
 - **🎨 Backgrounds**: 52 gradients for App Store screenshots in Vibrant, Warm, Cool, Soft and Dark, 28 solid colors, or your own, with text that stays readable automatically.
 - **✋ Simple Controls**: Text, Background and Device tabs in plain language; drag the device on the canvas; apply one screen's style to all screens.
+- **📐 Layouts**: Classic, Big & Bold, Floating, Text Below and Tilted presets as live previews, with full manual control (snap to centre, arrow-key nudging).
 - **🆕 What's New**: Release notes in the app, generated from [CHANGELOG.md](CHANGELOG.md).
 - **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
 - **🌓 Light & Dark Mode**: A clean, native-feeling editor that leaves the color to your screenshots.
@@ -64,7 +76,7 @@ A professional, high-performance web tool designed for developers and designers 
 
 ## 🤖 MCP Server for AI Agents
 
-The `mcp/` package is a [Model Context Protocol](https://modelcontextprotocol.io) server that renders
+The `mcp/` package is Storyframe's [Model Context Protocol](https://modelcontextprotocol.io) server that renders
 the same screenshots as the editor (same frames, layout and typefaces) without a browser, so an AI
 agent can produce a complete, branded set from your app's raw screenshots.
 
@@ -74,11 +86,11 @@ Add `https://screenshots.linkandreas.de/mcp` as a remote MCP server (Streamable 
 
 ```bash
 # Claude Code
-claude mcp add --transport http appstore-screenshots https://screenshots.linkandreas.de/mcp
+claude mcp add --transport http storyframe https://screenshots.linkandreas.de/mcp
 ```
 
 In Claude (web/desktop) add it under *Settings → Connectors → Add custom connector*; in Cursor add
-`{"mcpServers": {"appstore-screenshots": {"url": "https://screenshots.linkandreas.de/mcp"}}}` to
+`{"mcpServers": {"storyframe": {"url": "https://screenshots.linkandreas.de/mcp"}}}` to
 `.cursor/mcp.json`.
 
 The hosted server can't read files on your machine. Pass screenshots as https URLs, or upload them
@@ -95,7 +107,7 @@ Results come back as download links (each PNG plus a ZIP of the set) that expire
 
 ```bash
 npm run mcp:install && npm run mcp:build
-claude mcp add appstore-screenshots -- node "$PWD/mcp/dist/server.js"
+claude mcp add storyframe -- node "$PWD/mcp/dist/server.js"
 ```
 
 Locally, `image` can be a file path and the PNGs are written to `outputDir` (default
@@ -126,7 +138,7 @@ Screenshots of another accepted size (e.g. Mac 1440 × 900) or the same aspect r
 
 Example request to an agent:
 
-> Use the appstore-screenshots tools to make App Store screenshots for my habit tracker from
+> Use the Storyframe tools to make App Store screenshots for my habit tracker from
 > `./shots/*.png`, in English and German. Brand: cream background `#f3ede2`, ink text, Instrument
 > Serif headlines, Cosmic Orange frame.
 
