@@ -16,7 +16,9 @@ A professional, high-performance web tool designed for developers and designers 
 - **⚡ Bulk Export**: Generate high-resolution assets for multiple devices (iPhone & iPad) and all localizations in a single click.
 - **📱 Every App Store Slot**: iPhone 6.9", iPhone Duo (open and closed), iPad 13", Mac and Apple Watch (Ultra and Series), with Apple's latest frames: iPhone 18 Pro Max, iPhone Duo, iPad Pro M5, MacBook Pro and MacBook Air M5, Apple Watch Ultra 3 and Series 11 (plus iPhone 17 Pro Max and iPad Pro M4).
 - **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
-- **🎨 Premium Editor**: Curated palette of 28 high-impact gradients and 28 solid colors specifically chosen for marketing conversion.
+- **🎨 Backgrounds**: 52 gradients for App Store screenshots in Vibrant, Warm, Cool, Soft and Dark, 28 solid colors, or your own, with text that stays readable automatically.
+- **✋ Simple Controls**: Text, Background and Device tabs in plain language; drag the device on the canvas; apply one screen's style to all screens.
+- **🆕 What's New**: Release notes in the app, generated from [CHANGELOG.md](CHANGELOG.md).
 - **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
 - **🌓 Light & Dark Mode**: A clean, native-feeling editor that leaves the color to your screenshots.
 - **🤖 MCP Server**: Let Claude, Cursor or any MCP client render branded screenshot sets for you ([below](#-mcp-server-for-ai-agents)).
