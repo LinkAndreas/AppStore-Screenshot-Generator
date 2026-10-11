@@ -5,7 +5,7 @@ import { AVAILABLE_BEZELS, getBezelCategories } from '../constants';
 import { GRADIENT_PRESETS, SOLID_PRESETS, FONT_COLOR_PRESETS } from '../shared/presets';
 import { DEFAULT_SUBTITLE_FONT, DEFAULT_TITLE_FONT, SCREEN_FONTS, getScreenFont, screenFontStack, type ScreenFontId } from '../shared/fonts';
 import { DEVICE_LAYOUT, LAYOUT_LIMITS } from '../shared/layout';
-import { ImagePlus, ArrowLeftRight, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight } from 'lucide-react';
+import { ImagePlus, ArrowLeftRight, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, ChevronDown, ChevronRight, MousePointerClick } from 'lucide-react';
 
 const FONT_SIZE_OPTIONS = [
   { label: 'Auto', value: undefined },
@@ -40,9 +40,14 @@ const Slider = ({ label, value, display, min, max, step, onChange }: {
   <div className="field">
     <div className="slider-head">
       <span>{label}</span>
-      <span className="mono">{display}</span>
+      <span className="slider-value">{display}</span>
     </div>
-    <input type="range" min={min} max={max} step={step} value={value} onChange={e => onChange(parseFloat(e.target.value))} />
+    <input
+      type="range" min={min} max={max} step={step} value={value}
+      aria-label={label}
+      style={{ '--pct': `${((value - min) / (max - min)) * 100}%` } as React.CSSProperties}
+      onChange={e => onChange(parseFloat(e.target.value))}
+    />
   </div>
 );
 
@@ -112,9 +117,9 @@ const TypographyControls = ({
         </select>
       </div>
 
-      <div className="label-row">
-        <span>{t('style.format')}</span>
-        <div style={{ display: 'flex', gap: '6px' }}>
+      <div className="field">
+        <span className="field-label">{t('style.format')}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '6px' }}>
           <div className="segmented compact">
             <ToggleButton active={!!isBold} onClick={() => setBold(!isBold)} label="Bold"><Bold size={13} /></ToggleButton>
             <ToggleButton active={!!italic} onClick={() => setItalic(!italic)} label="Italic"><Italic size={13} /></ToggleButton>
@@ -270,22 +275,24 @@ export const RightSidebar = () => {
     return (
       <div className={`collapsible ${isOpen ? 'open' : ''}`}>
         <div className="collapsible-head">
+          <button onClick={() => toggleSection(type)} disabled={!isVisible} aria-expanded={isOpen}>
+            {isOpen ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
+            <span>{t(type === 'title' ? 'content.title' : 'content.subtitle')}</span>
+          </button>
           <input
             type="checkbox"
             className="custom-checkbox"
             checked={isVisible}
-            aria-label={t(type === 'title' ? 'content.title' : 'content.subtitle')}
+            title={t('content.show')}
+            aria-label={`${t('content.show')}: ${t(type === 'title' ? 'content.title' : 'content.subtitle')}`}
             onChange={e => {
               const val = e.target.checked;
               updateScreen(selectedScreen.id, { [visibleKey]: val });
+              if (val && !expandedSections.includes(type)) toggleSection(type);
               if (!val && expandedSections.includes(type)) toggleSection(type);
             }}
             onClick={e => e.stopPropagation()}
           />
-          <button onClick={() => toggleSection(type)} disabled={!isVisible}>
-            <span>{t(type === 'title' ? 'content.title' : 'content.subtitle')}</span>
-            {isOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
-          </button>
         </div>
         {isOpen && (
           <div className="collapsible-body">
@@ -319,15 +326,17 @@ export const RightSidebar = () => {
       </div>
 
       {!selectedScreen ? (
-        <div className="empty-state" style={{ padding: '48px 28px', flex: 1 }}>
-          <span className="eyebrow">{t('sidebar.inspector')}</span>
-          <h2 style={{ fontSize: '34px' }}>{t('sidebar.selectScreen')}</h2>
-          <p style={{ fontSize: '13px' }}>{t('sidebar.selectDesc')}</p>
+        <div className="empty-state" style={{ flex: 1, justifyContent: 'center', padding: '40px 28px' }}>
+          <div className="empty-icon" style={{ width: 56, height: 56, borderRadius: 14, background: 'var(--fill)', color: 'var(--text-muted)', boxShadow: 'none' }}>
+            <MousePointerClick size={26} strokeWidth={1.75} />
+          </div>
+          <h2 style={{ fontSize: '17px', fontWeight: 600 }}>{t('sidebar.selectScreen')}</h2>
+          <p style={{ fontSize: '13px', margin: 0 }}>{t('sidebar.selectDesc')}</p>
         </div>
       ) : (
         /* Main Customization Tabs */
         <>
-          <div className="tabs" role="tablist">
+          <div className="tabs segmented" role="tablist">
             {(['layout', 'style', 'content'] as const).map(tab => (
               <button
                 key={tab}
@@ -346,6 +355,7 @@ export const RightSidebar = () => {
               <>
                 <div className="panel-group">
                   <h3>{t('layout.model')}</h3>
+                  <div className="card">
                   <div className="segmented wrap-free">
                     {bezelOptionsData?.validOptions.map(name => {
                       const display = name.split(' - ').slice(-2, -1)[0] ?? name;
@@ -360,10 +370,12 @@ export const RightSidebar = () => {
                       );
                     })}
                   </div>
+                  </div>
                 </div>
 
                 <div className="panel-group">
                   <h3>{t('layout.positioning')}</h3>
+                  <div className="card">
                   <div className="field">
                     <span className="field-label">{t('layout.autoPlacement')}</span>
                     <div className="segmented">
@@ -416,6 +428,7 @@ export const RightSidebar = () => {
                   >
                     {t('layout.reset')}
                   </button>
+                  </div>
                 </div>
               </>
             )}
@@ -423,6 +436,7 @@ export const RightSidebar = () => {
             {rightSidebarTab === 'style' && (
               <div className="panel-group">
                 <h3>{t('style.bg')}</h3>
+                <div className="card">
                 <div className="segmented">
                   <button
                     className={selectedScreen.bgType === 'gradient' ? 'active' : ''}
@@ -494,6 +508,7 @@ export const RightSidebar = () => {
                     </button>
                   </>
                 )}
+                </div>
               </div>
             )}
 
@@ -509,10 +524,10 @@ export const RightSidebar = () => {
                   <h3>{t('content.screenshot')}</h3>
                   <label className="file-drop">
                     <input type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} />
-                    <ImagePlus size={18} strokeWidth={1.5} />
+                    <ImagePlus size={20} />
                     <span>{selectedScreen.imageObjUrl ? t('content.change') : t('content.upload')}</span>
-                    <span className="mono" style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                      {bezelOptionsData?.device === 'iPad' ? '2064 × 2752' : '1320 × 2868'} px
+                    <span className="hint">
+                      {t('content.sizeHint', { size: bezelOptionsData?.device === 'iPad' ? '2064 × 2752' : '1320 × 2868' })}
                     </span>
                   </label>
                 </div>
