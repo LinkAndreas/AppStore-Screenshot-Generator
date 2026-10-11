@@ -64,10 +64,10 @@ const inputHelp = (mode: Mode) => mode.kind === 'stdio'
 
 export const buildServer = (mode: Mode) => {
   const server = new McpServer(
-    { name: 'appstore-screenshots', title: 'App Store Screenshot Generator', version: VERSION },
+    { name: 'vitrine', title: 'Vitrine: App Store screenshots', version: VERSION },
     {
       instructions:
-        'Renders App Store marketing screenshots: the app screenshot inside an Apple device frame (iPhone 18/17 Pro Max, ' +
+        'Vitrine renders App Store marketing screenshots: the app screenshot inside an Apple device frame (iPhone 18/17 Pro Max, ' +
         'iPhone Duo open or closed, iPad Pro 13", MacBook Pro/Air, Apple Watch Ultra 3 / Series 11) on a branded background ' +
         'with a headline and description, at the exact sizes App Store Connect requires for each slot. Call get_design_options once, then render_screenshots with a brand ' +
         'and one entry per screen (repeat entries per device and locale). Check the returned previews and adjust. ' +
@@ -321,7 +321,7 @@ const startHttp = (port: number, prefix: string, publicUrl?: string) => {
           const zip = new JSZip();
           for (const [p, png] of result.files) zip.file(p, png);
           const data = await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-          res.writeHead(200, { 'content-type': 'application/zip', 'content-disposition': 'attachment; filename="AppStore_Screenshots.zip"', 'cache-control': 'private, max-age=3600' });
+          res.writeHead(200, { 'content-type': 'application/zip', 'content-disposition': 'attachment; filename="Vitrine_Screenshots.zip"', 'cache-control': 'private, max-age=3600' });
           return void res.end(data);
         }
         const png = result.files.get(name);

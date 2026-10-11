@@ -22,10 +22,12 @@
   --text-main: #1d1d1f;
   --text-soft: #424245;
   --text-muted: #86868b;
-  --accent: #0071e3;
-  --accent-hover: #0077ed;
+  /* Vitrine indigo (Apple's system indigo) and the brand gradient of the mark. */
+  --accent: #5856d6;
+  --accent-hover: #4f4dc9;
   --accent-ink: #ffffff;
-  --accent-glow: rgba(0, 113, 227, 0.12);
+  --accent-glow: rgba(88, 86, 214, 0.13);
+  --brand-gradient: linear-gradient(180deg, #8e8bff 0%, #4a46d8 100%);
   --danger: #ff3b30;
   --segment-active: #ffffff;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
@@ -52,9 +54,9 @@
   --text-main: #f5f5f7;
   --text-soft: #d1d1d6;
   --text-muted: #98989d;
-  --accent: #0a84ff;
-  --accent-hover: #409cff;
-  --accent-glow: rgba(10, 132, 255, 0.2);
+  --accent: #6e6cf0;
+  --accent-hover: #8583ff;
+  --accent-glow: rgba(110, 108, 240, 0.22);
   --danger: #ff453a;
   --segment-active: #636366;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
@@ -150,6 +152,16 @@ button {
   padding: 20px 18px 16px;
 }
 
+.brand-mark {
+  flex-shrink: 0;
+  filter: drop-shadow(0 1px 2px rgba(74, 70, 216, 0.25));
+}
+
+.empty-brand {
+  margin-bottom: 22px;
+  filter: drop-shadow(0 12px 28px rgba(74, 70, 216, 0.35));
+}
+
 .app-icon {
   width: 40px;
   height: 40px;
@@ -159,7 +171,7 @@ button {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background: linear-gradient(180deg, #3d9bff 0%, #0063e0 100%);
+  background: var(--brand-gradient);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 0 0 0.5px rgba(0, 0, 0, 0.12);
 }
 
@@ -904,8 +916,8 @@ button {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background: linear-gradient(180deg, #3d9bff 0%, #0063e0 100%);
-  box-shadow: 0 10px 30px rgba(0, 113, 227, 0.3);
+  background: var(--brand-gradient);
+  box-shadow: 0 10px 30px rgba(88, 86, 214, 0.32);
 }
 
 .empty-state h2 {
@@ -1801,7 +1813,7 @@ input[type='range']::-moz-range-thumb {
   align-items: center;
   justify-content: center;
   color: #fff;
-  background: linear-gradient(180deg, #3d9bff 0%, #0063e0 100%);
+  background: var(--brand-gradient);
 }
 
 .sheet-icon.danger {

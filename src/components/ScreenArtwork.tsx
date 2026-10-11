@@ -231,7 +231,7 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
 
       {/* Centre guide while dragging, when the device has snapped to the middle. */}
       {dragging && screen.offsetX === 0 && (
-        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 6, marginLeft: -3, background: '#0a84ff', opacity: 0.8, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: '50%', width: 6, marginLeft: -3, background: '#5e5ce6', opacity: 0.85, pointerEvents: 'none' }} />
       )}
     </div>
   );
