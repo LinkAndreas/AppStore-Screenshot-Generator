@@ -2,7 +2,7 @@
 
 **🔗 [Open AppStore Screenshot Generator](https://screenshots.linkandreas.de/)**
 
-[![Version](https://img.shields.io/badge/version-1.9.0-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-1.10.0-blue.svg)](package.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-6-purple?logo=vite)](https://vitejs.dev/)
@@ -18,7 +18,7 @@ A professional, high-performance web tool designed for developers and designers 
 - **🌍 Global Ready**: Comprehensive localization support with flag icons and automated text replacement.
 - **🎨 Premium Editor**: Curated palette of 28 high-impact gradients and 28 solid colors specifically chosen for marketing conversion.
 - **🔤 Brand Typefaces**: Eight self-hosted typefaces (sans and serif) for headlines and descriptions.
-- **🌓 Paper & Darkroom Themes**: A calm, proof-sheet editor in light and dark that leaves the color to your screenshots.
+- **🌓 Light & Dark Mode**: A clean, native-feeling editor that leaves the color to your screenshots.
 - **🤖 MCP Server**: Let Claude, Cursor or any MCP client render branded screenshot sets for you ([below](#-mcp-server-for-ai-agents)).
 - **⚙️ Precise Control**: Fine-tune scale, rotation, and offsets with a live, 60fps preview.
 
