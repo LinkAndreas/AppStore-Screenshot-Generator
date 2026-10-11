@@ -1,7 +1,7 @@
 {
   "name": "appstore-screenshot-mcp",
   "version": "1.11.0",
-  "description": "Vitrine MCP server: renders branded App Store screenshots with the same layouts and frames as the Vitrine editor.",
+  "description": "Storyframe MCP server: renders branded App Store screenshots with the same layouts and frames as the Storyframe editor.",
   "license": "MIT",
   "private": true,
   "type": "module",

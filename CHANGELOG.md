@@ -1,15 +1,15 @@
 # Changelog
 
-All notable changes to Vitrine (formerly the App Store Screenshot Generator). The app's "What's New" sheet is
+All notable changes to Storyframe (formerly the App Store Screenshot Generator). The app's "What's New" sheet is
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
 ## [Unreleased]
 
-Meet Vitrine: the screenshot generator has a name, a logo and its own colour, plus ready-made layouts and precise placement.
+Meet Storyframe: the screenshot generator has a name, a logo and its own colour, plus ready-made layouts and precise placement.
 
-- New name and look: Vitrine, a glass display case for your app, with an indigo accent, a new icon and a home-screen icon when added to your phone.
-- Exported ZIPs are named after Vitrine, for example Vitrine_iPhone_6.9_en-US.zip.
+- New name and look: Storyframe, because App Store screenshots tell your app's story frame by frame. With an indigo accent, a new icon and a home-screen icon when added to your phone.
+- Exported ZIPs are named after Storyframe, for example Storyframe_iPhone_6.9_en-US.zip.
 - Seven layouts to start from, shown as live previews of your screen: Classic, Big & Bold, Rising, Floating, Tilted Left, Tilted Right and Text Below.
 - Text can now sit below the device.
 - Fine-tune any layout: position, size, tilt, left/right and up/down are always at hand, the device snaps to the centre while dragging, and the arrow keys nudge it (Shift for bigger steps).
