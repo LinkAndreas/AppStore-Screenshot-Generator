@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useConfig } from '../store/ConfigContext';
 import type { ScreenConfig } from '../store/ConfigContext';
 import { getBezelPath, getBezelCategories, SCREEN_DIMENSIONS } from '../constants';
@@ -93,11 +93,42 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
   const internalWidth = bezelDims?.w || referenceWidth;
   const internalHeight = bezelDims?.h || (referenceWidth / (isIpad ? (3 / 4) : (9 / 19.5)));
   const baseScale = referenceWidth / internalWidth;
-  const actualScale = screen.scale * baseScale;
 
   const isTitleVisible = screen.showTitle !== false && screen.title.trim() !== '';
   const isSubtitleVisible = screen.showSubtitle !== false && screen.subtitle.trim() !== '';
   const showText = isTitleVisible || isSubtitleVisible;
+
+  // ------------------------------------------------------------------
+  // Fit: below a title and subtitle, a device at full scale runs past the
+  // canvas's bottom edge and loses what's at the bottom of its screen, as a
+  // tab bar. Unless it's placed at the bottom on purpose, to bleed off the
+  // edge, it shrinks just enough to fit whole under the text.
+  // ------------------------------------------------------------------
+  const headerRef = useRef<HTMLDivElement>(null);
+  const [headerHeight, setHeaderHeight] = useState(0);
+
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    if (!header) {
+      setHeaderHeight(0);
+      return;
+    }
+    const measure = () => setHeaderHeight(header.offsetHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, [showText]);
+
+  const paddingTop = showText ? (isIpad ? 200 : 100) : 0;
+  const headerGap = showText ? (isIpad ? 120 : 80) : 0;
+  const bottomGap = isIpad ? 120 : 80;
+  const availableHeight = canvasDim.height - paddingTop - headerHeight - headerGap - bottomGap;
+  const fitScale = availableHeight / internalHeight;
+  const chosenScale = screen.scale * baseScale;
+  const actualScale = screen.positioning === 'bottom' || fitScale <= 0
+    ? chosenScale
+    : Math.min(chosenScale, fitScale);
 
   return (
     <div
@@ -126,6 +157,7 @@ const ScreenCard = ({ screen, isSelected, onSelect, onFileSelect, onTextClick, u
       >
         {showText && (
           <div
+            ref={headerRef}
             className="header-text"
             style={{
               marginBottom: isIpad ? '120px' : '80px',
