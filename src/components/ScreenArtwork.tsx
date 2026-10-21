@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import type { ScreenConfig } from '../store/ConfigContext';
 import { resolveBezel } from '../constants';
-import { DEVICES, TEXT_LINE_PADDING_X, TEXT_PADDING_X, textShadow, type DeviceType } from '../shared/layout';
+import { DEVICES, TEXT_LINE_PADDING_X, TEXT_PADDING_X, fittedDeviceScale, textShadow, type DeviceType } from '../shared/layout';
 import { screenBackground, subtitleStyle, titleStyle } from '../utils/screenStyle';
 import { DeviceFrame } from './DeviceFrame';
 
@@ -120,9 +120,35 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
   const showSubtitle = screen.showSubtitle !== false && (screen.subtitle.trim() !== '' || focused === 'subtitle');
   const showText = showTitle || showSubtitle;
 
-  const actualScale = screen.scale * (layout.deviceWidth / bezel.width);
   const position = screen.positioning ?? 'center';
   const textBelow = screen.textPosition === 'bottom';
+
+  // The text block's height, for fitting the device under (or above) it; the MCP renderer
+  // measures the same block with satori.
+  const textRef = useRef<HTMLDivElement>(null);
+  const [textHeight, setTextHeight] = useState(0);
+  useLayoutEffect(() => {
+    const block = textRef.current;
+    if (!block) {
+      setTextHeight(0);
+      return;
+    }
+    const measure = () => setTextHeight(block.offsetHeight);
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(block);
+    return () => observer.disconnect();
+  }, [showText]);
+
+  const actualScale = fittedDeviceScale({
+    device,
+    scale: screen.scale * (layout.deviceWidth / bezel.width),
+    bezelHeight: bezel.height,
+    textHeight,
+    showText,
+    textBelow,
+    position,
+  });
   const linePadding = `0 ${TEXT_LINE_PADDING_X * layout.unit}px`;
 
   const line = (kind: 'title' | 'subtitle') => {
@@ -173,6 +199,7 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
     >
       {showText && (
         <div
+          ref={textRef}
           className="header-text"
           style={{
             width: '100%',
@@ -196,9 +223,10 @@ export const ScreenArtwork = ({ screen, device, className, style, editing, idPre
         className={editing ? 'device-drag' : undefined}
         style={{
           position: 'relative',
-          // The box may shrink when device and text overflow the canvas. The device is anchored to
-          // the side facing the text, so a large device bleeds off the far edge instead of covering
-          // the text. Both renderers place it the same way (see mcp/src/render.ts).
+          // The device is fitted to the canvas (fittedDeviceScale) unless it's placed at the edge away
+          // from the text; then the box may shrink, and the device, anchored to the side facing the
+          // text, bleeds off that edge instead of covering the text. Both renderers place it the
+          // same way (see mcp/src/render.ts).
           flexShrink: 1,
           minHeight: 0,
           cursor: editing ? (dragging ? 'grabbing' : 'grab') : undefined,
