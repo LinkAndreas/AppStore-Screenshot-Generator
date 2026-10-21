@@ -4,6 +4,10 @@ All notable changes to Storyframe (formerly the App Store Screenshot Generator).
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
+## [1.12.2] - 2026-10-21
+
+- Devices fit whole below a long title and subtitle, so what's at the bottom of the screen, like a tab bar, stays in sight. A device placed at the edge away from the text still bleeds off it.
+
 ## [1.12.1] - 2026-10-11
 
 - A new project page on GitHub with a gallery of what Storyframe makes.
