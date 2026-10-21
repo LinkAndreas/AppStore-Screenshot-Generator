@@ -8,6 +8,7 @@ import {
   TEXT_LINE_PADDING_X,
   TEXT_PADDING_X,
   TITLE_TYPOGRAPHY,
+  fittedDeviceScale,
   screenshotRect,
   textShadow,
   type BezelSpec,
@@ -99,31 +100,12 @@ export const renderDevice = async (bezel: BezelSpec, image: NonNullable<Resolved
   return new Resvg(svg, { fitTo: { mode: 'original' }, font: { loadSystemFonts: false } }).render().asPng();
 };
 
-/**
- * Builds the element tree for one screen, following CanvasRenderer.tsx: a column with optional
- * text on top and the device below, pushed up, centred or down with auto margins.
- */
-const buildTree = (s: ResolvedScreen): El => {
-  const { width, height } = SCREEN_DIMENSIONS[s.device];
+/** The title and subtitle as one column, without its margins, or null without text. */
+const buildTextBlock = (s: ResolvedScreen): El | null => {
   const layout = DEVICE_LAYOUT[s.device];
   const showTitle = s.title.trim() !== '';
   const showSubtitle = s.subtitle.trim() !== '';
-  const showText = showTitle || showSubtitle;
-
-  // Device box: the bezel PNG scaled so that scale 1 is the device's reference width.
-  const actualScale = s.scale * (layout.deviceWidth / s.bezel.width);
-  const boxW = s.bezel.width * actualScale;
-  const boxH = s.bezel.height * actualScale;
-
-  // The editor rotates around the box's top centre; satori rotates around the centre, so add the
-  // translation that turns one into the other.
-  // The editor scales and rotates around the edge facing the text (top centre, or bottom centre
-  // when the text is below); satori rotates around the centre, so add the difference.
-  const anchorBottom = s.textPosition === 'bottom';
-  const rad = (s.rotation * Math.PI) / 180;
-  const half = boxH / 2;
-  const tx = s.offsetX + (anchorBottom ? 1 : -1) * half * Math.sin(rad);
-  const ty = s.offsetY + (anchorBottom ? 1 : -1) * half * (1 - Math.cos(rad));
+  if (!showTitle && !showSubtitle) return null;
 
   const textLine = (text: string, kind: 'title' | 'subtitle') => {
     const isTitle = kind === 'title';
@@ -149,30 +131,87 @@ const buildTree = (s: ResolvedScreen): El => {
     }, text);
   };
 
+  return h('div', {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: `0 ${TEXT_PADDING_X * layout.unit}px`,
+    flexShrink: 0,
+  }, [showTitle && textLine(s.title, 'title'), showSubtitle && textLine(s.subtitle, 'subtitle')].filter(Boolean));
+};
+
+/**
+ * The text block's height as satori lays it out across the canvas's width, as the editor
+ * measures its own, so the device is fitted the same way in both.
+ */
+const measureTextHeight = async (s: ResolvedScreen): Promise<number> => {
+  const block = buildTextBlock(s);
+  if (!block) return 0;
+  const { width } = SCREEN_DIMENSIONS[s.device];
+  const svg = await satori(h('div', { display: 'flex', flexDirection: 'column', width }, [block]) as unknown as Parameters<typeof satori>[0], {
+    width,
+    fonts: loadScreenFonts(),
+    loadAdditionalAsset: async (code, segment) => loadFallbackFont(code, segment, s.locale, s.title + s.subtitle),
+  });
+  const match = svg.match(/<svg[^>]*\sheight="([\d.]+)"/);
+  return match ? Number(match[1]) : 0;
+};
+
+/**
+ * Builds the element tree for one screen, following CanvasRenderer.tsx: a column with optional
+ * text on top and the device below, pushed up, centred or down with auto margins.
+ */
+const buildTree = (s: ResolvedScreen, textHeight: number): El => {
+  const { width, height } = SCREEN_DIMENSIONS[s.device];
+  const layout = DEVICE_LAYOUT[s.device];
+  const showTitle = s.title.trim() !== '';
+  const showSubtitle = s.subtitle.trim() !== '';
+  const showText = showTitle || showSubtitle;
+
+  // Device box: the bezel PNG scaled so that scale 1 is the device's reference width, shrunk
+  // where it would run past the edge away from the text (as in the editor).
+  const actualScale = fittedDeviceScale({
+    device: s.device,
+    scale: s.scale * (layout.deviceWidth / s.bezel.width),
+    bezelHeight: s.bezel.height,
+    textHeight,
+    showText,
+    textBelow: s.textPosition === 'bottom',
+    position: s.devicePosition,
+  });
+  const boxW = s.bezel.width * actualScale;
+  const boxH = s.bezel.height * actualScale;
+
+  // The editor rotates around the box's top centre; satori rotates around the centre, so add the
+  // translation that turns one into the other.
+  // The editor scales and rotates around the edge facing the text (top centre, or bottom centre
+  // when the text is below); satori rotates around the centre, so add the difference.
+  const anchorBottom = s.textPosition === 'bottom';
+  const rad = (s.rotation * Math.PI) / 180;
+  const half = boxH / 2;
+  const tx = s.offsetX + (anchorBottom ? 1 : -1) * half * Math.sin(rad);
+  const ty = s.offsetY + (anchorBottom ? 1 : -1) * half * (1 - Math.cos(rad));
+
   const children: El[] = [];
   const textBelow = s.textPosition === 'bottom';
-  if (showText) {
+  const textBlock = buildTextBlock(s);
+  if (textBlock) {
     children.push(h('div', {
-      display: 'flex',
-      flexDirection: 'column',
-      width: '100%',
-      boxSizing: 'border-box',
-      padding: `0 ${TEXT_PADDING_X * layout.unit}px`,
+      ...textBlock.props.style,
       marginTop: textBelow ? layout.textMarginBottom : 0,
       marginBottom: textBelow ? 0 : layout.textMarginBottom,
-      flexShrink: 0,
-    }, [showTitle && textLine(s.title, 'title'), showSubtitle && textLine(s.subtitle, 'subtitle')].filter(Boolean)));
+    }, textBlock.props.children));
   }
 
   const deviceLayers = buildDeviceLayers(s.bezel, s.image, actualScale);
-
 
   const pos = s.devicePosition;
   children.push(h('div', {
     display: 'flex',
     position: 'relative',
-    // May shrink when device and text overflow the canvas; the device is anchored to the side
-    // facing the text so it bleeds off the far edge (as in the editor).
+    // May shrink when a device placed at the far edge overflows the canvas; it's anchored to the
+    // side facing the text so it bleeds off that edge (as in the editor).
     flexShrink: 1,
     minHeight: 0,
     width: boxW,
@@ -222,7 +261,8 @@ export interface RenderedScreen {
 /** Renders one screen to a PNG at App Store size, plus a small preview. */
 export const renderScreen = async (screen: ResolvedScreen, previewWidth = 360): Promise<RenderedScreen> => {
   const { width, height } = SCREEN_DIMENSIONS[screen.device];
-  const svg = await satori(buildTree(screen) as unknown as Parameters<typeof satori>[0], {
+  const textHeight = await measureTextHeight(screen);
+  const svg = await satori(buildTree(screen, textHeight) as unknown as Parameters<typeof satori>[0], {
     width,
     height,
     fonts: loadScreenFonts(),

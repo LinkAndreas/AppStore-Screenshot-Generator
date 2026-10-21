@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://screenshots.linkandreas.de/"><img src="https://img.shields.io/badge/Open_Storyframe-5856D6?style=for-the-badge" alt="Open Storyframe"></a>
   <a href="#-for-ai-agents-mcp"><img src="https://img.shields.io/badge/MCP-ready-5856D6?style=for-the-badge" alt="MCP ready"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.12.1-1d1d1f?style=for-the-badge" alt="Version 1.12.1"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.12.2-1d1d1f?style=for-the-badge" alt="Version 1.12.2"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1d1d1f?style=for-the-badge" alt="MIT license"></a>
 </p>
 
