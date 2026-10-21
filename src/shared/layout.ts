@@ -238,3 +238,32 @@ export const LAYOUT_LIMITS = {
 
 /** How far the device may move from its place: up to half the canvas, enough to leave the edge. */
 export const offsetLimit = (device: DeviceType) => Math.round(0.5 * Math.max(DEVICES[device].width, DEVICES[device].height));
+
+/**
+ * The device's scale on the canvas: shrunk where it would run past the edge away from the text,
+ * so the whole device shows, as a tab bar at the bottom of its screen. It keeps a margin to that
+ * edge as wide as the gap to the text. A device placed at that edge on purpose keeps its size and
+ * bleeds off it. Both renderers use this, with the text block's height as each one measured it.
+ */
+export const fittedDeviceScale = (o: {
+  device: DeviceType;
+  /** The scale from the size control, applied to the bezel's own pixels. */
+  scale: number;
+  bezelHeight: number;
+  /** Height of the text block without its margins; 0 without text. */
+  textHeight: number;
+  showText: boolean;
+  textBelow: boolean;
+  position: 'top' | 'center' | 'bottom';
+}) => {
+  const { height, layout } = DEVICES[o.device];
+  const bleeds = o.showText && (o.textBelow ? o.position === 'top' : o.position === 'bottom');
+  if (bleeds) return o.scale;
+  const textSpace = o.showText ? layout.paddingTop + o.textHeight + layout.textMarginBottom : layout.textMarginBottom;
+  // A centred device shares the room left over equally above and below it, so it needs twice
+  // the margin for that margin to remain below it.
+  const farMargin = o.position === 'center' ? 2 * layout.textMarginBottom : layout.textMarginBottom;
+  const available = height - textSpace - farMargin;
+  if (available <= 0 || o.bezelHeight <= 0) return o.scale;
+  return Math.min(o.scale, available / o.bezelHeight);
+};
