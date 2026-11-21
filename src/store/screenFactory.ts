@@ -5,11 +5,15 @@ import type { ScreenConfig } from './ConfigContext';
 export const LOCALIZED_DEFAULTS: Record<string, { title: string; subtitle: string }> = {
   'en-US': { title: 'Feature Title', subtitle: 'A short description here' },
   'de-DE': { title: 'Feature Titel', subtitle: 'Kurze Beschreibung hier' },
-  'fr-FR': { title: 'Titre du Feature', subtitle: 'Description courte ici' },
+  'fr-FR': { title: 'Titre de la fonctionnalité', subtitle: 'Une courte description ici' },
   'es-ES': { title: 'Título', subtitle: 'Breve descripción aquí' },
   'it-IT': { title: 'Titolo', subtitle: 'Breve descrizione' },
+  'pt-BR': { title: 'Título do recurso', subtitle: 'Uma breve descrição aqui' },
+  'nl-NL': { title: 'Functietitel', subtitle: 'Korte beschrijving hier' },
   'ja-JP': { title: 'タイトル', subtitle: 'ここに簡単な説明' },
-  'zh-CN': { title: '标题', subtitle: '在此输入简短描述' },
+  'ko-KR': { title: '기능 제목', subtitle: '여기에 짧은 설명' },
+  'zh-CN': { title: '功能标题', subtitle: '在此输入简短描述' },
+  'ru-RU': { title: 'Заголовок', subtitle: 'Краткое описание' },
 };
 
 /** A new screen for the device with the default style, optionally with an image already placed. */
