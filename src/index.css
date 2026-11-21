@@ -639,6 +639,23 @@ button {
   color: var(--accent);
 }
 
+.legal-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px 12px;
+  font-size: 11px;
+}
+
+.legal-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.legal-links a:hover {
+  color: var(--accent);
+}
+
 .whats-new {
   max-width: 440px;
   max-height: calc(100dvh - 48px);
