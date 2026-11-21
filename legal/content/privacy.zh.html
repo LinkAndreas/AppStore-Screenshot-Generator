@@ -1,0 +1,124 @@
+<p class="intro">
+  Storyframe 由 <strong>{{developerName}}</strong>（以下简称“我们”）开发和运营。本隐私政策依据《通用数据保护条例》（GDPR），说明你在使用位于
+  screenshots.linkandreas.de 的 Storyframe 网页应用及其位于 screenshots.linkandreas.de/mcp、面向 AI 智能体的托管 MCP 服务器时，哪些个人数据会被处理。
+</p>
+
+<p class="summary">
+  <strong>简而言之：</strong>Storyframe 没有账户，不设置 Cookie，也不使用任何分析或跟踪工具。编辑器完全在你的浏览器中运行：你添加的截图和撰写的文字绝不会离开你的设备。只有当你使用托管
+  MCP 服务器时，我们的服务器才会接收你的 AI 智能体发送的图片和文字，并在内存中最多保留一小时。
+</p>
+
+<h2 id="controller">1. 控制者</h2>
+<p>
+  对本政策所述个人数据处理负责的控制者为：<br />
+  {{developerBlock}}
+</p>
+
+<h2 id="no-collection">2. 无账户、无 Cookie、无跟踪</h2>
+<ul>
+  <li>Storyframe 既不需要也不提供用户账户，绝不会询问你的姓名、电子邮件地址或其他联系方式。</li>
+  <li>本网站不设置 Cookie。</li>
+  <li>本网站不含广告，也不含任何分析、跟踪或用户画像工具。</li>
+  <li>字体、设备边框及所有其他文件均由我们自己的服务器提供；你的浏览器不会从第三方服务器（例如字体或脚本 CDN）加载任何内容。</li>
+</ul>
+
+<h2 id="hosting">3. 网站的托管与分发</h2>
+<p>
+  本网站运行在我们向 Hostinger（Hostinger International Ltd., 61 Lordou Vironos Street, 6023 Larnaca, 塞浦路斯）租用的虚拟服务器上，该服务器位于德国法兰克福。本网站通过
+  Cloudflare（Cloudflare, Inc., 101 Townsend St., San Francisco, CA 94107, 美国）的网络分发：每个发往 screenshots.linkandreas.de 的请求都会经过
+  Cloudflare。Cloudflare 提供加密的 HTTPS 连接，通过安全隧道将请求转发到我们的服务器，并保护服务器免受攻击和过载。
+</p>
+<p>
+  当你打开本网站时，你的浏览器必然会传输技术信息，例如你的 IP 地址、请求的日期和时间、所请求的页面或文件、来源页面以及浏览器类型和版本。Cloudflare
+  和我们的服务器仅为分发网站并保障其安全与稳定而处理这些信息（GDPR 第 6 条第 1 款 (f) 项；我们的合法利益在于一个安全、正常运行的网站）。我们虚拟服务器上的 Web 服务器不记录访问日志。Cloudflare 为分发和保护本网站而处理连接数据，并可能要求你的浏览器向其报告连接失败的情况（Network Error Logging）。
+</p>
+<p>
+  linkandreas.de 域名启用了 Cloudflare 的电子邮件地址混淆（Email Obfuscation）功能：为保护电子邮件地址免受垃圾邮件机器人抓取，Cloudflare
+  会在分发页面时改写页面上的电子邮件链接，再由一个从与页面相同地址加载的 Cloudflare 小脚本在你的浏览器中将其还原。除上述连接数据外，此过程不会处理任何其他个人数据。
+</p>
+
+<h2 id="editor">4. 浏览器中的编辑器</h2>
+<p>编辑器的一切处理都<strong>在你的浏览器中本地完成</strong>：</p>
+<ul>
+  <li><strong>截图：</strong>你添加的图片直接在浏览器中打开，不会被上传。它们只保存在浏览器的内存中，当你重新加载或关闭页面时即会消失。</li>
+  <li><strong>你的项目：</strong>标题和描述、样式、布局、你正在处理的语言和设备、浅色或深色主题，以及你是否已看过教程和最新的“新功能”，都会保存在浏览器的本地存储（localStorage）中，这样你下次打开 Storyframe 时，之前的工作仍然都在。</li>
+  <li><strong>导出：</strong>完成的截图和 ZIP 文件在你的浏览器中生成，并直接保存到你的设备上。</li>
+  <li><strong>语言：</strong>编辑器会读取浏览器的语言设置，以便用你的语言显示界面；该设置既不会被保存，也不会被传输。</li>
+</ul>
+<p>
+  上述数据均不会传输给我们或任何第三方，我们也无法访问。将你的项目保存在本地存储中，是提供你所使用的编辑器所严格必需的（德国《电信数字服务数据保护法》（TDDDG）第 25 条第 2 款第 2 项）。你可以随时在浏览器设置中清除本网站的数据，以将其删除。
+</p>
+
+<h2 id="mcp">5. 面向 AI 智能体的 MCP 服务器</h2>
+<p>
+  Storyframe 在 screenshots.linkandreas.de/mcp 提供一个基于 Model Context Protocol（MCP）的服务器，Claude 或 Cursor 等 AI
+  智能体可以使用它来生成截图。如果你将 AI 智能体连接到该服务器，我们的服务器会处理智能体发送的请求：
+</p>
+<ul>
+  <li><strong>待生成的内容：</strong>标题和描述、颜色、字体、布局、语言区域（locale）以及应用截图；智能体以图片数据、上传文件或网址（URL）的形式发送这些截图。</li>
+  <li><strong>上传内容与生成结果：</strong>上传的图片和生成的截图只保存在服务器的内存中，不会写入磁盘，并最迟在一小时后删除（内存已满时会更早删除）。任何拥有下载链接的人都可以下载生成的文件；链接中包含一个随机且无法猜测的代码。</li>
+  <li><strong>来自网址的图片：</strong>如果智能体传递图片的 URL，我们的服务器会从该地址下载图片。该地址上的网站看到的是我们服务器的 IP 地址，而不是你的。</li>
+  <li><strong>其他文字的字体：</strong>如果文本包含内置字体未覆盖的字符（例如日文、中文或阿拉伯文），我们的服务器会向 Google Fonts（Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, 爱尔兰）请求合适的 Noto 字体。该请求包含该页面文字中使用的字符（已排序并去除重复），并由我们的服务器而非你的设备发出。</li>
+  <li><strong>防止滥用：</strong>为限制每个客户端的请求数量，服务器会在其内存中按 IP 地址统计一分钟内的请求次数。</li>
+</ul>
+<p>
+  MCP 服务器没有账户，也不需要访问密钥。我们处理这些数据，仅为生成你所请求的截图（GDPR 第 6 条第 1 款 (b) 项）以及保护服务免遭滥用（GDPR 第 6 条第 1 款 (f)
+  项）。你所使用的 AI 智能体及其提供方会依据其自身的条款和隐私政策处理你的数据，并对此负责。在网页浏览器中打开 MCP 地址时，你会被转到 GitHub（GitHub, Inc., 美国）上的项目页面。
+</p>
+<p>
+  如果你改为在自己的电脑上运行 MCP 服务器，截图会在本地生成，我们不会收到任何数据。届时，只有上述其他文字字体的请求会从你的电脑发送至 Google Fonts。
+</p>
+
+<h2 id="email">6. 通过电子邮件联系</h2>
+<p>
+  如果你通过电子邮件联系我们，我们仅为答复你的请求而处理你的电子邮件地址、邮件内容及其中包含的任何信息（GDPR 第 6 条第 1 款 (b) 项和 (f) 项），并在不再需要时将其删除。
+</p>
+
+<h2 id="recipients">7. 接收方与服务提供商</h2>
+<p>
+  我们不会出售、出租或分享个人数据。以下服务提供商处理数据：
+</p>
+<ul>
+  <li><strong>Hostinger</strong> – 虚拟服务器的运营（第 3 节）。</li>
+  <li><strong>Cloudflare</strong> – 网站和 MCP 服务器的分发与保护（第 3 节）。</li>
+</ul>
+<p>
+  Google 作为字体提供方，接收第 5 节所述的 MCP 服务器字体请求。
+</p>
+
+<h2 id="transfers">8. 向第三国传输</h2>
+<p>
+  Cloudflare, Inc. 和 Google Ireland Limited 的母公司 Google LLC 的总部均位于美国，因此个人数据可能会在美国处理；由于 Cloudflare 运营的是全球网络，连接数据也可能在欧洲经济区以外的其他国家处理。两家公司均已获得 EU–U.S. Data Privacy
+  Framework（欧盟—美国数据隐私框架）认证，欧盟委员会已就该框架通过充分性决定（GDPR 第 45 条）。
+</p>
+
+<h2 id="retention">9. 保存期限</h2>
+<ul>
+  <li>浏览器本地存储中的数据会一直保留在你的设备上，直到你将其删除。</li>
+  <li>MCP 服务器上的上传内容和生成的文件最迟在一小时后删除；请求计数在一分钟后删除。</li>
+  <li>电子邮件会在你的请求处理完毕后删除，除非适用法定保存期限。</li>
+</ul>
+
+<h2 id="rights">10. 你的权利</h2>
+<p>
+  根据 GDPR，你享有访问权（第 15 条）、更正权（第 16 条）、删除权（第 17 条）、限制处理权（第 18 条）、数据可携带权（第 20 条），以及反对基于合法利益的处理的权利（第 21
+  条）。如需行使这些权利，只需联系我们即可。由于编辑器将你的数据保存在你的设备上，你可以随时自行在设备上查看和删除这些数据。
+</p>
+
+<h2 id="authority">11. 投诉权</h2>
+<p>
+  你有权向数据保护监管机构提出投诉（GDPR 第 77 条），尤其是向你的惯常居住地或工作地所在的欧盟成员国的监管机构提出投诉。对我们具有管辖权的监管机构是
+  Landesbeauftragte für den Datenschutz und die Informationsfreiheit Baden-Württemberg（巴登-符腾堡州数据保护与信息自由专员），Lautenschlagerstraße 20,
+  70173 Stuttgart, 德国。
+</p>
+
+<h2 id="changes">12. 本政策的变更</h2>
+<p>
+  当 Storyframe 或法律要求发生变化时，我们可能会更新本隐私政策。最新版本始终发布在本页面上，并在顶部注明生效日期。
+</p>
+
+<h2 id="contact">13. 联系方式</h2>
+<p>
+  如果你对隐私或本政策有任何疑问，请通过
+  <a href="mailto:{{privacyEmail}}">{{privacyEmail}}</a> 联系我们。
+</p>

@@ -1,0 +1,155 @@
+<p class="intro">
+  Storyframe está desarrollada y gestionada por <strong>{{developerName}}</strong> («nosotros»). Esta política de
+  privacidad explica qué datos personales se tratan cuando usas la app web Storyframe en screenshots.linkandreas.de y
+  su servidor MCP alojado para agentes de IA en screenshots.linkandreas.de/mcp, de conformidad con el Reglamento
+  General de Protección de Datos (RGPD).
+</p>
+
+<p class="summary">
+  <strong>En resumen:</strong> Storyframe no tiene cuenta, no instala cookies y no utiliza herramientas de análisis
+  ni de seguimiento. El editor funciona por completo en tu navegador: las capturas de pantalla que añades y los textos
+  que escribes nunca salen de tu dispositivo. Solo si usas el servidor MCP alojado recibe nuestro servidor las
+  imágenes y los textos que envía tu agente de IA; los conserva en memoria durante una hora como máximo.
+</p>
+
+<h2 id="controller">1. Responsable del tratamiento</h2>
+<p>
+  El responsable de los tratamientos de datos personales descritos en esta política es:<br />
+  {{developerBlock}}
+</p>
+
+<h2 id="no-collection">2. Sin cuenta, sin cookies, sin seguimiento</h2>
+<ul>
+  <li>Storyframe no requiere ni ofrece una cuenta de usuario y nunca te pide tu nombre, tu dirección de correo electrónico ni otros datos de contacto.</li>
+  <li>El sitio web no instala cookies.</li>
+  <li>No contiene publicidad ni herramientas de análisis, seguimiento o elaboración de perfiles.</li>
+  <li>Las fuentes tipográficas, los marcos de dispositivo y todos los demás archivos se sirven desde nuestro propio servidor; tu navegador no carga nada desde servidores de terceros, como CDN de fuentes o de scripts.</li>
+</ul>
+
+<h2 id="hosting">3. Alojamiento y entrega del sitio web</h2>
+<p>
+  El sitio web funciona en un servidor virtual que alquilamos a Hostinger (Hostinger International Ltd., 61 Lordou
+  Vironos Street, 6023 Lárnaca, Chipre); el servidor se encuentra en Fráncfort, Alemania. Se entrega a través de la red de Cloudflare (Cloudflare, Inc., 101 Townsend
+  St., San Francisco, CA 94107, EE. UU.): cada solicitud a screenshots.linkandreas.de pasa por Cloudflare, que
+  proporciona la conexión HTTPS cifrada, reenvía la solicitud a nuestro servidor a través de un túnel seguro y lo
+  protege frente a ataques y sobrecargas.
+</p>
+<p>
+  Cuando abres el sitio web, tu navegador transmite necesariamente información técnica, como tu dirección IP, la
+  fecha y hora de la solicitud, la página o el archivo solicitado, la página de procedencia y el tipo y la versión de
+  tu navegador. Cloudflare y nuestro servidor tratan esta información únicamente para entregar el sitio web y
+  mantenerlo seguro y estable (art. 6.1.f del RGPD; nuestro interés legítimo es un sitio web seguro y que funcione).
+  El servidor web de nuestro servidor virtual no escribe registros de acceso. Cloudflare trata los datos de conexión para entregar y proteger el sitio web y también puede pedir a tu navegador que le notifique las conexiones fallidas (Network Error
+  Logging).
+</p>
+<p>
+  La ofuscación de correo electrónico de Cloudflare (Email Obfuscation) está activa para el dominio
+  linkandreas.de: para proteger las direcciones de correo de los bots de spam, Cloudflare reescribe los enlaces de
+  correo de nuestras páginas al entregarlas, y un pequeño script de Cloudflare, servido desde la misma dirección que
+  la página, los vuelve a descodificar en tu navegador. Con ello no se trata ningún dato personal más allá de los
+  datos de conexión descritos arriba.
+</p>
+
+<h2 id="editor">4. El editor en tu navegador</h2>
+<p>El editor lo trata todo <strong>localmente en tu navegador</strong>:</p>
+<ul>
+  <li><strong>Capturas de pantalla:</strong> las imágenes que añades se abren directamente en tu navegador y no se suben. Solo se conservan en la memoria de tu navegador y desaparecen cuando recargas o cierras la página.</li>
+  <li><strong>Tu proyecto:</strong> los títulos y descripciones, los estilos, los diseños, los idiomas y dispositivos en los que trabajas, tu tema claro u oscuro y si ya has visto el tutorial y las últimas «Novedades» se guardan en el almacenamiento local de tu navegador (localStorage), para que tu trabajo siga ahí la próxima vez que abras Storyframe.</li>
+  <li><strong>Exportación:</strong> las capturas de pantalla terminadas y el archivo ZIP se crean en tu navegador y se guardan directamente en tu dispositivo.</li>
+  <li><strong>Idioma:</strong> el editor lee el ajuste de idioma de tu navegador para mostrar su interfaz en tu idioma; este ajuste no se guarda ni se transmite.</li>
+</ul>
+<p>
+  Nada de esto se nos transmite a nosotros ni a terceros, y no tenemos acceso a ello. Guardar tu proyecto en el
+  almacenamiento local es estrictamente necesario para ofrecerte el editor que utilizas (§ 25, apdo. 2, n.º 2 TDDDG). Puedes
+  eliminarlo en cualquier momento borrando los datos de este sitio web en los ajustes de tu navegador.
+</p>
+
+<h2 id="mcp">5. Servidor MCP para agentes de IA</h2>
+<p>
+  Storyframe ofrece en screenshots.linkandreas.de/mcp un servidor basado en el Model Context Protocol (MCP) que los
+  agentes de IA, como Claude o Cursor, pueden usar para generar capturas de pantalla. Si conectas un agente de IA a
+  él, nuestro servidor trata las solicitudes que envía el agente:
+</p>
+<ul>
+  <li><strong>Contenido que se va a generar:</strong> títulos y descripciones, colores, fuentes tipográficas, diseños, idiomas (locales) y las capturas de pantalla de la app, que el agente envía como datos de imagen, como subida o como dirección web (URL).</li>
+  <li><strong>Subidas y resultados:</strong> las imágenes subidas y las capturas de pantalla generadas solo se conservan en la memoria del servidor, no se escriben en disco y se eliminan como muy tarde al cabo de una hora (antes si la memoria se llena). Cualquier persona que tenga el enlace de descarga puede descargar los archivos generados; los enlaces contienen un código aleatorio imposible de adivinar.</li>
+  <li><strong>Imágenes desde direcciones web:</strong> si el agente pasa la URL de una imagen, nuestro servidor la descarga desde esa dirección. El sitio web de esa dirección ve la dirección IP de nuestro servidor, no la tuya.</li>
+  <li><strong>Fuentes para otras escrituras:</strong> si un texto contiene caracteres que las fuentes integradas no cubren (por ejemplo, japonés, chino o árabe), nuestro servidor solicita una fuente Noto adecuada a Google Fonts (Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irlanda). La solicitud contiene los caracteres usados en el texto de esa pantalla, ordenados y sin repeticiones, y procede de nuestro servidor, no de tu dispositivo.</li>
+  <li><strong>Protección frente al uso indebido:</strong> para limitar el número de solicitudes por cliente, el servidor cuenta en su memoria, durante un minuto, las solicitudes por dirección IP.</li>
+</ul>
+<p>
+  El servidor MCP no tiene cuentas ni requiere claves de acceso. Tratamos estos datos únicamente para generar las
+  capturas de pantalla que has solicitado (art. 6.1.b del RGPD) y para proteger el servicio frente al uso indebido
+  (art. 6.1.f del RGPD). El agente de IA que utilizas y su proveedor tratan tus datos conforme a sus propias
+  condiciones y políticas de privacidad, de las que son responsables. Si abres la dirección MCP en un navegador web,
+  se te redirige a la página del proyecto en GitHub (GitHub, Inc., EE. UU.).
+</p>
+<p>
+  Si, en cambio, ejecutas el servidor MCP en tu propio ordenador, genera las capturas localmente y no recibimos
+  ningún dato. En ese caso, solo la solicitud de fuentes para otras escrituras descrita más arriba se envía desde tu
+  ordenador a Google Fonts.
+</p>
+
+<h2 id="email">6. Contacto por correo electrónico</h2>
+<p>
+  Si nos escribes por correo electrónico, tratamos tu dirección de correo, tu mensaje y los datos que incluyas
+  únicamente para responder a tu solicitud (art. 6.1.b y f del RGPD) y los eliminamos cuando dejan de ser
+  necesarios.
+</p>
+
+<h2 id="recipients">7. Destinatarios y proveedores de servicios</h2>
+<p>
+  No vendemos, alquilamos ni compartimos datos personales. Los siguientes proveedores de servicios tratan datos:
+</p>
+<ul>
+  <li><strong>Hostinger</strong> – funcionamiento del servidor virtual (apartado 3).</li>
+  <li><strong>Cloudflare</strong> – entrega y protección del sitio web y del servidor MCP (apartado 3).</li>
+</ul>
+<p>
+  Google recibe, como proveedor de fuentes, las solicitudes de fuentes del servidor MCP descritas en el apartado 5.
+</p>
+
+<h2 id="transfers">8. Transferencias a terceros países</h2>
+<p>
+  Cloudflare, Inc. y Google LLC, la empresa matriz de Google Ireland Limited, tienen su sede en EE. UU., por lo que
+  los datos personales pueden tratarse allí; como Cloudflare opera una red global, los datos de conexión también
+  pueden tratarse en otros países fuera del Espacio Económico Europeo. Ambas empresas están certificadas conforme al EU–U.S. Data Privacy
+  Framework (Marco de Privacidad de Datos UE-EE. UU.), para el que la Comisión Europea ha adoptado una decisión de
+  adecuación (art. 45 del RGPD).
+</p>
+
+<h2 id="retention">9. Plazo de conservación</h2>
+<ul>
+  <li>Los datos del almacenamiento local de tu navegador permanecen en tu dispositivo hasta que los eliminas.</li>
+  <li>Las subidas y los archivos generados del servidor MCP se eliminan como muy tarde al cabo de una hora; los contadores de solicitudes, al cabo de un minuto.</li>
+  <li>Los correos electrónicos se eliminan una vez atendida tu solicitud, salvo que se apliquen plazos legales de conservación.</li>
+</ul>
+
+<h2 id="rights">10. Tus derechos</h2>
+<p>
+  Conforme al RGPD, tienes derecho de acceso (art. 15), rectificación (art. 16), supresión (art. 17), limitación del
+  tratamiento (art. 18), portabilidad (art. 20) y oposición a los tratamientos basados en intereses legítimos
+  (art. 21). Para ejercerlos, basta con que te pongas en contacto con nosotros. Como el editor conserva tus datos en
+  tu dispositivo, puedes consultarlos y eliminarlos allí tú mismo en cualquier momento.
+</p>
+
+<h2 id="authority">11. Derecho a presentar una reclamación</h2>
+<p>
+  Tienes derecho a presentar una reclamación ante una autoridad de control de protección de datos (art. 77 del
+  RGPD), en particular en el Estado miembro de la UE en el que tengas tu residencia habitual o tu lugar de trabajo.
+  La autoridad competente para nosotros es el Landesbeauftragte für den Datenschutz und die Informationsfreiheit
+  Baden-Württemberg (Comisionado de Protección de Datos y Libertad de Información de Baden-Wurtemberg),
+  Lautenschlagerstraße 20, 70173 Stuttgart, Alemania.
+</p>
+
+<h2 id="changes">12. Cambios en esta política</h2>
+<p>
+  Podemos actualizar esta política de privacidad cuando cambien Storyframe o los requisitos legales. La versión
+  vigente se publica siempre en esta página, con su fecha de entrada en vigor al principio.
+</p>
+
+<h2 id="contact">13. Contacto</h2>
+<p>
+  Si tienes preguntas sobre privacidad o sobre esta política, escríbenos a
+  <a href="mailto:{{privacyEmail}}">{{privacyEmail}}</a>.
+</p>

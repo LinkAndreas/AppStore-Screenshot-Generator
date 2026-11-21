@@ -131,13 +131,16 @@ export const ConfigProvider = ({ children }: { children: ReactNode }) => {
     return isDeviceType(saved) ? saved : 'iPhone';
   });
 
-  // Detect system language and find best match in presets
+  // The first of the browser's preferred languages that a preset covers, matched by language
+  // subtag (pt-PT → pt-BR, zh-TW → zh-CN, nl-BE → nl-NL); English otherwise.
   const getInitialLocalization = (): Localization => {
-    const sysLang = navigator.language.toLowerCase();
-    const match = LOCALIZATION_PRESETS.find(p => 
-      sysLang.startsWith(p.id.split('-')[0].toLowerCase())
-    );
-    return match || LOCALIZATION_PRESETS[0]; // Fallback to en-US
+    const preferred = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const lang of preferred) {
+      const primary = lang.toLowerCase().split('-')[0];
+      const match = LOCALIZATION_PRESETS.find(p => p.id.split('-')[0].toLowerCase() === primary);
+      if (match) return match;
+    }
+    return LOCALIZATION_PRESETS[0];
   };
 
   const [uiLanguage] = useState<string>(() => getInitialLocalization().id);

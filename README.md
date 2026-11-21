@@ -10,7 +10,7 @@
 <p align="center">
   <a href="https://screenshots.linkandreas.de/"><img src="https://img.shields.io/badge/Open_Storyframe-5856D6?style=for-the-badge" alt="Open Storyframe"></a>
   <a href="#-for-ai-agents-mcp"><img src="https://img.shields.io/badge/MCP-ready-5856D6?style=for-the-badge" alt="MCP ready"></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.12.2-1d1d1f?style=for-the-badge" alt="Version 1.12.2"></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-1.13.0-1d1d1f?style=for-the-badge" alt="Version 1.13.0"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-1d1d1f?style=for-the-badge" alt="MIT license"></a>
 </p>
 
@@ -44,7 +44,7 @@ Store Connect. Free, in your browser, no sign-up. Your screenshots never leave y
 | 📱 **Official Apple frames** | iPhone 18 & 17 Pro Max, iPhone Duo, iPad Pro M5 & M4, MacBook Pro & Air, Apple Watch Ultra 3 & Series 11, fitted pixel-perfectly. |
 | 🎨 **Backgrounds** | 52 gradients made for App Store screenshots, 28 solid colors, or your own, with text that stays readable automatically. |
 | 🔤 **Typography** | Eight typefaces, sizes S to XL, alignment and colors for headline and subtitle. |
-| 🌍 **Every language** | A set of screens per language; non-Latin scripts like Japanese and Chinese render correctly. |
+| 🌍 **Every language** | A set of screens per language; non-Latin scripts like Japanese, Chinese, Korean and Russian render correctly. The editor itself speaks English, German, French, Spanish, Italian, Portuguese (Brazil), Dutch, Japanese, Korean, Chinese (Simplified) and Russian. |
 | ✋ **Precise control** | Drag the device on the canvas, nudge it with the arrow keys, snap to center, tilt and scale. |
 | ⚡ **One-click export** | All devices and languages at App Store resolution in one ZIP. |
 | 🤖 **AI agents** | An MCP server lets Claude, Cursor and other agents create complete, branded sets for you. |

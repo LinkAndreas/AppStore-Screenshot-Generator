@@ -17,6 +17,9 @@ const DEVICE_ICONS: Record<Device, LucideIcon> = {
   WatchUltra: Watch,
   Watch: Watch,
 };
+
+/** URL language code of the legal pages (legal/site.ts) for a UI language, e.g. pt-BR → pt-br, zh-CN → zh. */
+const legalPageLanguage = (uiLanguage: string) => (uiLanguage === 'pt-BR' ? 'pt-br' : uiLanguage.split('-')[0]);
 import JSZip from 'jszip';
 import FileSaver from 'file-saver';
 import { toBlob } from 'html-to-image';
@@ -423,6 +426,14 @@ export const LeftSidebar = () => {
         <button className="whats-new-link" onClick={() => config.setShowWhatsNew(true)}>
           {APP_NAME} {CURRENT_VERSION} · {t('whatsNew.link')}
         </button>
+        {/* Static pages next to the app (legal/); a new tab keeps the open project and its screenshots. */}
+        <nav className="legal-links" aria-label={t('legal.nav')}>
+          {(['imprint', 'privacy', 'versions'] as const).map(page => (
+            <a key={page} href={`/${page}/${legalPageLanguage(config.uiLanguage)}/`} target="_blank" rel="noopener">
+              {t(`legal.${page}`)}
+            </a>
+          ))}
+        </nav>
       </div>
     </div>
   );
