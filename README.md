@@ -44,7 +44,7 @@ Store Connect. Free, in your browser, no sign-up. Your screenshots never leave y
 | 📱 **Official Apple frames** | iPhone 18 & 17 Pro Max, iPhone Duo, iPad Pro M5 & M4, MacBook Pro & Air, Apple Watch Ultra 3 & Series 11, fitted pixel-perfectly. |
 | 🎨 **Backgrounds** | 52 gradients made for App Store screenshots, 28 solid colors, or your own, with text that stays readable automatically. |
 | 🔤 **Typography** | Eight typefaces, sizes S to XL, alignment and colors for headline and subtitle. |
-| 🌍 **Every language** | A set of screens per language; non-Latin scripts like Japanese and Chinese render correctly. |
+| 🌍 **Every language** | A set of screens per language; non-Latin scripts like Japanese, Chinese, Korean and Russian render correctly. The editor itself speaks English, German, French, Spanish, Italian, Portuguese (Brazil), Dutch, Japanese, Korean, Chinese (Simplified) and Russian. |
 | ✋ **Precise control** | Drag the device on the canvas, nudge it with the arrow keys, snap to center, tilt and scale. |
 | ⚡ **One-click export** | All devices and languages at App Store resolution in one ZIP. |
 | 🤖 **AI agents** | An MCP server lets Claude, Cursor and other agents create complete, branded sets for you. |
