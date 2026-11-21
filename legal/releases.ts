@@ -13,6 +13,78 @@ export interface ReleaseText {
 }
 
 export const translations: Record<string, Partial<Record<Exclude<Lang, 'en'>, ReleaseText>>> = {
+  '1.13.0': {
+    de: {
+      summary: 'Storyframe spricht jetzt elf Sprachen.',
+      notes: [
+        'Der Editor gibt es auf Englisch, Deutsch, Französisch, Spanisch, Italienisch, brasilianischem Portugiesisch, Niederländisch, Japanisch, Koreanisch, vereinfachtem Chinesisch und Russisch, und er öffnet sich in der Sprache deines Browsers. Portugiesisch, Niederländisch, Koreanisch und Russisch kannst du jetzt auch als Sprache für deine Screenshots hinzufügen.',
+        'Impressum, Datenschutzerklärung und Versionshistorie, verlinkt unten in der Seitenleiste.',
+      ],
+    },
+    fr: {
+      summary: 'Storyframe parle désormais onze langues.',
+      notes: [
+        'L’éditeur est disponible en anglais, allemand, français, espagnol, italien, portugais du Brésil, néerlandais, japonais, coréen, chinois simplifié et russe, et s’ouvre dans la langue de ton navigateur. Tu peux aussi ajouter le portugais, le néerlandais, le coréen et le russe comme langues de tes captures.',
+        'Mentions légales, politique de confidentialité et historique des versions, accessibles en bas de la barre latérale.',
+      ],
+    },
+    es: {
+      summary: 'Storyframe ahora habla once idiomas.',
+      notes: [
+        'El editor está disponible en inglés, alemán, francés, español, italiano, portugués de Brasil, neerlandés, japonés, coreano, chino simplificado y ruso, y se abre en el idioma de tu navegador. También puedes añadir portugués, neerlandés, coreano y ruso como idiomas de tus capturas.',
+        'Aviso legal, política de privacidad e historial de versiones, enlazados en la parte inferior de la barra lateral.',
+      ],
+    },
+    it: {
+      summary: 'Storyframe ora parla undici lingue.',
+      notes: [
+        'L’editor è disponibile in inglese, tedesco, francese, spagnolo, italiano, portoghese brasiliano, olandese, giapponese, coreano, cinese semplificato e russo, e si apre nella lingua del tuo browser. Puoi anche aggiungere portoghese, olandese, coreano e russo come lingue delle tue schermate.',
+        'Note legali, informativa sulla privacy e cronologia versioni, con i link in fondo alla barra laterale.',
+      ],
+    },
+    'pt-br': {
+      summary: 'O Storyframe agora fala onze idiomas.',
+      notes: [
+        'O editor está disponível em inglês, alemão, francês, espanhol, italiano, português do Brasil, holandês, japonês, coreano, chinês simplificado e russo, e abre no idioma do seu navegador. Você também pode adicionar português, holandês, coreano e russo como idiomas das suas capturas.',
+        'Aviso legal, Política de Privacidade e histórico de versões, com links no fim da barra lateral.',
+      ],
+    },
+    nl: {
+      summary: 'Storyframe spreekt nu elf talen.',
+      notes: [
+        'De editor is beschikbaar in het Engels, Duits, Frans, Spaans, Italiaans, Braziliaans-Portugees, Nederlands, Japans, Koreaans, vereenvoudigd Chinees en Russisch, en opent in de taal van je browser. Je kunt Portugees, Nederlands, Koreaans en Russisch nu ook als taal voor je screenshots toevoegen.',
+        'Juridische informatie, privacybeleid en versiegeschiedenis, gelinkt onderaan de navigatiekolom.',
+      ],
+    },
+    ja: {
+      summary: 'Storyframeが11の言語に対応しました。',
+      notes: [
+        'エディタは英語、ドイツ語、フランス語、スペイン語、イタリア語、ポルトガル語（ブラジル）、オランダ語、日本語、韓国語、簡体字中国語、ロシア語で使え、ブラウザの言語で開きます。ポルトガル語、オランダ語、韓国語、ロシア語もスクリーンショットの言語として追加できるようになりました。',
+        '法的表示、プライバシーポリシー、バージョン履歴へのリンクをサイドバーの下部に追加しました。',
+      ],
+    },
+    ko: {
+      summary: 'Storyframe이 이제 11개 언어를 지원해요.',
+      notes: [
+        '편집기를 영어, 독일어, 프랑스어, 스페인어, 이탈리아어, 포르투갈어(브라질), 네덜란드어, 일본어, 한국어, 중국어(간체), 러시아어로 사용할 수 있고, 브라우저 언어로 열려요. 포르투갈어, 네덜란드어, 한국어, 러시아어도 스크린샷 언어로 추가할 수 있어요.',
+        '사이드바 아래쪽에 법적 고지, 개인정보 처리방침, 버전 기록 링크가 생겼어요.',
+      ],
+    },
+    zh: {
+      summary: 'Storyframe 现在支持 11 种语言。',
+      notes: [
+        '编辑器支持英语、德语、法语、西班牙语、意大利语、巴西葡萄牙语、荷兰语、日语、韩语、简体中文和俄语，并会以你的浏览器语言打开。你现在也可以将葡萄牙语、荷兰语、韩语和俄语添加为截图语言。',
+        '法律声明、隐私政策和版本历史的链接位于侧边栏底部。',
+      ],
+    },
+    ru: {
+      summary: 'Storyframe теперь говорит на одиннадцати языках.',
+      notes: [
+        'Редактор доступен на английском, немецком, французском, испанском, итальянском, бразильском португальском, нидерландском, японском, корейском, упрощённом китайском и русском и открывается на языке твоего браузера. Португальский, нидерландский, корейский и русский теперь можно добавить и как языки скриншотов.',
+        'Выходные данные, политика конфиденциальности и история версий — ссылки внизу боковой панели.',
+      ],
+    },
+  },
   '1.12.2': {
     de: {
       notes: [

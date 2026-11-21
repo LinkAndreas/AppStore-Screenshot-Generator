@@ -4,6 +4,13 @@ All notable changes to Storyframe (formerly the App Store Screenshot Generator).
 generated from this file, so keep the format: `## [version] - YYYY-MM-DD`, an optional one-line
 summary, then `- ` bullets.
 
+## [1.13.0] - 2026-11-21
+
+Storyframe now speaks eleven languages.
+
+- The editor is available in English, German, French, Spanish, Italian, Brazilian Portuguese, Dutch, Japanese, Korean, Simplified Chinese and Russian, and opens in your browser's language. Portuguese, Dutch, Korean and Russian can now also be added as screenshot languages.
+- A legal notice, privacy policy and version history, linked at the bottom of the sidebar.
+
 ## [1.12.2] - 2026-10-21
 
 - Devices fit whole below a long title and subtitle, so what's at the bottom of the screen, like a tab bar, stays in sight. A device placed at the edge away from the text still bleeds off it.
