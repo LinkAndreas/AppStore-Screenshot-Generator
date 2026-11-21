@@ -433,6 +433,9 @@ export const LeftSidebar = () => {
               {t(`legal.${page}`)}
             </a>
           ))}
+          <a href="https://github.com/LinkAndreas/AppStore-Screenshot-Generator" target="_blank" rel="noopener">
+            {t('legal.source')}
+          </a>
         </nav>
       </div>
     </div>

@@ -18,6 +18,8 @@ export interface Strings {
   backToApp: string;
   /** Shown above notes that exist only in English. */
   englishOnly: string;
+  /** Footer link to the source code on GitHub. */
+  source: string;
 }
 
 export const strings: Record<Lang, Strings> = {
@@ -35,13 +37,14 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Contents',
     backToApp: 'Open Storyframe',
     englishOnly: 'Available in English only.',
+    source: 'Open Source',
   },
   de: {
     imprintTitle: 'Impressum',
     imprintDescription: 'Impressum von Storyframe: Anbieterkennzeichnung nach § 5 DDG.',
     privacyTitle: 'Datenschutzerklärung',
     privacyDescription: 'Wie Storyframe mit deinen Daten umgeht: Der Editor läuft in deinem Browser – ohne Konto, Cookies oder Tracking.',
-    versionsTitle: 'Versionsverlauf',
+    versionsTitle: 'Versionshistorie',
     versionsDescription: 'Alle Versionen von Storyframe und was sich geändert hat.',
     versionsLede: 'Alle Versionen von Storyframe, die neueste zuerst.',
     version: 'Version {version}',
@@ -50,6 +53,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Inhalt',
     backToApp: 'Storyframe öffnen',
     englishOnly: 'Nur auf Englisch verfügbar.',
+    source: 'Open Source',
   },
   fr: {
     imprintTitle: 'Mentions légales',
@@ -65,6 +69,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Sommaire',
     backToApp: 'Ouvrir Storyframe',
     englishOnly: 'Disponible en anglais uniquement.',
+    source: 'Open source',
   },
   es: {
     imprintTitle: 'Aviso legal',
@@ -80,6 +85,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Contenido',
     backToApp: 'Abrir Storyframe',
     englishOnly: 'Disponible solo en inglés.',
+    source: 'Código abierto',
   },
   it: {
     imprintTitle: 'Note legali',
@@ -95,6 +101,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Indice',
     backToApp: 'Apri Storyframe',
     englishOnly: 'Disponibile solo in inglese.',
+    source: 'Open source',
   },
   'pt-br': {
     imprintTitle: 'Aviso legal',
@@ -110,6 +117,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Índice',
     backToApp: 'Abrir o Storyframe',
     englishOnly: 'Disponível apenas em inglês.',
+    source: 'Código aberto',
   },
   nl: {
     imprintTitle: 'Juridische informatie',
@@ -125,6 +133,7 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Inhoud',
     backToApp: 'Open Storyframe',
     englishOnly: 'Alleen beschikbaar in het Engels.',
+    source: 'Open source',
   },
   ja: {
     imprintTitle: '法的表示',
@@ -140,6 +149,7 @@ export const strings: Record<Lang, Strings> = {
     contents: '目次',
     backToApp: 'Storyframe を開く',
     englishOnly: '英語のみ。',
+    source: 'オープンソース',
   },
   ko: {
     imprintTitle: '법적 고지',
@@ -155,6 +165,7 @@ export const strings: Record<Lang, Strings> = {
     contents: '목차',
     backToApp: 'Storyframe 열기',
     englishOnly: '영어로만 제공돼요.',
+    source: '오픈 소스',
   },
   zh: {
     imprintTitle: '法律声明',
@@ -170,6 +181,7 @@ export const strings: Record<Lang, Strings> = {
     contents: '目录',
     backToApp: '打开 Storyframe',
     englishOnly: '仅提供英文版本。',
+    source: '开源',
   },
   ru: {
     imprintTitle: 'Выходные данные',
@@ -185,5 +197,6 @@ export const strings: Record<Lang, Strings> = {
     contents: 'Содержание',
     backToApp: 'Открыть Storyframe',
     englishOnly: 'Доступно только на английском.',
+    source: 'Открытый код',
   },
 };

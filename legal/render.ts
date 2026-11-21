@@ -182,6 +182,7 @@ function renderDocument(page: Page, lang: Lang, meta: string, body: string) {
     .join('\n    ');
   const footerLinks = pages
     .map((p) => `<a href="${pagePath(p, lang)}"${p === page ? ' aria-current="page"' : ''}>${pageTitle(p, lang)}</a>`)
+    .concat(`<a href="${site.sourceUrl}" rel="noopener">${escapeHtml(strings[lang].source)}</a>`)
     .join('\n          ');
 
   return `<!doctype html>

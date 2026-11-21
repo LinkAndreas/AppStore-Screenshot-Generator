@@ -309,7 +309,7 @@ export const translations: Record<string, Partial<Record<Exclude<Lang, 'en'>, Re
         'Das Gerät lässt sich auf der Arbeitsfläche verschieben.',
         '24 neue Verläufe, ausgewählt für App-Store-Screenshots, gegliedert in Lebhaft, Warm, Kühl, Sanft und Dunkel.',
         'Den Stil eines Bildschirms mit einem Klick auf alle Bildschirme übertragen.',
-        '„Neuigkeiten“ zeigt den Versionsverlauf.',
+        '„Neuigkeiten“ zeigt die Versionshistorie.',
       ],
     },
     fr: {

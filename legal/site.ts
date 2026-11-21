@@ -5,6 +5,8 @@ export const site = {
   /** Canonical, absolute URL of the deployed app, with a trailing slash. */
   url: 'https://screenshots.linkandreas.de/',
   privacyEmail: 'privacy@linkandreas.de',
+  /** Public source code of the app, linked from the footer. */
+  sourceUrl: 'https://github.com/LinkAndreas/AppStore-Screenshot-Generator',
 
   /** The provider of the app, named in the legal pages. */
   developer: {
